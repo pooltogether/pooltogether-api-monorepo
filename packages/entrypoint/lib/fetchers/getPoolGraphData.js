@@ -23,6 +23,8 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
   const query = prizePoolsQuery(blockNumber)
+  console.log('query')
+  console.log(query)
 
   const data = await Promise.all(
     subgraphVersions.map((version) => {
@@ -56,6 +58,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
     }
     return true
   })
+
+  console.log(externalErc20Awards)
 
   const formattedData = {
     config: {
