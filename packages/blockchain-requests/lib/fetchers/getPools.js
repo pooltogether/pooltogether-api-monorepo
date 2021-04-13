@@ -9,9 +9,10 @@ import { calculateEstimatedPoolPrize } from 'lib/services/calculateEstimatedPool
 import { getGraphLootBoxData } from 'lib/fetchers/getGraphLootBoxData'
 import { stringWithPrecision } from 'lib/utils/stringWithPrecision'
 import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
+import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
+import { getPoolChainData } from 'lib/fetchers/getPoolChainData'
 
-const { getPoolGraphData } = require('lib/fetchers/getPoolGraphData')
-const { getPoolChainData } = require('lib/fetchers/getPoolChainData')
+import { poolGraphData } from 'lib/frozenPoolGraphData'
 
 const bn = ethers.BigNumber.from
 
@@ -26,26 +27,26 @@ export const ERC20_BLOCK_LIST = ['0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf']
  * @param {*} poolContracts
  * @returns
  */
-export const getPools = async (chainId, readProvider, poolContracts) => {
-  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
-  return poolGraphData
-  // const poolChainData = await getPoolChainData(chainId, readProvider, poolContracts, poolGraphData)
-  // console.log('poolChainData:')
-  // console.log(poolChainData)
-  // let pools = combinepools(poolGraphData, poolChainData)
-  // console.log('pools:')
-  // console.log(pools)
-  // const lootBoxData = await getGraphLootBoxData(chainId, pools)
-  // pools = combineLootBoxData(pools, lootBoxData)
-  // const erc20Addresses = getAllErc20Addresses(pools)
-  // const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
-  // pools = combineTokenPricesData(pools, tokenPriceGraphData)
-  // pools = calculateTotalPrizeValuePerPool(pools)
-  // pools = calculateTotalValueLockedPerPool(pools)
-  // pools = calculateTokenFaucetApr(pools)
-  // pools = addPoolMetadata(pools, poolContracts)
-  // console.log('final', pools)
-  // return pools
+export const getPools = async (chainId, poolContracts) => {
+  // const poolGraphData = await getPoolGraphData(chainId, poolContracts)
+  const poolChainData = await getPoolChainData(chainId, poolGraphData)
+  // const poolChainData = await getPoolChainData(chainId, poolContracts, poolGraphData)
+  console.log('poolChainData:')
+  console.log(poolChainData)
+  let pools = combinepools(poolGraphData, poolChainData)
+  console.log('pools:')
+  console.log(pools)
+  const lootBoxData = await getGraphLootBoxData(chainId, pools)
+  pools = combineLootBoxData(pools, lootBoxData)
+  const erc20Addresses = getAllErc20Addresses(pools)
+  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
+  pools = combineTokenPricesData(pools, tokenPriceGraphData)
+  pools = calculateTotalPrizeValuePerPool(pools)
+  pools = calculateTotalValueLockedPerPool(pools)
+  pools = calculateTokenFaucetApr(pools)
+  pools = addPoolMetadata(pools, poolContracts)
+  console.log('final', pools)
+  return pools
 }
 
 /**

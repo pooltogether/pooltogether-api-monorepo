@@ -1,0 +1,9 @@
+# pooltogether-api-monorepo
+
+`entrypoint`:
+https://pooltogether-api-entrypoint.chuck4816.workers.dev/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json
+
+Makes use of data from the following endpoints:
+
+`the-graph-requests`:
+https://pooltogether-api-the-graph-requests.chuck4816.workers.dev/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json

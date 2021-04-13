@@ -19,7 +19,7 @@ export const usePoolByAddress = async (chainId, poolAddress) => {
 const usePool = async (chainId, poolContract) => {
   const usePoolData = await usePools(chainId, [poolContract])
 
-  return { ...usePoolData, data: usePoolData?.data?.[0] }
+  return usePoolData
 }
 
 /**

@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@pooltogether/current-pool-data": "^3.3.3",
+    "@pooltogether/etherplex": "^1.0.2",
     "@pooltogether/evm-chains-extended": "^0.4.3",
     "@pooltogether/loot-box": "^1.1.0",
     "@pooltogether/pooltogether-contracts": "^3.3.7",

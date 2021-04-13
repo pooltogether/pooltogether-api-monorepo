@@ -1,5 +1,5 @@
 import { usePoolContract } from 'lib/hooks/usePoolContracts'
-import { useReadProvider } from 'lib/hooks/useReadProvider'
+// import { useReadProvider } from 'lib/hooks/useReadProvider'
 import { getPools } from 'lib/fetchers/getPools'
 
 /**
@@ -29,8 +29,9 @@ const usePool = async (chainId, poolContract) => {
  * @returns
  */
 export const usePools = async (chainId, poolContracts) => {
-  const { readProvider, isLoaded } = await useReadProvider(chainId)
+  // const { readProvider, isLoaded } = await useReadProvider(chainId)
   const contracts = poolContracts.filter(Boolean)
 
-  return await getPools(chainId, readProvider, contracts)
+  // return await getPools(chainId, readProvider, contracts)
+  return await getPools(chainId, contracts)
 }

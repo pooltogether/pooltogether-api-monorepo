@@ -34,11 +34,11 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
     })
   )
 
-  return data
-    .filter(Boolean)
-    .flatMap(({ prizePools }) =>
-      prizePools.map((prizePool) => formatPoolGraphData(prizePool, chainId))
-    )
+  return data.filter(Boolean).flatMap(({ prizePools }) =>
+    prizePools.map((prizePool) => ({
+      [prizePool.id]: formatPoolGraphData(prizePool, chainId)
+    }))
+  )
 }
 
 const formatPoolGraphData = (prizePool, chainId) => {
