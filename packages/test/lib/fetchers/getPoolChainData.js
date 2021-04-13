@@ -34,6 +34,11 @@ const getReserveBatchName = (reserveAddress, prizePoolAddress) =>
 
 // TODO: fetchExternalErc1155Awards
 
+const getPool = (graphPool) => {
+  const poolAddressKey = Object.keys(graphPool)[0]
+  return graphPool[poolAddressKey]
+}
+
 /**
  *
  * @param {*} chainId
@@ -42,13 +47,13 @@ const getReserveBatchName = (reserveAddress, prizePoolAddress) =>
  * @returns
  */
 export const getPoolChainData = async (chainId, poolGraphData) => {
+  let pool
   let batchCalls = []
   const erc721AwardsToFetchMetadataFor = []
 
   // First set of calls
-  poolGraphData.forEach((poolGraphData) => {
-    const poolAddressKey = Object.keys(poolGraphData)[0]
-    const pool = poolGraphData[poolAddressKey]
+  poolGraphData.forEach((graphPool) => {
+    pool = getPool(graphPool)
 
     // Prize Pool
     const prizePoolContract = contract(pool.prizePool.address, PrizePoolAbi, pool.prizePool.address)
@@ -76,110 +81,109 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
 
     // Token Listener
     // NOTE: If it's not a token faucet, this will break everything
-    // if (pool.tokenListener.address) {
-    //   const tokenFaucetContract = contract(
-    //     pool.tokenListener.address,
-    //     TokenFaucetABI,
-    //     pool.tokenListener.address
-    //   )
-    //   batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
-    // }
+    if (pool.tokenListener.address) {
+      const tokenFaucetContract = contract(
+        pool.tokenListener.address,
+        TokenFaucetABI,
+        pool.tokenListener.address
+      )
+      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+    }
 
-    // // External ERC20 awards
-    // if (pool.prize.externalErc20Awards.length > 0) {
-    //   pool.prize.externalErc20Awards.forEach((erc20) => {
-    //     const erc20Contract = contract(
-    //       getExternalErc20AwardBatchName(pool.prizePool.address, erc20.address),
-    //       ERC20Abi,
-    //       erc20.address
-    //     )
-    //     batchCalls.push(erc20Contract.balanceOf(pool.prizePool.address))
-    //   })
-    // }
+    // External ERC20 awards
+    if (pool.prize.externalErc20Awards.length > 0) {
+      pool.prize.externalErc20Awards.forEach((erc20) => {
+        const erc20Contract = contract(
+          getExternalErc20AwardBatchName(pool.prizePool.address, erc20.address),
+          ERC20Abi,
+          erc20.address
+        )
+        batchCalls.push(erc20Contract.balanceOf(pool.prizePool.address))
+      })
+    }
 
-    // // External ERC721 awards
-    // if (pool.prize.externalErc721Awards.length > 0) {
-    //   pool.prize.externalErc721Awards.forEach((erc721) => {
-    //     erc721.tokenIds.forEach((tokenId) => {
-    //       const erc721Contract = contract(
-    //         getErc721BatchName(erc721.address, tokenId),
-    //         ERC721Abi,
-    //         erc721.address
-    //       )
-    //       batchCalls.push(
-    //         erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
-    //       )
-    //       erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
-    //     })
-    //   })
-    // }
+    // External ERC721 awards
+    if (pool.prize.externalErc721Awards.length > 0) {
+      pool.prize.externalErc721Awards.forEach((erc721) => {
+        erc721.tokenIds.forEach((tokenId) => {
+          const erc721Contract = contract(
+            getErc721BatchName(erc721.address, tokenId),
+            ERC721Abi,
+            erc721.address
+          )
+          batchCalls.push(
+            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+          )
+          erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
+        })
+      })
+    }
 
-    // // Sablier
-    // if (pool.prize.sablierStream.id) {
-    //   // TODO: Add sablier to contract addresses package
-    //   const sablierContract = contract(
-    //     pool.prize.sablierStream.id,
-    //     SablierAbi,
-    //     CUSTOM_CONTRACT_ADDRESSES[chainId].Sablier
-    //   )
-    //   batchCalls.push(sablierContract.getStream(ethers.BigNumber.from(pool.prize.sablierStream.id)))
-    // }
+    // Sablier
+    if (pool.prize.sablierStream.id) {
+      // TODO: Add sablier to contract addresses package
+      const sablierContract = contract(
+        pool.prize.sablierStream.id,
+        SablierAbi,
+        CUSTOM_CONTRACT_ADDRESSES[chainId].Sablier
+      )
+      batchCalls.push(sablierContract.getStream(ethers.BigNumber.from(pool.prize.sablierStream.id)))
+    }
 
-    // // cToken
-    // if (pool.tokens.cToken) {
-    //   const cTokenContract = contract(
-    //     getCTokenBatchName(pool.prizePool.address, pool.tokens.cToken.address),
-    //     CTokenAbi,
-    //     pool.tokens.cToken.address
-    //   )
-    //   batchCalls.push(cTokenContract.supplyRatePerBlock())
-    // }
+    // cToken
+    if (pool.tokens.cToken) {
+      const cTokenContract = contract(
+        getCTokenBatchName(pool.prizePool.address, pool.tokens.cToken.address),
+        CTokenAbi,
+        pool.tokens.cToken.address
+      )
+      batchCalls.push(cTokenContract.supplyRatePerBlock())
+    }
 
-    // // LootBox
+    // LootBox
 
-    // const lootBoxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
-    // if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
-    //   const lootBox = pool.prize.externalErc721Awards.find(
-    //     (erc721) => erc721.address === lootBoxAddress
-    //   )
+    const lootBoxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
+    if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
+      const lootBox = pool.prize.externalErc721Awards.find(
+        (erc721) => erc721.address === lootBoxAddress
+      )
 
-    //   if (lootBox) {
-    //     const lootBoxControllerAddress = CONTRACT_ADDRESSES[chainId].lootBoxController
-    //     lootBox.tokenIds.forEach((tokenId) => {
-    //       const lootBoxControllerContract = contract(
-    //         getLootBoxBatchName(lootBoxAddress, tokenId),
-    //         LootBoxControllerAbi,
-    //         lootBoxControllerAddress
-    //       )
-    //       batchCalls.push(lootBoxControllerContract.computeAddress(lootBoxAddress, tokenId))
-    //     })
-    //   }
-    // }
+      if (lootBox) {
+        const lootBoxControllerAddress = CONTRACT_ADDRESSES[chainId].lootBoxController
+        lootBox.tokenIds.forEach((tokenId) => {
+          const lootBoxControllerContract = contract(
+            getLootBoxBatchName(lootBoxAddress, tokenId),
+            LootBoxControllerAbi,
+            lootBoxControllerAddress
+          )
+          batchCalls.push(lootBoxControllerContract.computeAddress(lootBoxAddress, tokenId))
+        })
+      }
+    }
 
-    // // Reserve Registry
-    // const registryAddress = pool.reserve.registry.address
-    // if (registryAddress !== ethers.constants.AddressZero) {
-    //   const registryContract = contract(
-    //     getRegistryBatchName(registryAddress, pool.prizePool.address),
-    //     RegistryAbi,
-    //     registryAddress
-    //   )
-    //   batchCalls.push(registryContract.lookup())
-    // }
+    // Reserve Registry
+    const registryAddress = pool.reserve.registry.address
+    if (registryAddress !== ethers.constants.AddressZero) {
+      const registryContract = contract(
+        getRegistryBatchName(registryAddress, pool.prizePool.address),
+        RegistryAbi,
+        registryAddress
+      )
+      batchCalls.push(registryContract.lookup())
+    }
   })
 
   // First big batch call
-  // console.log('**************BC')
-  // console.log(batchCalls)
-  const firstBatchValues = await batch(batchCalls)
-  // const firstBatchValues = await batch(...batchCalls)
+  const firstBatchValues = await batch(...batchCalls)
 
   batchCalls = []
   console.log('**************firstBatchValues')
   console.log(firstBatchValues)
 
   // Second set of calls
-  poolGraphData.forEach((pool) => {
+  poolGraphData.forEach((graphPool) => {
+    pool = getPool(graphPool)
+
     // Prize Pool
     const prizePoolContract = contract(pool.prizePool.address, PrizePoolAbi, pool.prizePool.address)
     // Must be called in a separate multi-call from `captureAwardBalance`
@@ -226,6 +230,8 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
   })
 
   const secondBatchValues = await batch(...batchCalls)
+  console.log('**************secondBatchValues')
+  console.log(secondBatchValues)
 
   // Get External Erc721 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([
@@ -234,7 +240,9 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
       uri: await getErc721TokenUri(erc721Award.address, erc721Award.tokenId)
     })),
     // TODO: Split award is only supported on some versions of prizeStrategies
-    ...poolGraphData.map(async (pool) => {
+    ...poolGraphData.map(async (graphPool) => {
+      pool = getPool(graphPool)
+
       const prizeStrategyContract = contract(
         pool.prizeStrategy.address,
         MultipleWinnersAbi,
@@ -298,7 +306,10 @@ const formatPoolChainData = (
 ) => {
   // Format individual pool data
   const formattedPools = {}
-  poolGraphData.forEach((pool) => {
+  let pool
+  poolGraphData.forEach((graphPool) => {
+    pool = getPool(graphPool)
+
     const prizePoolAddress = pool.prizePool.address
     const prizeStrategyAddress = pool.prizeStrategy.address
     const prizeStrategyData = firstBatchValues[prizeStrategyAddress]

@@ -33,6 +33,11 @@ function jsonResponse(data) {
   }
   const body = JSON.stringify(data, null, 2)
 
+  console.log('**************')
+  console.log('SUCCESS!')
+  console.log('**************')
+  console.log(body)
+
   return new Response(body, config)
 }
 

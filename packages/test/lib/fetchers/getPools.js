@@ -12,13 +12,16 @@ import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
 import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
 import { getPoolChainData } from 'lib/fetchers/getPoolChainData'
 
-import { poolGraphData } from 'lib/frozenPoolGraphData'
-
 const bn = ethers.BigNumber.from
 
 // TODO: Block list for erc20's const MY_CRYPTO_MEMBERSHIP_ADDRESS = '0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf'
 
 export const ERC20_BLOCK_LIST = ['0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf']
+
+const getPool = (graphPool) => {
+  const poolAddressKey = Object.keys(graphPool)[0]
+  return graphPool[poolAddressKey]
+}
 
 /**
  *
@@ -28,14 +31,9 @@ export const ERC20_BLOCK_LIST = ['0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf']
  * @returns
  */
 export const getPools = async (chainId, poolContracts) => {
-  // const poolGraphData = await getPoolGraphData(chainId, poolContracts)
+  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
   const poolChainData = await getPoolChainData(chainId, poolGraphData)
-  // const poolChainData = await getPoolChainData(chainId, poolContracts, poolGraphData)
-  console.log('poolChainData:')
-  console.log(poolChainData)
   let pools = combinepools(poolGraphData, poolChainData)
-  console.log('pools:')
-  console.log(pools)
   const lootBoxData = await getGraphLootBoxData(chainId, pools)
   pools = combineLootBoxData(pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
@@ -45,7 +43,6 @@ export const getPools = async (chainId, poolContracts) => {
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateTokenFaucetApr(pools)
   pools = addPoolMetadata(pools, poolContracts)
-  console.log('final', pools)
   return pools
 }
 
@@ -57,7 +54,9 @@ export const getPools = async (chainId, poolContracts) => {
  * @returns
  */
 const combinepools = (poolGraphData, poolChainData) => {
-  const pools = poolGraphData.map((pool) => {
+  let pool
+  const pools = poolGraphData.map((graphPool) => {
+    pool = getPool(graphPool)
     const chainData = poolChainData[pool.prizePool.address]
     return merge(pool, chainData)
   })
@@ -172,7 +171,10 @@ const addTotalValueForReserve = (pool) => {
  * @param {*} usd as a Number
  * @returns a BigNumber
  */
-const amountMultByUsd = (amount, usd) => amount.mul(Math.round(usd * 100)).div(100)
+const amountMultByUsd = (amount, usd) => {
+  const result = amount.mul(Math.round(usd * 100)).div(100)
+  return result
+}
 
 /**
  * Calculate total prize value

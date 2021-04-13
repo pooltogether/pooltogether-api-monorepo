@@ -4,6 +4,7 @@ import {
   POOLTOGETHER_SUBGRAPHS,
   UNISWAP_GRAPH_URIS
 } from 'lib/constants/subgraphUris'
+import fetch from 'node-fetch'
 
 export const useSubgraphClients = (chainId, versions) => {
   return versions.map((version) => POOLTOGETHER_SUBGRAPHS[chainId][version])
