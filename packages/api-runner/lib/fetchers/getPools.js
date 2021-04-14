@@ -1,7 +1,7 @@
 import merge from 'lodash.merge'
 import cloneDeep from 'lodash.clonedeep'
 import { ethers } from 'ethers'
-import { formatUnits, parseUnits } from '@ethersproject/abi'
+import { formatUnits, parseUnits } from '@ethersproject/units'
 
 import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
 import { getTokenPriceData } from 'lib/fetchers/getTokenPriceData'
@@ -30,25 +30,16 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
   const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
   let pools = combinepools(poolGraphData, poolChainData)
-  console.log('combinepools pools')
-  console.log(pools)
-  console.log(JSON.stringify(pools))
   const lootBoxData = await getGraphLootBoxData(chainId, pools, fetch)
   pools = combineLootBoxData(pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
-
-  console.log('tokenPriceGraphData')
-  console.log(tokenPriceGraphData)
-  console.log(JSON.stringify(tokenPriceGraphData))
 
   pools = combineTokenPricesData(pools, tokenPriceGraphData)
   pools = calculateTotalPrizeValuePerPool(pools)
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateTokenFaucetApr(pools)
   pools = addPoolMetadata(pools, poolContracts)
-  console.log('final')
-  console.log(pools)
 
   return pools
 }
@@ -78,11 +69,12 @@ const combinepools = (poolGraphData, poolChainData) => {
  */
 const combineLootBoxData = (_pools, lootBoxData) => {
   const pools = cloneDeep(_pools)
+
   pools.forEach((pool) => {
     if (pool.prize.lootBoxes?.length > 0) {
       pool.prize.lootBoxes.forEach((lootBox) => {
         const lootBoxGraphData = lootBoxData.lootBoxes.find((box) => box.tokenId === lootBox.id)
-        lootBox.erc1155Tokens = lootBoxGraphData.erc1155Balance
+        lootBox.erc1155Tokens = lootBoxGraphData.erc1155Balances
         lootBox.erc721Tokens = lootBoxGraphData.erc721Tokens
         lootBox.erc20Tokens = lootBoxGraphData.erc20Balances
           .filter((erc20) => !ERC20_BLOCK_LIST.includes(erc20.id))
@@ -91,7 +83,7 @@ const combineLootBoxData = (_pools, lootBoxData) => {
             address: erc20.erc20Entity.id,
             lootBoxAddress: erc20.erc20Entity.id,
             amountUnformatted: bn(erc20.balance),
-            amount: formatUnits(erc20.balance, erc20.erc20Entity.balance)
+            amount: formatUnits(erc20.balance, erc20.erc20Entity.decimals)
           }))
       })
     }

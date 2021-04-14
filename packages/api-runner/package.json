@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.0.7",
+  "version": "1.0.13",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "Gain more insight when testing the API code in a regular node enviroment",
@@ -17,8 +17,7 @@
     "build": "rollup -c rollup.config.js",
     "watch": "rollup -w rollup.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write '**/*.{js,css,json,md}'",
-    "prepublish": "yarn build"
+    "format": "prettier --write '**/*.{js,css,json,md}'"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",

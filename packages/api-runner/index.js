@@ -9,15 +9,15 @@ function path(request) {
   return pathname
 }
 
-// export async function pools(request, fetch = nodeFetch) {
-//   const pathname = path(request).split('.')[0]
-//   const chainId = parseInt(pathname.split('/')[2], 10)
-//   const poolContracts = usePoolContracts(chainId)
+export async function pools(request, fetch = nodeFetch) {
+  const pathname = path(request).split('.')[0]
+  const chainId = parseInt(pathname.split('/')[2], 10)
+  const poolContracts = usePoolContracts(chainId)
 
-//   const pools = await usePools(chainId, poolContracts, fetch)
+  const pools = await usePools(chainId, poolContracts, fetch)
 
-//   return pools
-// }
+  return pools
+}
 
 export async function pool(request, fetch = nodeFetch) {
   const pathname = path(request).split('.')[0]

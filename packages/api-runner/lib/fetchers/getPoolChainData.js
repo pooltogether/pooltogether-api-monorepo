@@ -55,10 +55,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
   let batchCalls = []
   const erc721AwardsToFetchMetadataFor = []
 
-  console.log('poolGraphData')
-  console.log(poolGraphData)
-  console.log(JSON.stringify(poolGraphData))
-
   // First set of calls
   poolGraphData.forEach((graphPool) => {
     pool = getPool(graphPool)
@@ -185,8 +181,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
   const firstBatchValues = await batch(fetch, ...batchCalls)
 
   batchCalls = []
-  console.log('**************firstBatchValues')
-  console.log(firstBatchValues)
 
   // Second set of calls
   poolGraphData.forEach((graphPool) => {
@@ -238,8 +232,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
   })
 
   const secondBatchValues = await batch(fetch, ...batchCalls)
-  console.log('**************secondBatchValues')
-  console.log(secondBatchValues)
 
   // Get External Erc721 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([
@@ -266,11 +258,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
       }
     })
   ])
-
-  console.log('additionalBatchedCalls')
-  console.log(additionalBatchedCalls)
-  console.log(JSON.stringify(additionalBatchedCalls))
-  console.log('formatPoolChainData')
 
   return formatPoolChainData(
     chainId,
@@ -370,10 +357,6 @@ const formatPoolChainData = (
       }
     }
 
-    console.log('formattedPoolChainData')
-    console.log(formattedPoolChainData)
-    console.log(JSON.stringify(formattedPoolChainData))
-
     // Token listener
     if (pool.tokenListener.address) {
       const tokenListenerData = firstBatchValues[pool.tokenListener.address]
@@ -412,10 +395,6 @@ const formatPoolChainData = (
         tokenFaucetDripToken
       }
     }
-
-    console.log('formattedPoolChainData2')
-    console.log(formattedPoolChainData)
-    console.log(JSON.stringify(formattedPoolChainData))
 
     // External ERC20 awards
     // NOTE: editing pool graph data here to merge the token amounts in
@@ -536,10 +515,6 @@ const formatPoolChainData = (
 
     formattedPools[prizePoolAddress] = formattedPoolChainData
   })
-
-  console.log('formattedPools')
-  console.log(formattedPools)
-  console.log(JSON.stringify(formattedPools))
 
   return formattedPools
 }

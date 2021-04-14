@@ -24,9 +24,6 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
 
   const query = prizePoolsQuery(blockNumber)
 
-  console.log('query')
-  console.log(query)
-
   const data = await Promise.all(
     subgraphVersions.map((version) => {
       const client = subgraphClients[version]

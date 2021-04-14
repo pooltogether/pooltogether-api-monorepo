@@ -45,7 +45,6 @@ export const getPoolAddressesBySubgraphVersionFromContracts = (poolContracts) =>
 export const getLootBoxSubgraphClient = (chainId, fetch) =>
   new GraphQLClient(LOOTBOX_GRAPH_URIS[chainId], {
     fetch
-    // fetch: theGraphCustomFetch
   })
 
 // const retryCodes = [408, 500, 502, 503, 504, 522, 524]

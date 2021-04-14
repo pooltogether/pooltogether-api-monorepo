@@ -9,8 +9,6 @@ export const batch = async (fetch, ...batchCalls) => {
   // so make sure to handle calls differently if the network doesn't support multicall!
   // (see Etherplex for calls fallback for non-multicall networks)
   const [result, calls, data] = encodeData(...batchCalls)
-  console.log('result, calls, data')
-  console.log(result, data)
 
   const tx = {
     params: [await prepareTransaction(chainId, data), 'latest'],
