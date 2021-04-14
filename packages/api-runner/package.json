@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@pooltogether/api-runner",
   "version": "1.0.0",
   "author": "PoolTogether <hello@pooltogether.com>",

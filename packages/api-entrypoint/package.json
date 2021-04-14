@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@pooltogether/api-entrypoint",
   "version": "1.0.0",
   "description": "API resources for calculating PoolTogether prize values, etc.",
