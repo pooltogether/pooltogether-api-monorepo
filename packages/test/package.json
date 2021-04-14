@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "pooltogether-api-test",
+  "name": "@pooltogether/api-runner",
   "version": "1.0.0",
-  "description": "Quickly test code in regular node enviroment",
+  "description": "Gain more insight when testing the API code in a regular node enviroment",
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",

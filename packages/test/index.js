@@ -1,26 +1,27 @@
-// import { usePools } from 'lib/hooks/usePool'
-import { usePoolByAddress } from 'lib/hooks/usePool'
+import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
+import { usePoolContracts } from 'lib/hooks/usePoolContracts'
 
 import Router from 'lib/router'
 
-// async function poolsHandler(request) {
-//   const _url = new URL(request.url)
-//   const path = _url.pathname
-//   const chainId = parseInt(path.split('/')[2], 10).split('.')[0]
-//   console.log('chainId')
-//   console.log(chainId)
+function path(request) {
+  const _url = new URL(request.url)
+  const pathname = _url.pathname
+  return pathname
+}
 
-//   const pools = await usePools(chainId)
+// async function poolsHandler(request) {
+//   const pathname = path(request).split('.')[0]
+//   const chainId = parseInt(pathname.split('/')[2], 10)
+//   const poolContracts = usePoolContracts(chainId)
+//   const pools = await usePools(chainId, poolContracts)
 
 //   return jsonResponse(pools)
 // }
 
 async function poolHandler(request) {
-  const _url = new URL(request.url)
-  const path = _url.pathname
-  const chainId = parseInt(path.split('/')[2], 10)
-  // remove the .json extension
-  const poolAddress = path.split('/')[3].split('.')[0]
+  const pathname = path(request).split('.')[0]
+  const chainId = parseInt(pathname.split('/')[2], 10)
+  const poolAddress = pathname.split('/')[3]
 
   const pool = await usePoolByAddress(chainId, poolAddress)
 
@@ -38,7 +39,9 @@ function jsonResponse(data) {
   console.log('**************')
   console.log(body)
 
-  return new Response(body, config)
+  return body
+
+  // return new Response(body, config)
 }
 
 async function callInfura(event) {
@@ -94,4 +97,5 @@ async function handleRequest(request) {
 // })
 
 const request = { url: 'https://api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json' }
+// poolsHandler(request)
 poolHandler(request)

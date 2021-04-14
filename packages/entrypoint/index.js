@@ -1,3 +1,5 @@
+import { pooltogetherApiRunner } from 'pooltogether-api-runner'
+
 const Router = require('./router')
 
 const url1Path = '/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json'
