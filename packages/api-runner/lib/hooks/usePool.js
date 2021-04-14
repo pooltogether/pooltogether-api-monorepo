@@ -18,8 +18,7 @@ export const usePoolByAddress = async (chainId, poolAddress, fetch) => {
  */
 const usePool = async (chainId, poolContract, fetch) => {
   const usePoolData = await usePools(chainId, [poolContract], fetch)
-
-  return { ...usePoolData, data: usePoolData?.data?.[0] }
+  return usePoolData?.[0]
 }
 
 /**
@@ -29,5 +28,6 @@ const usePool = async (chainId, poolContract, fetch) => {
  */
 export const usePools = async (chainId, poolContracts, fetch) => {
   const contracts = poolContracts.filter(Boolean)
-  return await getPools(chainId, contracts, fetch)
+  const pools = await getPools(chainId, contracts, fetch)
+  return pools
 }

@@ -227,7 +227,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ReserveAbi,
         reserveAddress
       )
-      batchCalls.push(reserveContract.rateMantissa())
+      batchCalls.push(reserveContract.reserveRateMantissa(pool.prizePool.address))
     }
   })
 
@@ -505,11 +505,13 @@ const formatPoolChainData = (
         ...formattedPoolChainData.reserve,
         address: reserveAddress,
         rate: formatUnits(
-          secondBatchValues[getReserveBatchName(reserveAddress, prizePoolAddress)].rateMantissa[0],
+          secondBatchValues[getReserveBatchName(reserveAddress, prizePoolAddress)]
+            .reserveRateMantissa[0],
           DEFAULT_TOKEN_PRECISION
         ),
         rateUnformatted:
-          secondBatchValues[getReserveBatchName(reserveAddress, prizePoolAddress)].rateMantissa[0]
+          secondBatchValues[getReserveBatchName(reserveAddress, prizePoolAddress)]
+            .reserveRateMantissa[0]
       }
     }
 
