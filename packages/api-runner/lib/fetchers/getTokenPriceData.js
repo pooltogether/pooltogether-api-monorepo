@@ -38,12 +38,12 @@ const _calculateUsd = (token) => {
   return 1 / derivedETH
 }
 
-export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
+export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
   // Only supported on mainnet
   if (![1, 4].includes(chainId)) return null
 
   const blockFilter = _getBlockFilter(blockNumber)
-  const graphQLClient = getUniswapSubgraphClient(chainId)
+  const graphQLClient = getUniswapSubgraphClient(chainId, fetch)
 
   // We'll use this stablecoin to measure the price of ETH off of
   const stablecoinAddress = CUSTOM_CONTRACT_ADDRESSES[chainId]?.['Usdt']

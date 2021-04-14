@@ -1,8 +1,6 @@
 import { pool, pools } from '@pooltogether/api-runner'
 import Router from 'lib/router'
 
-// const { pool, pools } = require('@pooltogether/api-runner')
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
@@ -20,61 +18,16 @@ const init = {
 }
 
 async function poolsHandler(request) {
-  return jsonResponse(await pools(request, fetch))
+  return jsonResponse(6)
+  // return jsonResponse(await pools(request, fetch))
 }
 
 async function poolHandler(request) {
-  return jsonResponse(await pool(request, fetch))
-
-  // console.log('request.url')
-  // console.log(request.url)
-
-  // const _url = new URL(request.url)
-  // const path = _url.pathname
-  // const chainId = parseInt(path.split('/')[2], 10)
-  // // remove the .json extension
-  // const poolAddress = path.split('/')[3].split('.')[0]
-
-  // // 0xebfb47a7ad0fd6e57323c8a42b2e5a6a4f68fc1a
-  // // TODO: 1. get subgraph data:
-  // const apiGraphUrl = `${url1}/pools/${chainId}/${poolAddress}.json`
-  // console.log(apiGraphUrl)
-
-  // // const poolGraphDataJsonUrl = await fetch(apiGraphUrl, {
-  // //   // method: "POST",
-  // //   // body: JSON.stringify(tx),
-  // //   headers: { 'Content-Type': 'application/json' }
-  // // })
-  // // return await response.json()
-
-  // // const body = await poolGraphDataJsonUrl.json()
-  // // console.log(body)
-
-  // // TODO: 2. get chain data:
-  // console.log('wtf')
-
-  // // 3. Promise chain:
-  // const responses = await Promise.all([
-  //   // fetch(apiGraphUrl, init),
-  //   fetch(url1, init),
-  //   fetch(url3, init),
-  //   fetch(url3, init)
-  // ])
-  // console.log('responses')
-  // console.log(responses)
-  // const results = await Promise.all([
-  //   gatherResponse(responses[0]),
-  //   gatherResponse(responses[1]),
-  //   gatherResponse(responses[2])
-  // ])
-  // return new Response(JSON.stringify(results.join(), null, 2), init)
-
-  // // TODO: 4. combine it all together:
-  // // const pool = body
-  // // const pool = results
-  // // const pool = 2
-
-  // // return jsonResponse(2)
+  const _pool = await pool(request, fetch)
+  console.log('final pool')
+  console.log(_pool)
+  console.log(JSON.stringify(_pool))
+  return jsonResponse(_pool)
 }
 
 /**
@@ -101,11 +54,6 @@ function jsonResponse(data) {
 
   return new Response(body, init)
 }
-
-// async function callInfura(event) {
-//   // const resp = await fetch('https://')
-//   // const infuraResult = await callInfura(event)
-// }
 
 // async function cacheResource(event) {
 //   const url = new URL(event.request.url)

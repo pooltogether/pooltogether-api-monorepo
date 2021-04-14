@@ -1,9 +1,9 @@
 import merge from 'lodash.merge'
 import cloneDeep from 'lodash.clonedeep'
 import { ethers } from 'ethers'
-import { formatUnits, parseUnits } from 'ethers/lib/utils'
+import { formatUnits, parseUnits } from '@ethersproject/abi'
 
-import { SECONDS_PER_DAY } from 'lib/constants'
+import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
 import { getTokenPriceData } from 'lib/fetchers/getTokenPriceData'
 import { calculateEstimatedPoolPrize } from 'lib/services/calculateEstimatedPoolPrize'
 import { getGraphLootBoxData } from 'lib/fetchers/getGraphLootBoxData'
@@ -13,10 +13,6 @@ import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
 import { getPoolChainData } from 'lib/fetchers/getPoolChainData'
 
 const bn = ethers.BigNumber.from
-
-// TODO: Block list for erc20's const MY_CRYPTO_MEMBERSHIP_ADDRESS = '0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf'
-
-export const ERC20_BLOCK_LIST = ['0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf']
 
 const getPool = (graphPool) => {
   const poolAddressKey = Object.keys(graphPool)[0]
@@ -31,13 +27,21 @@ const getPool = (graphPool) => {
  * @returns
  */
 export const getPools = async (chainId, poolContracts, fetch) => {
-  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
+  const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
   const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
   let pools = combinepools(poolGraphData, poolChainData)
-  const lootBoxData = await getGraphLootBoxData(chainId, pools)
+  console.log('combinepools pools')
+  console.log(pools)
+  console.log(JSON.stringify(pools))
+  const lootBoxData = await getGraphLootBoxData(chainId, pools, fetch)
   pools = combineLootBoxData(pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
-  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
+  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
+
+  console.log('tokenPriceGraphData')
+  console.log(tokenPriceGraphData)
+  console.log(JSON.stringify(tokenPriceGraphData))
+
   pools = combineTokenPricesData(pools, tokenPriceGraphData)
   pools = calculateTotalPrizeValuePerPool(pools)
   pools = calculateTotalValueLockedPerPool(pools)

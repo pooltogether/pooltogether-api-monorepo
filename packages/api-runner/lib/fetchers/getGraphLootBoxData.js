@@ -2,8 +2,8 @@ import { CONTRACT_ADDRESSES } from 'lib/constants/contracts'
 import { getLootBoxSubgraphClient } from 'lib/hooks/useSubgraphClients'
 import { lootBoxQuery } from 'lib/queries/lootBoxQuery'
 
-export const getGraphLootBoxData = async (chainId, poolData, blockNumber = -1) => {
-  const graphQLClient = getLootBoxSubgraphClient(chainId)
+export const getGraphLootBoxData = async (chainId, poolData, fetch, blockNumber = -1) => {
+  const graphQLClient = getLootBoxSubgraphClient(chainId, fetch)
   const tokenIds = [
     ...new Set(
       poolData

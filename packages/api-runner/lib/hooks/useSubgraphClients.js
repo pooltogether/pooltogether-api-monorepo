@@ -14,14 +14,16 @@ export const getSubgraphVersionsFromContracts = (poolContracts) => [
   ...new Set(poolContracts.map((pool) => pool.subgraphVersion))
 ]
 
-export const getUniswapSubgraphClient = (chainId) => new GraphQLClient(UNISWAP_GRAPH_URIS[chainId])
+export const getUniswapSubgraphClient = (chainId, fetch) =>
+  new GraphQLClient(UNISWAP_GRAPH_URIS[chainId], { fetch })
 // new GraphQLClient(UNISWAP_GRAPH_URIS[chainId], { fetch: theGraphCustomFetch })
 
-export const getSubgraphClientsByVersionFromContracts = (poolContracts, chainId) =>
+export const getSubgraphClientsByVersionFromContracts = (poolContracts, chainId, fetch) =>
   getSubgraphVersionsFromContracts(poolContracts).reduce(
     (accumulator, version) => ({
       ...accumulator,
       [version]: new GraphQLClient(POOLTOGETHER_SUBGRAPHS[chainId][version], {
+        fetch
         // fetch: theGraphCustomFetch
       })
     }),
@@ -40,8 +42,9 @@ export const getPoolAddressesBySubgraphVersionFromContracts = (poolContracts) =>
   }, {})
 }
 
-export const getLootBoxSubgraphClient = (chainId) =>
+export const getLootBoxSubgraphClient = (chainId, fetch) =>
   new GraphQLClient(LOOTBOX_GRAPH_URIS[chainId], {
+    fetch
     // fetch: theGraphCustomFetch
   })
 

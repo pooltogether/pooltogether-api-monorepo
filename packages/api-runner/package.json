@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "Gain more insight when testing the API code in a regular node enviroment",
@@ -29,9 +29,12 @@
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "babel-loader": "^8.2.2",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "webpack": "^5.32.0"
   },
   "dependencies": {
+    "@ethersproject/abi": "^5.1.0",
+    "@ethersproject/units": "^5.1.0",
     "@pooltogether/current-pool-data": "^3.3.3",
     "@pooltogether/etherplex": "1.1.1",
     "@pooltogether/evm-chains-extended": "^0.4.3",

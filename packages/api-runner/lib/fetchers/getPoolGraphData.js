@@ -17,9 +17,9 @@ import { ethers } from 'ethers'
  * @param {*} blockNumber
  * @returns
  */
-export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1) => {
+export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumber = -1) => {
   const subgraphVersions = getSubgraphVersionsFromContracts(poolContracts)
-  const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
+  const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId, fetch)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
   const query = prizePoolsQuery(blockNumber)
