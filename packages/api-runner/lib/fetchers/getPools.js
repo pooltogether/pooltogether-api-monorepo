@@ -30,9 +30,9 @@ const getPool = (graphPool) => {
  * @param {*} poolContracts
  * @returns
  */
-export const getPools = async (chainId, poolContracts) => {
+export const getPools = async (chainId, poolContracts, fetch) => {
   const poolGraphData = await getPoolGraphData(chainId, poolContracts)
-  const poolChainData = await getPoolChainData(chainId, poolGraphData)
+  const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
   let pools = combinepools(poolGraphData, poolChainData)
   const lootBoxData = await getGraphLootBoxData(chainId, pools)
   pools = combineLootBoxData(pools, lootBoxData)
@@ -43,6 +43,9 @@ export const getPools = async (chainId, poolContracts) => {
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateTokenFaucetApr(pools)
   pools = addPoolMetadata(pools, poolContracts)
+  console.log('final')
+  console.log(pools)
+
   return pools
 }
 

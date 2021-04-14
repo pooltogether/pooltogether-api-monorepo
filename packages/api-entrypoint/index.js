@@ -20,11 +20,11 @@ const init = {
 }
 
 async function poolsHandler(request) {
-  return jsonResponse(await pools(request))
+  return jsonResponse(await pools(request, fetch))
 }
 
 async function poolHandler(request) {
-  return jsonResponse(await pool(request))
+  return jsonResponse(await pool(request, fetch))
 
   // console.log('request.url')
   // console.log(request.url)

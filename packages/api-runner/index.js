@@ -1,5 +1,6 @@
 import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
 import { usePoolContracts } from 'lib/hooks/usePoolContracts'
+const nodeFetch = require('node-fetch')
 
 function path(request) {
   const _url = new URL(request.url)
@@ -7,24 +8,31 @@ function path(request) {
   return pathname
 }
 
-export async function pools(request) {
+export async function pools(request, fetch = nodeFetch) {
   const pathname = path(request).split('.')[0]
   const chainId = parseInt(pathname.split('/')[2], 10)
   const poolContracts = usePoolContracts(chainId)
 
-  const pools = await usePools(chainId, poolContracts)
+  const pools = await usePools(chainId, poolContracts, fetch)
 
   return pools
 }
 
-export async function pool(request) {
+export async function pool(request, fetch = nodeFetch) {
   const pathname = path(request).split('.')[0]
   const chainId = parseInt(pathname.split('/')[2], 10)
   const poolAddress = pathname.split('/')[3]
 
   console.log(pathname)
   console.log(poolAddress)
-  const pool = await usePoolByAddress(chainId, poolAddress)
+
+  console.log(fetch)
+  console.log(fetch)
+  console.log(fetch)
+  console.log(fetch)
+  console.log(fetch)
+  console.log(fetch)
+  const pool = await usePoolByAddress(chainId, poolAddress, fetch)
 
   return pool
 }

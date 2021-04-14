@@ -1,7 +1,7 @@
 // import fetch from 'node-fetch'
 import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherplex'
 
-export const batch = async (...batchCalls) => {
+export const batch = async (fetch, ...batchCalls) => {
   const chainId = 1
   // var INFURA_API_ID = process.env.INFURA_ID;
 

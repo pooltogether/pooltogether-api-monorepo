@@ -6,9 +6,9 @@ import { getPools } from 'lib/fetchers/getPools'
  * @param {*} poolAddress
  * @returns
  */
-export const usePoolByAddress = async (chainId, poolAddress) => {
+export const usePoolByAddress = async (chainId, poolAddress, fetch) => {
   const poolContract = await usePoolContract(chainId, poolAddress)
-  return await usePool(chainId, poolContract)
+  return await usePool(chainId, poolContract, fetch)
 }
 
 /**
@@ -16,8 +16,8 @@ export const usePoolByAddress = async (chainId, poolAddress) => {
  * @param {*} label
  * @returns
  */
-const usePool = async (chainId, poolContract) => {
-  const usePoolData = await usePools(chainId, [poolContract])
+const usePool = async (chainId, poolContract, fetch) => {
+  const usePoolData = await usePools(chainId, [poolContract], fetch)
 
   return { ...usePoolData, data: usePoolData?.data?.[0] }
 }
@@ -27,7 +27,7 @@ const usePool = async (chainId, poolContract) => {
  * @param {*} poolContracts
  * @returns
  */
-export const usePools = async (chainId, poolContracts) => {
+export const usePools = async (chainId, poolContracts, fetch) => {
   const contracts = poolContracts.filter(Boolean)
-  return await getPools(chainId, contracts)
+  return await getPools(chainId, contracts, fetch)
 }
