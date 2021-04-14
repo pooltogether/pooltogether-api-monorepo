@@ -1,84 +1,96 @@
 import { pool, pools } from '@pooltogether/api-runner'
-import Router from 'lib/router'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
-  'Access-Control-Max-Age': '86400',
-  'Access-Control-Request-Method': '*',
-  'Vary': 'Accept-Encoding, Origin'
+const CACHE_AGE_IN_SECONDS = 60
+console.log(`s-maxage=${CACHE_AGE_IN_SECONDS}`)
+
+function path(request) {
+  const _url = new URL(request.url)
+  const pathname = _url.pathname
+  return pathname
 }
+
+// const corsHeaders = {
+//   'Access-Control-Allow-Origin': '*',
+//   'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
+//   'Access-Control-Max-Age': '86400',
+//   'Access-Control-Request-Method': '*',
+//   'Vary': 'Accept-Encoding, Origin'
+// }
 const type = 'application/json;charset=UTF-8'
-const init = {
-  headers: {
-    ...corsHeaders,
-    'Access-Control-Allow-Headers': '*',
-    'Content-Type': type
-  }
-}
-
-async function poolsHandler(request) {
-  return jsonResponse(6)
-  // return jsonResponse(await pools(request, fetch))
-}
-
-async function poolHandler(request) {
-  const _pool = await pool(request, fetch)
-  console.log('final pool')
-  console.log(_pool)
-  console.log(JSON.stringify(_pool))
-  return jsonResponse(_pool)
-}
-
-function jsonResponse(data) {
-  const body = JSON.stringify(data, null, 2)
-
-  return new Response(body, init)
-}
-
-// async function cacheResource(event) {
-//   const url = new URL(event.request.url)
-
-//   // Only use the path for the cache key, removing query strings
-//   // and always store using HTTPS e.g. https://www.example.com/file-uri-here
-//   const someCustomKey = `https://${url.hostname}${url.pathname}`
-
-//   let response = await fetch(event.request, {
-//     cf: {
-//       // Always cache this fetch regardless of content type
-//       // for a max of 5 seconds before revalidating the resource
-//       cacheTtl: 5,
-//       cacheEverything: true,
-//       // Enterprise only feature, see Cache API for other plans
-//       cacheKey: someCustomKey
-//     }
-//   })
-
-//   // Reconstruct the Response object to make its headers mutable.
-//   response = new Response(response.body, response)
-
-//   // Set cache control headers to cache on browser for 25 minutes
-//   response.headers.set('Cache-Control', 'max-age=1500')
-
-//   return response
+// const init = {
+//   headers: {
+//     ...corsHeaders,
+//     'Access-Control-Allow-Headers': '*',
+//     'Content-Type': type
+//   }
 // }
 
-async function handleRequest(request) {
-  const r = new Router()
+async function poolsHandler(event) {
+  const request = event.request
+  return useCache(event, pools(request, fetch))
+}
 
-  // TODO: Fix this:
-  // r.get('.*/pools/.*.json', (request) => poolsHandler(request))
+async function poolHandler(event) {
+  const request = event.request
+  return useCache(event, pool(request, fetch))
+}
 
-  r.get('.*/pools/.*/.*.json', (request) => poolHandler(request))
+// function jsonResponse(data) {
+//   const body = JSON.stringify(data, null, 2)
+//   return new Response(body, init)
+// }
 
-  const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress.json\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json`
-  r.get('/', () => new Response(errorMsg))
+async function useCache(event, promise) {
+  const request = event.request
+  const cacheUrl = new URL(request.url)
 
-  const response = await r.route(request)
+  // Construct the cache key from the cache URL
+  const cacheKey = new Request(cacheUrl.toString(), request)
+  const cache = caches.default
+
+  // Check whether the value is already available in the cache
+  // if not, you will need to fetch it from origin, and store it in the cache
+  // for future access
+  let response = await cache.match(cacheKey)
+  console.log('response')
+  console.log(JSON.stringify(response))
+
+  if (!response) {
+    // If not in cache, get it from origin
+    let body = await promise
+    const jsonBody = JSON.stringify(body, null, 2)
+
+    // Must use Response constructor to inherit all of response's fields
+    response = new Response(jsonBody, response)
+    response.headers.set('Content-Type', type)
+    response.headers.append('Cache-Control', `s-maxage=${CACHE_AGE_IN_SECONDS}`)
+
+    // Use waitUntil so you can return the response without blocking on
+    // writing to cache
+    event.waitUntil(cache.put(cacheKey, response.clone()))
+  } else {
+    console.log('cache hit!')
+  }
 
   return response
 }
 
+async function handleRequest(event) {
+  const request = event.request
+  const pathname = path(request)
+
+  const singlePoolRegex = /\/pools\/\d\/[A-Za-z0-9]*.json/
+  const multiPoolRegex = /\/pools\/\d.json/
+  if (singlePoolRegex.test(pathname)) {
+    return poolHandler(event)
+  } else if (multiPoolRegex.test(pathname)) {
+    return poolsHandler(event)
+  } else {
+    const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress.json\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json`
+    return new Response(errorMsg)
+  }
+}
+
 addEventListener('fetch', (event) => {
-  event.respondWith(handleRequest(event.request))
+  event.respondWith(handleRequest(event))
 })

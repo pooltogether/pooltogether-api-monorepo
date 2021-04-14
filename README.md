@@ -11,5 +11,7 @@ https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 ### TODO:
 
 - caching
+- cpu limits: 'Worker exceeded resource limits'
+- fix routing issue where routes are being overridden
 - get it live on pooltogether-api.com
 - handle requests using various services / cloudflare, alchemy, infura, etc
