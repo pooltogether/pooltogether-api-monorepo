@@ -2,11 +2,11 @@
 
 API calls are all GET requests and use the following structure:
 
-http://127.0.0.1:8787/pools/:chainId/:poolAddress
+https://pooltogether-api.com/pools/:chainId/:poolAddress
 
 Example: the DAI pool's data would be:
 
-http://127.0.0.1:8787/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
+https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 
 ### TODO:
 
