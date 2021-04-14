@@ -1,5 +1,9 @@
 {
-  "name": "root",
+  "name": "pooltogether-api-monorepo",
+  "version": "1.0.0",
+  "author": "PoolTogether <hello@pooltogether.com>",
+  "license": "MIT",
+  "description": "API for PoolTogether data",
   "devDependencies": {
     "lerna": "^4.0.0"
   }
