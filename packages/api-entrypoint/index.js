@@ -1,7 +1,7 @@
 import { pool, pools } from '@pooltogether/api-runner'
 
-const CACHE_AGE_IN_SECONDS = 60
-console.log(`s-maxage=${CACHE_AGE_IN_SECONDS}`)
+const SINGLE_QUERY_CACHE_AGE_IN_SECONDS = 59
+const MULTI_QUERY_CACHE_AGE_IN_SECONDS = 119
 
 function path(request) {
   const _url = new URL(request.url)
@@ -27,20 +27,15 @@ const type = 'application/json;charset=UTF-8'
 
 async function poolsHandler(event) {
   const request = event.request
-  return useCache(event, pools(request, fetch))
+  return useCache(event, pools(request, fetch), MULTI_QUERY_CACHE_AGE_IN_SECONDS)
 }
 
 async function poolHandler(event) {
   const request = event.request
-  return useCache(event, pool(request, fetch))
+  return useCache(event, pool(request, fetch), SINGLE_QUERY_CACHE_AGE_IN_SECONDS)
 }
 
-// function jsonResponse(data) {
-//   const body = JSON.stringify(data, null, 2)
-//   return new Response(body, init)
-// }
-
-async function useCache(event, promise) {
+async function useCache(event, promise, cacheAgeSeconds) {
   const request = event.request
   const cacheUrl = new URL(request.url)
 
@@ -52,8 +47,6 @@ async function useCache(event, promise) {
   // if not, you will need to fetch it from origin, and store it in the cache
   // for future access
   let response = await cache.match(cacheKey)
-  console.log('response')
-  console.log(JSON.stringify(response))
 
   if (!response) {
     // If not in cache, get it from origin
@@ -63,7 +56,11 @@ async function useCache(event, promise) {
     // Must use Response constructor to inherit all of response's fields
     response = new Response(jsonBody, response)
     response.headers.set('Content-Type', type)
-    response.headers.append('Cache-Control', `s-maxage=${CACHE_AGE_IN_SECONDS}`)
+
+    // Cache the query for multiple pools for a longer period of time
+    // as it's much heavier on the CPU usage and can be blocked by Cloudflare
+    response.headers.set('Cache-Control', `max-age=${cacheAgeSeconds}`)
+    // response.headers.append('Cache-Control', `s-maxage=${cacheAgeSeconds}`)
 
     // Use waitUntil so you can return the response without blocking on
     // writing to cache
