@@ -27,3 +27,7 @@ Currently there are two main packages: `packages/api-entrypoint` and `packages/a
 ##### TODO:
 
 - handle requests using various services / cloudflare, alchemy, infura, etc
+- allow querying other networks such polygon, bsc, rinkeby, etc
+- support any pool address
+- historical data querying based on a specific block number
+- write documentation on docs.pooltogether.com
