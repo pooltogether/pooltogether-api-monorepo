@@ -9,21 +9,20 @@ function path(request) {
   return pathname
 }
 
-// const corsHeaders = {
-//   'Access-Control-Allow-Origin': '*',
-//   'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
-//   'Access-Control-Max-Age': '86400',
-//   'Access-Control-Request-Method': '*',
-//   'Vary': 'Accept-Encoding, Origin'
-// }
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
+  'Access-Control-Request-Method': '*',
+  'Vary': 'Accept-Encoding, Origin'
+}
 const type = 'application/json;charset=UTF-8'
-// const init = {
-//   headers: {
-//     ...corsHeaders,
-//     'Access-Control-Allow-Headers': '*',
-//     'Content-Type': type
-//   }
-// }
+const init = {
+  headers: {
+    ...corsHeaders,
+    'Access-Control-Allow-Headers': '*',
+    'Content-Type': type
+  }
+}
 
 async function poolsHandler(event) {
   const request = event.request
@@ -60,7 +59,12 @@ async function useCache(event, promise, cacheAgeSeconds) {
     // Cache the query for multiple pools for a longer period of time
     // as it's much heavier on the CPU usage and can be blocked by Cloudflare
     response.headers.set('Cache-Control', `max-age=${cacheAgeSeconds}`)
-    // response.headers.append('Cache-Control', `s-maxage=${cacheAgeSeconds}`)
+
+    // CORS Headers
+    response.headers.set('Access-Control-Allow-Origin', `*`)
+    response.headers.set('Access-Control-Allow-Methods', `GET, HEAD, POST, OPTIONS`)
+    response.headers.set('Access-Control-Request-Method', `*`)
+    response.headers.set('Vary', `Accept-Encoding, Origin`)
 
     // Use waitUntil so you can return the response without blocking on
     // writing to cache
@@ -84,7 +88,7 @@ async function handleRequest(event) {
     return poolsHandler(event)
   } else {
     const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress.json\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a.json`
-    return new Response(errorMsg)
+    return new Response(errorMsg, init)
   }
 }
 
