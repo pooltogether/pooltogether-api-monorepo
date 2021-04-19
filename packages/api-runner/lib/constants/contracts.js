@@ -2,6 +2,18 @@ import { contractAddresses } from "@pooltogether/current-pool-data";
 
 export const CONTRACT_ADDRESSES = Object.freeze(contractAddresses);
 
+/**
+ * Each pool must be in the format:
+ * 
+ * {
+ *    prizePool: {
+ *      address: String
+ *    },
+ *    symbol: string
+ *    subgraphVersion: string
+ * }
+ * 
+ */
 export const PRIZE_POOL_CONTRACTS = Object.freeze({
   1: {
     governance: [
@@ -109,6 +121,7 @@ export const PRIZE_POOL_CONTRACTS = Object.freeze({
     community: [
       {
         prizePool: { address: "0x60764c6be24ddab70d9ae1dbf7436533cc073c21" },
+        symbol: "DAI-0x60764c",
         subgraphVersion: "3.3.0",
       },
     ],
