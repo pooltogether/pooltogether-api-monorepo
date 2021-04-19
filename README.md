@@ -26,6 +26,8 @@ https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 
 #### Development (alternative)
 
+Errors displayed from the entry point aren't the most useful - running in an isolated node environment gives you some more details!
+
 1. To run in dev mode, `cd packages/api-entrypoint` and run: `yarn start`
 2. To publish to production, `cd packages/api-entrypoint` and run `yarn publish`
 3. To test the functionality:
