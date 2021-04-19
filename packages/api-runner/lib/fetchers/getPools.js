@@ -125,7 +125,7 @@ const getAllErc20Addresses = (pools) => {
     // Get external erc20s
     pool.prize.externalErc20Awards.forEach((erc20) => addresses.add(erc20.address))
     // Get lootbox erc20s
-    pool.prize.lootBox?.erc20Tokens.forEach((erc20) => addresses.add(erc20.address))
+    pool.prize.lootBox?.erc20Tokens?.forEach((erc20) => addresses.add(erc20.address))
     // Get known tokens
     Object.values(pool.tokens).forEach((erc20) => addresses.add(erc20.address))
   })
@@ -148,7 +148,7 @@ const combineTokenPricesData = (_pools, tokenPriceData) => {
       addTokenTotalUsdValue(token, tokenPriceData)
     )
     // Add to all lootBox tokens
-    pool.prize.lootBox?.erc20Tokens.forEach((token) => addTokenTotalUsdValue(token, tokenPriceData))
+    pool.prize.lootBox?.erc20Tokens?.forEach((token) => addTokenTotalUsdValue(token, tokenPriceData))
     // Add total values for controlled tokens
     const underlyingToken = pool.tokens.underlyingToken
     addTotalValueForControlledTokens(pool.tokens.ticket, underlyingToken)
@@ -326,7 +326,7 @@ const calculateLootBoxTotalValuesUsd = (_pool) => {
   const pool = cloneDeep(_pool)
 
   const lootBoxTotalValueUsdScaled =
-    pool.prize.lootBox?.erc20Tokens.reduce(addScaledTokenValueToTotal, ethers.constants.Zero) ||
+    pool.prize.lootBox?.erc20Tokens?.reduce(addScaledTokenValueToTotal, ethers.constants.Zero) ||
     ethers.constants.Zero
 
   if (!pool.prize.lootBox) {
@@ -479,8 +479,8 @@ const addBigNumbers = (totals) =>
  * @returns
  */
 const addScaledTokenValueToTotal = (total, token) => {
-  if (token.valueUsdScaled) {
-    return total.add(token.valueUsdScaled)
+  if (token.totalValueUsdScaled) {
+    return total.add(token.totalValueUsdScaled)
   }
   return total
 }
