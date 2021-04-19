@@ -2,16 +2,10 @@ import { CONTRACT_ADDRESSES } from 'lib/constants/contracts'
 import { getLootBoxSubgraphClient } from 'lib/hooks/useSubgraphClients'
 import { lootBoxQuery } from 'lib/queries/lootBoxQuery'
 
-export const getGraphLootBoxData = async (chainId, poolData, fetch, blockNumber = -1) => {
+export const getGraphLootBoxData = async (chainId, tokenIds, fetch) => {
+  if (tokenIds.length === 0) return []
+
   const graphQLClient = getLootBoxSubgraphClient(chainId, fetch)
-  const tokenIds = [
-    ...new Set(
-      poolData
-        .map((pool) => pool.prize.lootBoxes?.map((lootBox) => lootBox.id))
-        .filter(Boolean)
-        .flat()
-    )
-  ]
 
   const lootBoxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
 
@@ -20,9 +14,7 @@ export const getGraphLootBoxData = async (chainId, poolData, fetch, blockNumber 
     tokenIds
   }
 
-  const query = lootBoxQuery(blockNumber)
-
-  if (tokenIds.length === 0) return []
+  const query = lootBoxQuery()
 
   try {
     const response = await graphQLClient.request(query, variables)
