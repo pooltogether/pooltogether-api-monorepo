@@ -27,13 +27,14 @@ const getPool = (graphPool) => {
  * @returns
  */
 export const getPools = async (chainId, poolContracts, fetch) => {
-  const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
-  const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
-  let pools = combinepools(poolGraphData, poolChainData)
-  const lootBoxData = await getGraphLootBoxData(chainId, pools, fetch)
+  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
+  const poolChainData = await getPoolChainData(chainId, readProvider, poolGraphData)
+  let pools = combinePoolData(poolGraphData, poolChainData)
+  const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
+  const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds)
   pools = combineLootBoxData(pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
-  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
+  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
 
   pools = combineTokenPricesData(pools, tokenPriceGraphData)
   pools = calculateTotalPrizeValuePerPool(pools)
@@ -51,10 +52,8 @@ export const getPools = async (chainId, poolContracts, fetch) => {
  * @param {*} poolChainData
  * @returns
  */
-const combinepools = (poolGraphData, poolChainData) => {
-  let pool
-  const pools = poolGraphData.map((graphPool) => {
-    pool = getPool(graphPool)
+ const combinePoolData = (poolGraphData, poolChainData) => {
+  const pools = poolGraphData.map((pool) => {
     const chainData = poolChainData[pool.prizePool.address]
     return merge(pool, chainData)
   })
@@ -62,35 +61,56 @@ const combinepools = (poolGraphData, poolChainData) => {
 }
 
 /**
- *
+ * Adds loot box data to each pool
  * @param {*} _pools
  * @param {*} lootBoxData
  * @returns
  */
-const combineLootBoxData = (_pools, lootBoxData) => {
+ const combineLootBoxData = (_pools, lootBoxData) => {
   const pools = cloneDeep(_pools)
-
-  pools.forEach((pool) => {
-    if (pool.prize.lootBoxes?.length > 0) {
-      pool.prize.lootBoxes.forEach((lootBox) => {
-        const lootBoxGraphData = lootBoxData.lootBoxes.find((box) => box.tokenId === lootBox.id)
-        lootBox.erc1155Tokens = lootBoxGraphData.erc1155Balances
-        lootBox.erc721Tokens = lootBoxGraphData.erc721Tokens
-        lootBox.erc20Tokens = lootBoxGraphData.erc20Balances
-          .filter((erc20) => !ERC20_BLOCK_LIST.includes(erc20.id))
-          .map((erc20) => ({
-            ...erc20.erc20Entity,
-            address: erc20.erc20Entity.id,
-            lootBoxAddress: erc20.erc20Entity.id,
-            amountUnformatted: bn(erc20.balance),
-            amount: formatUnits(erc20.balance, erc20.erc20Entity.decimals)
-          }))
-      })
-    }
-  })
-
+  pools.forEach((pool) => combineLootBoxDataWithPool(pool, lootBoxData))
   return pools
 }
+
+/**
+ * Adds loot box data to a single pool
+ * @param {*} pool 
+ * @param {*} lootBoxData 
+ * @returns 
+ */
+export const combineLootBoxDataWithPool = (pool, lootBoxData) => {
+  if (lootBoxData.lootBoxes?.length > 0) {
+    if (!pool.prize.lootBox) return
+    const lootBoxGraphData = lootBoxData.lootBoxes.find(
+      (lootBox) => lootBox.tokenId === pool.prize.lootBox.id
+    )
+    if (!lootBoxGraphData) return
+    const formattedLootBox = formatLootBox(lootBoxGraphData)
+    pool.prize.lootBox = {
+      ...pool.prize.lootBox,
+      ...formattedLootBox
+    }
+  }
+}
+
+/**
+ * Formats the data returned from the graph for a lootBox
+ * @param {*} lootBoxGraphData
+ * @returns
+ */
+export const formatLootBox = (lootBoxGraphData) => ({
+  erc1155Tokens: lootBoxGraphData.erc1155Balances,
+  erc721Tokens: lootBoxGraphData.erc721Tokens,
+  erc20Tokens: lootBoxGraphData.erc20Balances
+    .filter((erc20) => !ERC20_BLOCK_LIST.includes(erc20.id))
+    .map((erc20) => ({
+      ...erc20.erc20Entity,
+      address: erc20.erc20Entity.id,
+      lootBoxAddress: erc20.erc20Entity.id,
+      amountUnformatted: bn(erc20.balance),
+      amount: formatUnits(erc20.balance, erc20.erc20Entity.decimals)
+    }))
+})
 
 /**
  * Gets all erc20 addresses related to a pool
@@ -103,9 +123,7 @@ const getAllErc20Addresses = (pools) => {
     // Get external erc20s
     pool.prize.externalErc20Awards.forEach((erc20) => addresses.add(erc20.address))
     // Get lootbox erc20s
-    pool.prize.lootBoxes?.forEach((lootBox) =>
-      lootBox.erc20Tokens.forEach((erc20) => addresses.add(erc20.address))
-    )
+    pool.prize.lootBox?.erc20Tokens.forEach((erc20) => addresses.add(erc20.address))
     // Get known tokens
     Object.values(pool.tokens).forEach((erc20) => addresses.add(erc20.address))
   })
@@ -119,30 +137,16 @@ const getAllErc20Addresses = (pools) => {
  */
 const combineTokenPricesData = (_pools, tokenPriceData) => {
   const pools = cloneDeep(_pools)
-  /**
-   * Adds token USD value if we have the USD price per token
-   * @param {*} token
-   */
-  const addTokenTotalUsdValue = (token) => {
-    const priceData = tokenPriceData[token.address]
-    if (priceData) {
-      token.usd = tokenPriceData[token.address].usd
-      token.derivedETH = tokenPriceData[token.address].derivedETH
-      if (token.amount) {
-        const usdValueUnformatted = amountMultByUsd(token.amountUnformatted, token.usd)
-        token.valueUsd = formatUnits(usdValueUnformatted, token.decimals)
-        token.valueUsdScaled = toScaledUsdBigNumber(token.valueUsd)
-      }
-    }
-  }
 
   pools.forEach((pool) => {
     // Add to all known tokens
-    Object.values(pool.tokens).forEach(addTokenTotalUsdValue)
+    Object.values(pool.tokens).forEach((token) => addTokenTotalUsdValue(token, tokenPriceData))
     // Add to all external erc20 tokens
-    Object.values(pool.prize.externalErc20Awards).forEach(addTokenTotalUsdValue)
+    Object.values(pool.prize.externalErc20Awards).forEach((token) =>
+      addTokenTotalUsdValue(token, tokenPriceData)
+    )
     // Add to all lootBox tokens
-    pool.prize.lootBoxes?.forEach((lootBox) => lootBox.erc20Tokens.forEach(addTokenTotalUsdValue))
+    pool.prize.lootBox?.erc20Tokens.forEach((token) => addTokenTotalUsdValue(token, tokenPriceData))
     // Add total values for controlled tokens
     const underlyingToken = pool.tokens.underlyingToken
     addTotalValueForControlledTokens(pool.tokens.ticket, underlyingToken)
@@ -154,10 +158,34 @@ const combineTokenPricesData = (_pools, tokenPriceData) => {
   return pools
 }
 
+/**
+ * Adds token USD value if we have the USD price per token
+ * @param {*} token
+ */
+ export const addTokenTotalUsdValue = (token, tokenPriceData) => {
+  const priceData = tokenPriceData[token.address]
+  if (priceData) {
+    token.usd = tokenPriceData[token.address].usd || 0
+    token.derivedETH = tokenPriceData[token.address].derivedETH || '0'
+    if (token.amountUnformatted) {
+      const usdValueUnformatted = amountMultByUsd(token.amountUnformatted, token.usd)
+      token.totalValueUsd = formatUnits(usdValueUnformatted, token.decimals)
+      token.totalValueUsdScaled = toScaledUsdBigNumber(token.totalValueUsd)
+    }
+  } else {
+    token.usd = 0
+    token.derivedETH = '0'
+  }
+}
+
+/**
+ * Mutates reserve to have the total values
+ * @param {*} pool 
+ */
 const addTotalValueForReserve = (pool) => {
   const underlyingToken = pool.tokens.underlyingToken
   const amountUnformatted = pool.reserve.amountUnformatted
-  if (amountUnformatted && underlyingToken.usd) {
+  if (amountUnformatted) {
     const totalValueUsdUnformatted = amountMultByUsd(amountUnformatted, underlyingToken.usd)
     pool.reserve.totalValueUsd = formatUnits(totalValueUsdUnformatted, underlyingToken.decimals)
     pool.reserve.totalValueUsdScaled = toScaledUsdBigNumber(pool.reserve.totalValueUsd)
@@ -170,10 +198,7 @@ const addTotalValueForReserve = (pool) => {
  * @param {*} usd as a Number
  * @returns a BigNumber
  */
-const amountMultByUsd = (amount, usd) => {
-  const result = amount.mul(Math.round(usd * 100)).div(100)
-  return result
-}
+const amountMultByUsd = (amount, usd) => amount.mul(Math.round(usd * 100)).div(100)
 
 /**
  * Calculate total prize value
@@ -183,7 +208,7 @@ const amountMultByUsd = (amount, usd) => {
  *  + LootBox value
  *  + Estimated Yield by end of prize period (or just current balance if we can't estimate)
  * TODO: For per winner calculations: doesn't account for external erc20 awards
- * that are the yield token. We should be splitting those as well.
+ * that are the yield token. I think those get split as well
  * TODO: Assumes sablier stream is the same as the "yield" token for calculations
  * @param {*} pools
  */
@@ -191,7 +216,7 @@ const calculateTotalPrizeValuePerPool = (pools) => {
   return pools.map((_pool) => {
     let pool = cloneDeep(_pool)
     // Calculate erc20 values
-    pool = calculateErc20TotalValuesUsd(pool)
+    pool = calculateExternalErc20TotalValuesUsd(pool)
 
     // Calculate lootBox award value
     pool = calculateLootBoxTotalValuesUsd(pool)
@@ -203,11 +228,14 @@ const calculateTotalPrizeValuePerPool = (pools) => {
     pool = calculateSablierTotalValueUsd(pool)
 
     // Calculate total
-    pool.prize.totalExternalAwardsUsdScaled = addBigNumbers([
+    pool.prize.totalExternalAwardsValueUsdScaled = addBigNumbers([
       pool.prize.lootBox.totalValueUsdScaled,
       pool.prize.erc20Awards.totalValueUsdScaled
     ])
-    pool.prize.totalExternalAwardsUsd = formatUnits(pool.prize.totalExternalAwardsUsdScaled, 2)
+    pool.prize.totalExternalAwardsValueUsd = formatUnits(
+      pool.prize.totalExternalAwardsValueUsdScaled,
+      2
+    )
 
     pool.prize.totalInternalAwardsUsdScaled = addBigNumbers([
       pool.prize.yield.totalValueUsdScaled,
@@ -217,7 +245,7 @@ const calculateTotalPrizeValuePerPool = (pools) => {
 
     pool.prize.totalValueUsdScaled = addBigNumbers([
       pool.prize.totalInternalAwardsUsdScaled,
-      pool.prize.totalExternalAwardsUsdScaled
+      pool.prize.totalExternalAwardsValueUsdScaled
     ])
     pool.prize.totalValueUsd = formatUnits(pool.prize.totalValueUsdScaled, 2)
 
@@ -232,6 +260,11 @@ const calculateTotalPrizeValuePerPool = (pools) => {
   })
 }
 
+/**
+ * Calculates the prize for each winner (grand prize & runner up(s))
+ * @param {*} pool 
+ * @param {*} totalToBeSplit 
+ */
 const calculatePerWinnerPrizes = (pool, totalToBeSplit) => {
   pool.prize.totalValuePerWinnerUsdScaled = totalToBeSplit.div(pool.config.numberOfWinners)
   pool.prize.totalValuePerWinnerUsd = formatUnits(pool.prize.totalValuePerWinnerUsdScaled, 2)
@@ -246,7 +279,12 @@ const calculatePerWinnerPrizes = (pool, totalToBeSplit) => {
   )
 }
 
-const calculateErc20TotalValuesUsd = (_pool) => {
+/**
+ * Calculates the total values for all external erc20 tokens
+ * @param {*} _pool 
+ * @returns 
+ */
+const calculateExternalErc20TotalValuesUsd = (_pool) => {
   const pool = cloneDeep(_pool)
   const externalErc20TotalValueUsdScaled = Object.values(pool.prize.externalErc20Awards).reduce(
     addScaledTokenValueToTotal,
@@ -259,37 +297,50 @@ const calculateErc20TotalValuesUsd = (_pool) => {
   return pool
 }
 
+/**
+ * Mutates the token (ticket or sponsorship) to have total USD values
+ * @param {*} token 
+ * @param {*} underlyingToken 
+ */
 const addTotalValueForControlledTokens = (token, underlyingToken) => {
-  if (token.totalSupplyUnformatted && underlyingToken.usd) {
+  if (token.totalSupplyUnformatted) {
     const totalValueUsdUnformatted = amountMultByUsd(
       token.totalSupplyUnformatted,
       underlyingToken.usd
     )
+    token.usd = underlyingToken.usd
+    token.derivedETH = underlyingToken.derivedETH
     token.totalValueUsd = formatUnits(totalValueUsdUnformatted, token.decimals)
     token.totalValueUsdScaled = toScaledUsdBigNumber(token.totalValueUsd)
   }
 }
 
+/**
+ * Calculates the total value of all erc20 tokens in the loot box
+ * @param {*} _pool 
+ * @returns 
+ */
 const calculateLootBoxTotalValuesUsd = (_pool) => {
   const pool = cloneDeep(_pool)
-  const lootBoxTotalValueUsdScaled =
-    pool.prize.lootBoxes?.reduce((total, looBox) => {
-      if (looBox.erc20Tokens.length > 0) {
-        return total.add(
-          looBox.erc20Tokens.reduce(addScaledTokenValueToTotal, ethers.constants.Zero)
-        )
-      }
-      return total
-    }, ethers.constants.Zero) || ethers.constants.Zero
 
-  pool.prize.lootBox = {
-    ...pool.prize.lootBox,
-    totalValueUsdScaled: lootBoxTotalValueUsdScaled,
-    totalValueUsd: formatUnits(lootBoxTotalValueUsdScaled, 2)
+  const lootBoxTotalValueUsdScaled =
+    pool.prize.lootBox?.erc20Tokens.reduce(addScaledTokenValueToTotal, ethers.constants.Zero) ||
+    ethers.constants.Zero
+
+  if (!pool.prize.lootBox) {
+    pool.prize.lootBox = { id: null }
   }
+  pool.prize.lootBox.totalValueUsdScaled = lootBoxTotalValueUsdScaled
+  pool.prize.lootBox.totalValueUsd = formatUnits(lootBoxTotalValueUsdScaled, 2)
+
   return pool
 }
 
+/**
+ * Calculates the total yield values, $0 if no yield or no token prices
+ * @param {*} _pool 
+ * @returns 
+ */
 const calculateYieldTotalValuesUsd = (_pool) => {
   const pool = cloneDeep(_pool)
   const yieldAmount = stringWithPrecision(
@@ -310,9 +361,10 @@ const calculateYieldTotalValuesUsd = (_pool) => {
     pool.prize.yield.amount,
     pool.tokens.underlyingToken.decimals
   )
-  const yieldTotalValueUnformatted = pool.tokens.underlyingToken.usd
-    ? amountMultByUsd(pool.prize.yield.amountUnformatted, pool.tokens.underlyingToken.usd)
-    : ethers.constants.Zero
+  const yieldTotalValueUnformatted = amountMultByUsd(
+    pool.prize.yield.amountUnformatted,
+    pool.tokens.underlyingToken.usd
+  )
   pool.prize.yield.totalValueUsd = formatUnits(
     yieldTotalValueUnformatted,
     pool.tokens.underlyingToken.decimals
@@ -322,6 +374,12 @@ const calculateYieldTotalValuesUsd = (_pool) => {
   return pool
 }
 
+/**
+ * Calculates the total values for the Sablier stream if there is one
+ * Otherwise returns values as $0
+ * @param {*} _pool 
+ * @returns 
+ */
 const calculateSablierTotalValueUsd = (_pool) => {
   const pool = cloneDeep(_pool)
   if (!pool.prize.sablierStream?.id) {
@@ -376,9 +434,10 @@ const calculateSablierTotalValueUsd = (_pool) => {
     pool.tokens.sablierStreamToken.decimals
   )
 
-  const totalValueUsdUnformatted = pool.tokens.sablierStreamToken.usd
-    ? amountMultByUsd(amountThisPrizePeriodUnformatted, pool.tokens.sablierStreamToken.usd)
-    : ethers.constants.Zero
+  const totalValueUsdUnformatted = amountMultByUsd(
+    amountThisPrizePeriodUnformatted,
+    pool.tokens.sablierStreamToken.usd
+  )
   const totalValueUsd = formatUnits(
     totalValueUsdUnformatted,
     pool.tokens.sablierStreamToken.decimals
@@ -432,6 +491,7 @@ const addScaledTokenValueToTotal = (total, token) => {
 const toScaledUsdBigNumber = (usdValue) =>
   parseUnits(stringWithPrecision(usdValue, { precision: 2 }), 2)
 
+
 /**
  * Calculates & adds the tvl of each pool to pools
  * Calculates the tvl of all pools
@@ -439,53 +499,53 @@ const toScaledUsdBigNumber = (usdValue) =>
  * @returns tvl of all pools
  */
 const calculateTotalValueLockedPerPool = (pools) =>
-  pools.map((_pool) => {
-    const pool = cloneDeep(_pool)
-    if (pool.tokens.underlyingToken.usd && pool.tokens.ticket.totalSupplyUnformatted) {
-      const totalAmountDepositedUnformatted = pool.tokens.ticket.totalSupplyUnformatted.add(
-        pool.tokens.sponsorship.totalSupplyUnformatted
-      )
+pools.map((_pool) => {
+  const pool = cloneDeep(_pool)
+  if (pool.tokens.underlyingToken.usd && pool.tokens.ticket.totalSupplyUnformatted) {
+    const totalAmountDepositedUnformatted = pool.tokens.ticket.totalSupplyUnformatted.add(
+      pool.tokens.sponsorship.totalSupplyUnformatted
+    )
 
-      const totalValueLockedUsdUnformatted = amountMultByUsd(
-        totalAmountDepositedUnformatted,
-        pool.tokens.underlyingToken.usd
-      )
-      const tvlTicketsUsdUnformatted = amountMultByUsd(
-        pool.tokens.ticket.totalSupplyUnformatted,
-        pool.tokens.underlyingToken.usd
-      )
-      const tvlSponsorshipUsdUnformatted = amountMultByUsd(
-        pool.tokens.sponsorship.totalSupplyUnformatted,
-        pool.tokens.underlyingToken.usd
-      )
+    const totalValueLockedUsdUnformatted = amountMultByUsd(
+      totalAmountDepositedUnformatted,
+      pool.tokens.underlyingToken.usd
+    )
+    const tvlTicketsUsdUnformatted = amountMultByUsd(
+      pool.tokens.ticket.totalSupplyUnformatted,
+      pool.tokens.underlyingToken.usd
+    )
+    const tvlSponsorshipUsdUnformatted = amountMultByUsd(
+      pool.tokens.sponsorship.totalSupplyUnformatted,
+      pool.tokens.underlyingToken.usd
+    )
 
-      pool.prizePool.totalValueLockedUsd = formatUnits(
-        totalValueLockedUsdUnformatted,
-        pool.tokens.ticket.decimals
-      )
-      pool.prizePool.totalValueLockedUsdScaled = toScaledUsdBigNumber(
-        pool.prizePool.totalValueLockedUsd
-      )
-      pool.prizePool.totalTicketValueLockedUsd = formatUnits(
-        tvlTicketsUsdUnformatted,
-        pool.tokens.ticket.decimals
-      )
-      pool.prizePool.totalTicketValueLockedUsdScaled = toScaledUsdBigNumber(
-        pool.prizePool.totalTicketValueLockedUsd
-      )
-      pool.prizePool.totalSponsorshipValueLockedUsd = formatUnits(
-        tvlSponsorshipUsdUnformatted,
-        pool.tokens.ticket.decimals
-      )
-      pool.prizePool.totalSponsorshipValueLockedUsdScaled = toScaledUsdBigNumber(
-        pool.prizePool.totalSponsorshipValueLockedUsd
-      )
-    } else {
-      pool.prizePool.totalValueLockedUsd = '0'
-      pool.prizePool.totalValueLockedUsdScaled = ethers.constants.Zero
-    }
-    return pool
-  })
+    pool.prizePool.totalValueLockedUsd = formatUnits(
+      totalValueLockedUsdUnformatted,
+      pool.tokens.ticket.decimals
+    )
+    pool.prizePool.totalValueLockedUsdScaled = toScaledUsdBigNumber(
+      pool.prizePool.totalValueLockedUsd
+    )
+    pool.prizePool.totalTicketValueLockedUsd = formatUnits(
+      tvlTicketsUsdUnformatted,
+      pool.tokens.ticket.decimals
+    )
+    pool.prizePool.totalTicketValueLockedUsdScaled = toScaledUsdBigNumber(
+      pool.prizePool.totalTicketValueLockedUsd
+    )
+    pool.prizePool.totalSponsorshipValueLockedUsd = formatUnits(
+      tvlSponsorshipUsdUnformatted,
+      pool.tokens.ticket.decimals
+    )
+    pool.prizePool.totalSponsorshipValueLockedUsdScaled = toScaledUsdBigNumber(
+      pool.prizePool.totalSponsorshipValueLockedUsd
+    )
+  } else {
+    pool.prizePool.totalValueLockedUsd = '0'
+    pool.prizePool.totalValueLockedUsdScaled = ethers.constants.Zero
+  }
+  return pool
+})
 
 /**
  *
@@ -520,7 +580,8 @@ const addPoolMetadata = (_pools, poolContracts) => {
     const pool = pools.find((pool) => pool.prizePool.address === contract.prizePool.address)
     if (!pool) return
     pool.name = `${pool.tokens.underlyingToken.symbol} Pool`
-    merge(pool, contract)
+    pool.contract = contract
+    pool.symbol = contract.symbol
   })
   return pools
 }

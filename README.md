@@ -8,14 +8,24 @@ Example: the DAI pool's data would be:
 
 https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 
-### Instructions
+## Instructions
 
-Currently there are two main packages: `packages/api-entrypoint` and `packages/api-runner`. You will need to run `yarn install` in each of them. Following that:
+#### Installation
+
+1. `yarn global add @cloudflare/wrangler` and then log in `wrangler login`
+2. In `packages/api-entrypoint` run: `cp wrangler.toml.example wrangler.toml` and fill out `account_id` inside wrangler.toml
+3. In `packages/api-entrypoint` run: `yarn install`
+4. In `packages/api-runner` run: `yarn install`
+
+#### Development
+
+1. In `cd packages/api-entrypoint` run: `yarn start`
+2. API is available at `http://127.0.0.1:8787/`
+
+#### Publish
 
 1. To run in dev mode, `cd packages/api-entrypoint` and run: `yarn start`
-
 2. To publish to production, `cd packages/api-entrypoint` and run `yarn publish`
-
 3. To test the functionality:
 
 - `cd packages/api-runner`
