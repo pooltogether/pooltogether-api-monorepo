@@ -485,14 +485,15 @@ const formatPoolChainData = (
         pool.prize.externalErc721Awards,
         (erc721) => erc721.address === lootBoxAddress
       )
-      formattedPoolChainData.prize.lootBoxes = lootBoxes.map((lootBox) => {
+      if (lootBoxes) {
+        const lootBoxId = lootBoxes[0].id
         const computedAddress =
-          firstBatchValues[getLootBoxBatchName(lootBoxAddress, lootBox.id)].computeAddress[0]
-        return {
-          ...lootBox,
-          address: computedAddress
+          firstBatchValues[getLootBoxBatchName(lootBoxAddress, lootBoxId)].computeAddress[0]
+        formattedPoolChainData.prize.lootBox = {
+          address: computedAddress,
+          id: lootBoxId
         }
-      })
+      }
     }
 
     // Reserve
