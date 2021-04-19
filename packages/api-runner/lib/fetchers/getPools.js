@@ -27,14 +27,14 @@ const getPool = (graphPool) => {
  * @returns
  */
 export const getPools = async (chainId, poolContracts, fetch) => {
-  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
-  const poolChainData = await getPoolChainData(chainId, readProvider, poolGraphData)
+  const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
+  const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
   let pools = combinePoolData(poolGraphData, poolChainData)
   const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
-  const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds)
+  const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds, fetch)
   pools = combineLootBoxData(pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
-  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
+  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
 
   pools = combineTokenPricesData(pools, tokenPriceGraphData)
   pools = calculateTotalPrizeValuePerPool(pools)
@@ -53,7 +53,9 @@ export const getPools = async (chainId, poolContracts, fetch) => {
  * @returns
  */
  const combinePoolData = (poolGraphData, poolChainData) => {
-  const pools = poolGraphData.map((pool) => {
+  let pool
+  const pools = poolGraphData.map((graphPool) => {
+    pool = getPool(graphPool)
     const chainData = poolChainData[pool.prizePool.address]
     return merge(pool, chainData)
   })
