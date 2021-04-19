@@ -40,9 +40,10 @@ Errors displayed from the entry point aren't the most useful - running in an iso
 
 #### Publishing
 
-1. In `packages/api-runner` run: `yarn build && yarn publish`
-2. Ensure `zone_id` and `route` are configured in `packages/api-entrypoint/wrangler.toml`
-3. In `packages/api-entrypoint` run: `wrangler publish`
+1. In `packages/api-runner/package.json` bump the package version
+2. In `packages/api-runner` run: `yarn build && yarn publish`
+3. Ensure `zone_id` and `route` are configured in `packages/api-entrypoint/wrangler.toml`
+4. In `packages/api-entrypoint` run: `wrangler publish`
 
 ##### TODO:
 
