@@ -1,7 +1,8 @@
+import remove from 'lodash.remove'
 import { ethers } from 'ethers'
 import { formatUnits } from '@ethersproject/units'
 import { contract } from '@pooltogether/etherplex'
-import remove from 'lodash.remove'
+import { contractAddresses } from '@pooltogether/current-pool-data'
 
 import PrizePoolAbi from '@pooltogether/pooltogether-contracts/abis/PrizePool'
 import PrizeStrategyAbi from '@pooltogether/pooltogether-contracts/abis/PeriodicPrizeStrategy'
@@ -22,7 +23,6 @@ import {
   DEFAULT_TOKEN_PRECISION,
   SECONDS_PER_DAY
 } from 'lib/constants'
-import { CONTRACT_ADDRESSES } from 'lib/constants/contracts'
 
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
@@ -146,14 +146,14 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
 
     // LootBox
 
-    const lootBoxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
+    const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
     if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
       const lootBox = pool.prize.externalErc721Awards.find(
         (erc721) => erc721.address === lootBoxAddress
       )
 
       if (lootBox) {
-        const lootBoxControllerAddress = CONTRACT_ADDRESSES[chainId].lootBoxController
+        const lootBoxControllerAddress = contractAddresses[chainId].lootBoxController
         lootBox.tokenIds.forEach((tokenId) => {
           const lootBoxControllerContract = contract(
             getLootBoxBatchName(lootBoxAddress, tokenId),
@@ -488,7 +488,7 @@ const formatPoolChainData = (
     }
 
     // LootBox
-    const lootBoxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
+    const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
     if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
       const lootBoxes = remove(
         pool.prize.externalErc721Awards,

@@ -35,11 +35,11 @@
   "dependencies": {
     "@ethersproject/abi": "^5.1.0",
     "@ethersproject/units": "^5.1.0",
-    "@pooltogether/current-pool-data": "^3.3.8-b",
+    "@pooltogether/current-pool-data": "^3.3.8-d",
     "@pooltogether/etherplex": "1.1.1",
     "@pooltogether/evm-chains-extended": "^0.4.3",
     "@pooltogether/loot-box": "^1.1.0",
-    "@pooltogether/pooltogether-contracts": "^3.3.7",
+    "@pooltogether/pooltogether-contracts": "^3.3.8",
     "ethers": "5.0.32",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",

@@ -1007,10 +1007,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/current-pool-data@^3.3.8-b":
-  version "3.3.8-b"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.3.8-b.tgz#27676f664e2d5a45c6b802a3a4aa5120744cacad"
-  integrity sha512-xppjvzzjqUCMseQumvkhg08WG9duwKaah2528RJsqiOZGOXLKBJI1LWGegZCfNXJlItkyRCWlpCpW9uSEiYBJg==
+"@pooltogether/current-pool-data@^3.3.8-d":
+  version "3.3.8-d"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.3.8-d.tgz#f66d8a19e214655ab8ebdbe42f47e2766f900822"
+  integrity sha512-RKXihi6G0aOkhBB2X1F17RFiA602+TBfgv/6CkqJFHMXM/EgR0VPhRfQX0WZVnRt+td7UfCkh+b6XvkXGDuVCw==
 
 "@pooltogether/etherplex@1.1.1":
   version "1.1.1"
@@ -1055,10 +1055,10 @@
     deploy-eip-1820 "1.0.0"
     sortition-sum-tree-factory "0.1.0"
 
-"@pooltogether/pooltogether-contracts@^3.3.7":
-  version "3.3.7"
-  resolved "https://registry.yarnpkg.com/@pooltogether/pooltogether-contracts/-/pooltogether-contracts-3.3.7.tgz#1bf49ce5b85546af0cd91556dcf418456d918e93"
-  integrity sha512-B7iAWvJkEPubZdBN8dY5oiaAYA34in0mzV91opzoEZ9xP+VS16X3gGkdEj7r5K0iP7vvA7ZDTH3t4jEYpbmnYg==
+"@pooltogether/pooltogether-contracts@^3.3.8":
+  version "3.3.8"
+  resolved "https://registry.yarnpkg.com/@pooltogether/pooltogether-contracts/-/pooltogether-contracts-3.3.8.tgz#f45d2607fef7fc814037b2509697e39624430a16"
+  integrity sha512-1eMxOi3UzCl5G7fA0XYDPWOGJFKY5iRNpxMH/+FBIzzwnJ5ve57QWjWYy0pzA7dG4JB43Mo/94ZKfG9sJLKqpw==
   dependencies:
     "@openzeppelin/contracts-upgradeable" "3.4.0"
     "@pooltogether/fixed-point" "1.0.0-beta.2"

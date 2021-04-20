@@ -1,4 +1,5 @@
-import { CONTRACT_ADDRESSES } from 'lib/constants/contracts'
+import { contractAddresses } from '@pooltogether/current-pool-data'
+
 import { getLootBoxSubgraphClient } from 'lib/hooks/useSubgraphClients'
 import { lootBoxQuery } from 'lib/queries/lootBoxQuery'
 
@@ -7,7 +8,7 @@ export const getGraphLootBoxData = async (chainId, tokenIds, fetch) => {
 
   const graphQLClient = getLootBoxSubgraphClient(chainId, fetch)
 
-  const lootBoxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
+  const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
 
   const variables = {
     lootBoxAddress,
