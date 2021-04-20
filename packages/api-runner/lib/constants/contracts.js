@@ -51,6 +51,11 @@ export const PRIZE_POOL_CONTRACTS = Object.freeze({
         },
         symbol: 'PT-cCOMPs',
         subgraphVersion: '3.1.0'
+      },
+      {
+        prizePool: { address: contractAddresses[1].badger?.prizePool?.toLowerCase() },
+        symbol: 'PT-stBADGER',
+        subgraphVersion: '3.3.2'
       }
     ],
     community: [
