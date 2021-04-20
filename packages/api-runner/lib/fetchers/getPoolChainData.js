@@ -13,9 +13,9 @@ import ReserveAbi from '@pooltogether/pooltogether-contracts/abis/Reserve'
 import CTokenAbi from '@pooltogether/pooltogether-contracts/abis/CTokenInterface'
 import LootBoxControllerAbi from '@pooltogether/loot-box/abis/LootBoxController'
 
-import SablierAbi from 'abis/SablierAbi'
-import ERC20Abi from 'abis/ERC20Abi'
-import ERC721Abi from 'abis/CustomERC721'
+import { SablierAbi } from 'abis/SablierAbi'
+import { ERC20Abi } from 'abis/ERC20Abi'
+import { CustomERC721Abi as ERC721Abi } from 'abis/CustomERC721'
 import { batch } from 'lib/cloudflare-workers-batch'
 import {
   ERC20_BLOCK_LIST,
