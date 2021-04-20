@@ -169,16 +169,18 @@ const combineTokenPricesData = (_pools, tokenPriceData) => {
 export const addTokenTotalUsdValue = (token, tokenPriceData) => {
   const priceData = tokenPriceData[token.address]
   if (priceData) {
-    token.usd = tokenPriceData[token.address].usd || 0
-    token.derivedETH = tokenPriceData[token.address].derivedETH || '0'
+    token.usd = tokenPriceData[token.address].usd || 1
+    token.derivedETH = tokenPriceData[token.address].derivedETH || '1'
     if (token.amountUnformatted) {
       const usdValueUnformatted = amountMultByUsd(token.amountUnformatted, token.usd)
       token.totalValueUsd = formatUnits(usdValueUnformatted, token.decimals)
       token.totalValueUsdScaled = toScaledUsdBigNumber(token.totalValueUsd)
     }
   } else {
-    token.usd = 0
-    token.derivedETH = '0'
+    // assuming $1, likely Rinkeby, etc. Will need to be updated for networks
+    // we don't have underlying token price data on!
+    token.usd = 1
+    token.derivedETH = '1'
   }
 }
 

@@ -29,6 +29,7 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
       const client = subgraphClients[version]
       const poolAddresses = addressesByVersion[version]
       return client.request(query, { poolAddresses }).catch((e) => {
+        console.log(e)
         return null
       })
     })
