@@ -80,8 +80,8 @@ async function handleRequest(event) {
   const request = event.request
   const pathname = path(request)
 
-  const singlePoolRegex = /\/pools\/\d\/[A-Za-z0-9]*.json/
-  const multiPoolRegex = /\/pools\/\d.json/
+  const singlePoolRegex = /\/pools\/[\d]*\/[A-Za-z0-9]*.json/
+  const multiPoolRegex = /\/pools\/[\d]*.json/
   if (singlePoolRegex.test(pathname)) {
     return poolHandler(event)
   } else if (multiPoolRegex.test(pathname)) {
