@@ -40,7 +40,9 @@ const _calculateUsd = (token) => {
 
 export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
   // Only supported on mainnet
-  if (![1, 4].includes(chainId)) return null
+  if (chainId !== 1) {
+    return {}
+  }
 
   const blockFilter = _getBlockFilter(blockNumber)
   const graphQLClient = getUniswapSubgraphClient(chainId, fetch)

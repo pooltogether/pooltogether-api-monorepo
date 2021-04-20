@@ -113,6 +113,11 @@ export const PRIZE_POOL_CONTRACTS = Object.freeze({
         prizePool: { address: '0xc8e1ea1afb7361cd647ad1a54a6c074f1174eb6e' },
         symbol: 'BAT-0xc8e1ea',
         subgraphVersion: '3.3.2'
+      },
+      {
+        prizePool: { address: '0x84ed0f89c033fe7dadfc4d5f2a516ebd9dc15644' },
+        symbol: 'DAI-0x84ed0f',
+        subgraphVersion: '3.3.8'
       }
     ]
   },
