@@ -1,9 +1,9 @@
-import { PRIZE_POOL_CONTRACTS } from 'lib/constants/contracts'
+import { prizePoolContracts } from '@pooltogether/current-pool-data'
 
 export function usePoolContracts(chainId) {
   return [
-    ...PRIZE_POOL_CONTRACTS[chainId].governance,
-    ...PRIZE_POOL_CONTRACTS[chainId].community.map((contract) => ({
+    ...prizePoolContracts[chainId].governance,
+    ...prizePoolContracts[chainId].community.map((contract) => ({
       ...contract,
       isCommunityPool: true
     }))

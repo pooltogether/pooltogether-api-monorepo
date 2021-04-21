@@ -1,6 +1,6 @@
 import alias from '@rollup/plugin-alias'
-import { babel } from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
+import { babel } from '@rollup/plugin-babel'
 
 const path = require('path')
 
@@ -11,10 +11,25 @@ export default {
     format: 'cjs'
   },
   preserveModules: true,
-  external: ['graphql-tag', 'graphql', 'graphql-anywhere', 'ethers', 'lodash'],
+  external: [
+    'graphql-tag',
+    'graphql',
+    'graphql-anywhere',
+    'ethers',
+    'lodash',
+    '@ethersproject/abi',
+    '@ethersproject/units',
+    'mime-db',
+    '@pooltogether/pooltogether-contracts',
+    'graphql-request',
+    '@pooltogether/etherplex'
+  ],
   plugins: [
     commonjs(),
-    babel(),
+    babel({
+      babelHelpers: 'bundled'
+    }),
+
     alias({
       entries: [
         { find: 'lib', replacement: path.resolve(__dirname, 'lib/') },

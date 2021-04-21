@@ -1,13 +1,13 @@
-import { PRIZE_POOL_TYPES } from 'lib/constants'
 import { formatUnits } from '@ethersproject/units'
+import { contractAddresses } from '@pooltogether/current-pool-data'
 
+import { PRIZE_POOL_TYPES } from 'lib/constants'
 import {
   getPoolAddressesBySubgraphVersionFromContracts,
   getSubgraphClientsByVersionFromContracts,
   getSubgraphVersionsFromContracts
 } from 'lib/hooks/useSubgraphClients'
 import { prizePoolsQuery } from 'lib/queries/prizePoolsQuery'
-import { CONTRACT_ADDRESSES } from 'lib/constants/contracts'
 import { ethers } from 'ethers'
 
 /**
@@ -52,7 +52,7 @@ const formatPoolGraphData = (prizePool, chainId) => {
 
   // Filter out our PTLootBox erc721
   const externalErc20Awards = prizeStrategy.externalErc20Awards.filter((award) => {
-    const lootboxAddress = CONTRACT_ADDRESSES[chainId]?.lootBox?.toLowerCase()
+    const lootboxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
     if (lootboxAddress) {
       return award.address !== lootboxAddress
     }

@@ -25,6 +25,5 @@ export async function pool(request, fetch = nodeFetch) {
   const poolAddress = pathname.split('/')[3]
 
   const pool = await usePoolByAddress(chainId, poolAddress, fetch)
-
   return pool
 }

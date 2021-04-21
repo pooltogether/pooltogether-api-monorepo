@@ -8,6 +8,7 @@ import { getPools } from 'lib/fetchers/getPools'
  */
 export const usePoolByAddress = async (chainId, poolAddress, fetch) => {
   const poolContract = await usePoolContract(chainId, poolAddress)
+
   return await usePool(chainId, poolContract, fetch)
 }
 
@@ -29,5 +30,6 @@ const usePool = async (chainId, poolContract, fetch) => {
 export const usePools = async (chainId, poolContracts, fetch) => {
   const contracts = poolContracts.filter(Boolean)
   const pools = await getPools(chainId, contracts, fetch)
+
   return pools
 }
