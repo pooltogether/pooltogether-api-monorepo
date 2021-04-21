@@ -25,7 +25,6 @@ export const LOOTBOX_GRAPH_URIS = {
 
 export const UNISWAP_GRAPH_URIS = {
   1: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
-  3: '',
   4: 'https://api.thegraph.com/subgraphs/name/blockrockettech/uniswap-v2-subgraph-rinkeby',
-  137: 'https://thegraph.com/explorer/subgraph/sameepsi/quickswap'
+  137: 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap'
 }

@@ -91,7 +91,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         TokenFaucetABI,
         pool.tokenListener.address
       )
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(
+        tokenFaucetContract
+          .dripRatePerSecond()
+          .asset()
+          .measure()
+      )
     }
 
     // External ERC20 awards
@@ -116,7 +121,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+            erc721Contract
+              .balanceOf(pool.prizePool.address)
+              .name()
+              .symbol()
+              .ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -200,7 +209,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         tokenFaucetDripAssetAddress
       )
       batchCalls.push(
-        dripErc20Contract.balanceOf(pool.tokenListener.address).decimals().symbol().name()
+        dripErc20Contract
+          .balanceOf(pool.tokenListener.address)
+          .decimals()
+          .symbol()
+          .name()
       )
     }
 
@@ -214,7 +227,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
+      batchCalls.push(
+        sablierErc20Stream
+          .decimals()
+          .name()
+          .symbol()
+      )
     }
 
     // Reserve
@@ -411,7 +429,7 @@ const formatPoolChainData = (
     // but it is the simplist way to merge the arrays.
     if (pool.prize.externalErc20Awards.length > 0) {
       pool.prize.externalErc20Awards = pool.prize.externalErc20Awards
-        .filter((erc20) => !ERC20_BLOCK_LIST.includes(erc20.address))
+        .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.address))
         .map((erc20) => {
           const erc20AwardData =
             firstBatchValues[getExternalErc20AwardBatchName(prizePoolAddress, erc20.address)]
