@@ -47,8 +47,9 @@ Errors displayed from the entry point aren't the most useful - running in an iso
 
 ##### TODO:
 
-- handle requests using various services / cloudflare, alchemy, infura, etc
-- allow querying other networks such polygon, bsc, rinkeby, etc
+- split up governance pools from community pools in `all-pools.json`
+- break up the different sections into their own lambdas
 - support any pool address
+- handle requests using various services / cloudflare, alchemy, infura, etc
 - historical data querying based on a specific block number
 - write documentation on docs.pooltogether.com
