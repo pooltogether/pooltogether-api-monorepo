@@ -36,7 +36,7 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   let pools = combinePoolData(poolGraphData, poolChainData)
   const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
   const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds, fetch)
-  pools = combineLootBoxData(pools, lootBoxData)
+  pools = combineLootBoxData(chainId, pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
 
@@ -71,30 +71,32 @@ const combinePoolData = (poolGraphData, poolChainData) => {
 
 /**
  * Adds loot box data to each pool
+ * @param {*} chainId
  * @param {*} _pools
  * @param {*} lootBoxData
  * @returns
  */
-const combineLootBoxData = (_pools, lootBoxData) => {
+const combineLootBoxData = (chainId, _pools, lootBoxData) => {
   const pools = cloneDeep(_pools)
-  pools.forEach((pool) => combineLootBoxDataWithPool(pool, lootBoxData))
+  pools.forEach((pool) => combineLootBoxDataWithPool(chainId, pool, lootBoxData))
   return pools
 }
 
 /**
  * Adds loot box data to a single pool
+ * @param {*} chainId
  * @param {*} pool
  * @param {*} lootBoxData
  * @returns
  */
-export const combineLootBoxDataWithPool = (pool, lootBoxData) => {
+export const combineLootBoxDataWithPool = (chainId, pool, lootBoxData) => {
   if (lootBoxData.lootBoxes?.length > 0) {
     if (!pool.prize.lootBox) return
     const lootBoxGraphData = lootBoxData.lootBoxes.find(
       (lootBox) => lootBox.tokenId === pool.prize.lootBox.id
     )
     if (!lootBoxGraphData) return
-    const formattedLootBox = formatLootBox(lootBoxGraphData)
+    const formattedLootBox = formatLootBox(chainId, lootBoxGraphData)
     pool.prize.lootBox = {
       ...pool.prize.lootBox,
       ...formattedLootBox
@@ -104,14 +106,15 @@ export const combineLootBoxDataWithPool = (pool, lootBoxData) => {
 
 /**
  * Formats the data returned from the graph for a lootBox
+ * @param {*} chainId
  * @param {*} lootBoxGraphData
  * @returns
  */
-export const formatLootBox = (lootBoxGraphData) => ({
+export const formatLootBox = (chainId, lootBoxGraphData) => ({
   erc1155Tokens: lootBoxGraphData.erc1155Balances,
   erc721Tokens: lootBoxGraphData.erc721Tokens,
   erc20Tokens: lootBoxGraphData.erc20Balances
-    .filter((erc20) => !ERC20_BLOCK_LIST.includes(erc20.id))
+    .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.erc20Entity.id.toLowerCase()))
     .map((erc20) => ({
       ...erc20.erc20Entity,
       address: erc20.erc20Entity.id,

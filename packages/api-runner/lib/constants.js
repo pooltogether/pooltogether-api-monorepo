@@ -1,5 +1,6 @@
-// TODO: Block list for erc20's const MY_CRYPTO_MEMBERSHIP_ADDRESS = '0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf'
-export const ERC20_BLOCK_LIST = ['0x6ca105d2af7095b1bceeb6a2113d168dddcd57cf']
+import { tokenBlockList } from '@pooltogether/current-pool-data'
+
+export const ERC20_BLOCK_LIST = tokenBlockList
 
 export const SECONDS_PER_BLOCK = 14
 
