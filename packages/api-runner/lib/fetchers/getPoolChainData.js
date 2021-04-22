@@ -429,7 +429,7 @@ const formatPoolChainData = (
     // but it is the simplist way to merge the arrays.
     if (pool.prize.externalErc20Awards.length > 0) {
       pool.prize.externalErc20Awards = pool.prize.externalErc20Awards
-        .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.address))
+        .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.address.toLowerCase()))
         .map((erc20) => {
           const erc20AwardData =
             firstBatchValues[getExternalErc20AwardBatchName(prizePoolAddress, erc20.address)]

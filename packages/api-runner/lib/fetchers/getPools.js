@@ -28,26 +28,19 @@ const getPool = (graphPool) => {
  */
 export const getPools = async (chainId, poolContracts, fetch) => {
   const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
-  console.log('poolGraphData')
   const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
-  console.log('poolChainData')
   let pools = combinePoolData(poolGraphData, poolChainData)
-  console.log('combinePoolData')
   const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
   const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds, fetch)
   pools = combineLootBoxData(chainId, pools, lootBoxData)
-  console.log('combineLootBoxData')
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
-  console.log('tokenPriceGraphData')
 
   pools = combineTokenPricesData(pools, tokenPriceGraphData)
   pools = calculateTotalPrizeValuePerPool(pools)
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateTokenFaucetApr(pools)
   pools = addPoolMetadata(pools, poolContracts)
-
-  console.log(pools)
 
   return pools
 }
@@ -114,7 +107,7 @@ export const formatLootBox = (chainId, lootBoxGraphData) => ({
   erc1155Tokens: lootBoxGraphData.erc1155Balances,
   erc721Tokens: lootBoxGraphData.erc721Tokens,
   erc20Tokens: lootBoxGraphData.erc20Balances
-    .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.id))
+    .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.erc20Entity.id.toLowerCase()))
     .map((erc20) => ({
       ...erc20.erc20Entity,
       address: erc20.erc20Entity.id,
