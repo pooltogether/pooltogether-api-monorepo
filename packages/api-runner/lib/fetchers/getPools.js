@@ -12,6 +12,10 @@ import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
 import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
 import { getPoolChainData } from 'lib/fetchers/getPoolChainData'
 
+const MAINNET_USD_AMOUNT = 0
+const TESTNET_USD_AMOUNT = 1
+const TESTNET_CHAIN_IDS = [3, 4, 5, 42, 80001]
+
 const bn = ethers.BigNumber.from
 
 const getPool = (graphPool) => {
@@ -36,7 +40,10 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
 
-  pools = combineTokenPricesData(pools, tokenPriceGraphData)
+  const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
+    ? TESTNET_USD_AMOUNT
+    : MAINNET_USD_AMOUNT
+  pools = combineTokenPricesData(pools, tokenPriceGraphData, defaultTokenPriceUsd)
   pools = calculateTotalPrizeValuePerPool(pools)
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateTokenFaucetApr(pools)
@@ -137,19 +144,21 @@ const getAllErc20Addresses = (pools) => {
  * @param {*} _pools
  * @param {*} tokenPriceData
  */
-const combineTokenPricesData = (_pools, tokenPriceData) => {
+const combineTokenPricesData = (_pools, tokenPriceData, defaultTokenPriceUsd) => {
   const pools = cloneDeep(_pools)
 
   pools.forEach((pool) => {
     // Add to all known tokens
-    Object.values(pool.tokens).forEach((token) => addTokenTotalUsdValue(token, tokenPriceData))
+    Object.values(pool.tokens).forEach((token) =>
+      addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
+    )
     // Add to all external erc20 tokens
     Object.values(pool.prize.externalErc20Awards).forEach((token) =>
-      addTokenTotalUsdValue(token, tokenPriceData)
+      addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
     )
     // Add to all lootBox tokens
     pool.prize.lootBox?.erc20Tokens?.forEach((token) =>
-      addTokenTotalUsdValue(token, tokenPriceData)
+      addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
     )
     // Add total values for controlled tokens
     const underlyingToken = pool.tokens.underlyingToken
@@ -166,21 +175,19 @@ const combineTokenPricesData = (_pools, tokenPriceData) => {
  * Adds token USD value if we have the USD price per token
  * @param {*} token
  */
-export const addTokenTotalUsdValue = (token, tokenPriceData) => {
+export const addTokenTotalUsdValue = (token, tokenPriceData, defaultTokenPriceUsd) => {
   const priceData = tokenPriceData[token.address]
   if (priceData) {
-    token.usd = tokenPriceData[token.address].usd || 1
-    token.derivedETH = tokenPriceData[token.address].derivedETH || '1'
+    token.usd = tokenPriceData[token.address].usd || defaultTokenPriceUsd
+    token.derivedETH = tokenPriceData[token.address].derivedETH || defaultTokenPriceUsd.toString()
     if (token.amountUnformatted) {
       const usdValueUnformatted = amountMultByUsd(token.amountUnformatted, token.usd)
       token.totalValueUsd = formatUnits(usdValueUnformatted, token.decimals)
       token.totalValueUsdScaled = toScaledUsdBigNumber(token.totalValueUsd)
     }
   } else {
-    // assuming $1, likely Rinkeby, etc. Will need to be updated for networks
-    // we don't have underlying token price data on!
-    token.usd = 1
-    token.derivedETH = '1'
+    token.usd = defaultTokenPriceUsd
+    token.derivedETH = defaultTokenPriceUsd.toString()
   }
 }
 
