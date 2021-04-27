@@ -413,26 +413,19 @@ const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
     pool.prize.estimatedRemainingBlocksToPrize,
     pool.reserve?.rate
   )
+  const yieldAmount = ethers.utils.formatUnits(yieldAmountUnformatted, underlyingToken.decimals)
 
-  const yieldAmount = stringWithPrecision(
-    calculateEstimatedPoolPrize({
-      ticketSupply: pool.tokens.ticket.totalSupplyUnformatted,
-      totalSponsorship: pool.tokens.sponsorship.totalSupplyUnformatted,
-      awardBalance: pool.prize.amountUnformatted,
-      underlyingCollateralDecimals: pool.tokens.underlyingToken.decimals,
-      supplyRatePerBlock: pool.tokens.cToken?.supplyRatePerBlock,
-      prizePeriodRemainingSeconds: pool.prize.prizePeriodRemainingSeconds
-    }),
-    { precision: pool.tokens.underlyingToken.decimals - 1 }
-  )
+  const yieldAmountFormattedString = stringWithPrecision(yieldAmount, {
+    precision: pool.tokens.underlyingToken.decimals - 1
+  })
 
   pool.prize.yield = pool.prize.yield
     ? {
         ...pool.prize.yield,
-        amount: yieldAmount
+        amount: yieldAmountFormattedString
       }
     : {
-        amount: yieldAmount
+        amount: yieldAmountFormattedString
       }
   pool.prize.yield.amountUnformatted = parseUnits(
     pool.prize.yield.amount,
