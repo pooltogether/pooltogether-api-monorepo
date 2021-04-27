@@ -2,7 +2,7 @@ import remove from 'lodash.remove'
 import { ethers } from 'ethers'
 import { formatUnits } from '@ethersproject/units'
 import { contract } from '@pooltogether/etherplex'
-import { contractAddresses } from '@pooltogether/current-pool-data'
+import { contractAddresses, SECONDS_PER_BLOCK } from '@pooltogether/current-pool-data'
 
 import PrizePoolAbi from '@pooltogether/pooltogether-contracts/abis/PrizePool'
 import PrizeStrategyAbi from '@pooltogether/pooltogether-contracts/abis/PeriodicPrizeStrategy'
@@ -78,7 +78,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         .prizePeriodStartedAt()
         .prizePeriodRemainingSeconds()
         .prizePeriodSeconds()
-        .estimateRemainingBlocksToPrize(ethers.utils.parseEther('14'))
+        .estimateRemainingBlocksToPrize(SECONDS_PER_BLOCK[chainId] || SECONDS_PER_BLOCK[1])
     )
 
     // TODO: Uniswap data
@@ -373,7 +373,12 @@ const formatPoolChainData = (
         prizePeriodStartedAt: prizeStrategyData.prizePeriodStartedAt[0],
         prizePeriodRemainingSeconds: prizeStrategyData.prizePeriodRemainingSeconds[0],
         prizePeriodSeconds: prizeStrategyData.prizePeriodSeconds[0],
-        estimateRemainingBlocksToPrize: prizeStrategyData.estimateRemainingBlocksToPrize[0]
+        estimatedRemainingBlocksToPrize: formatUnits(
+          prizeStrategyData.estimateRemainingBlocksToPrize[0],
+          18
+        ),
+        estimatedRemainingBlocksToPrizeUnformatted:
+          prizeStrategyData.estimateRemainingBlocksToPrize[0]
       },
       reserve: {
         amountUnformatted: secondBatchValues[prizePoolAddress].reserveTotalSupply[0],
