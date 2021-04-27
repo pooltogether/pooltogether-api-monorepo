@@ -798,10 +798,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.1.11":
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.1.11.tgz#dea48760312ac0f11885ce84f1db1b21aa66c0f9"
-  integrity sha512-d8xM3oWJJm6ERY7xpkvgPYyHfE/9RH7VJ7sDHTDen3C3hRCq4xpR4h22qotci/LRbOWSCrw+m2dR4vMIBcnlEA==
+"@pooltogether/api-runner@1.1.14":
+  version "1.1.14"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.1.14.tgz#2b7e0dc72096cec29148714fba01d7140d580553"
+  integrity sha512-Uw4J7qP082rfPZ8dDRqbvMnH5tPpE7yKoeFyTXlU7LBcIw5ypWJwYVHlE2XWvuWVjEdqbhjVIOk3Y4ubhQCmBw==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
@@ -810,7 +810,7 @@
     "@pooltogether/evm-chains-extended" "^0.4.3"
     "@pooltogether/loot-box" "^1.1.0"
     "@pooltogether/pooltogether-contracts" "^3.3.8"
-    "@pooltogether/utilities" "^0.0.1"
+    "@pooltogether/utilities" "0.0.4"
     ethers "5.1.3"
     graphql "^15.5.0"
     graphql-request "^3.4.0"
@@ -823,11 +823,6 @@
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.3.tgz#a6811defb64805cb30ec2755537fd007cfabb3bd"
   integrity sha512-O19Eu972v0CJ6ebCWhaJgfIUs/rcbLpsMVEbW/KXyKWarEc0vtzXBEn8B7g9brGJHY75I587wrCutz+V1J+BRw==
-
-"@pooltogether/current-pool-data@^3.3.8-e":
-  version "3.3.8-e"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.3.8-e.tgz#52ca440dce21b7ee491b86b584efdae8ccbd95c3"
-  integrity sha512-no9OjizjkeYCi6wIIohAxNyB4XIxJu4fYjRGSMl37HtHdh/+5aSb6X1VYTyY2Ik6k/D/pJ9aTk4ZjMgG/sdZVA==
 
 "@pooltogether/etherplex@1.1.1":
   version "1.1.1"
@@ -895,10 +890,10 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/uniform-random-number/-/uniform-random-number-1.0.0-beta.1.tgz#72257401fe8536e95f9f812f1d249262659084a7"
   integrity sha512-V4iqLOpNFNhnUqfKRlvqUeRwvKaODdz+qn4Qi65C3iMOnDb0J31tBvyhwKbhP4wauNuUN64WfepqkkxET9U7EQ==
 
-"@pooltogether/utilities@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.1.tgz#e914ec994a60a417af17f68e5e6a4cf1b7275d85"
-  integrity sha512-6AWB8yILxEfabxdX27SjOkxibu5x+Ag6cXZNlXxIvekqAjj7D+XUoGXnxZ9SiXuI1IqjNEwOWy/XJ1R8fA5FEA==
+"@pooltogether/utilities@0.0.4", "@pooltogether/utilities@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.4.tgz#ac347d63d5d842bc3c0969629ac7abded688f2ab"
+  integrity sha512-kjF/uzpWB8puW0ru/dCrVtUc8pFB9XBVOJ5FsicS6aQ91Qdy1PpfPSywwL/I8wdaqGjg+D8L+9ULYRLHjajT3A==
   dependencies:
     "@pooltogether/current-pool-data" "^3.4.3"
     ethers "^5.1.2"
