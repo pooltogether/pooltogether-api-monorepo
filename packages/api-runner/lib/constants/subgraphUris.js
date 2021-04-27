@@ -13,7 +13,8 @@ export const POOLTOGETHER_SUBGRAPHS = {
     '3.3.8': 'https://api.thegraph.com/subgraphs/name/pooltogether/rinkeby-v3_3_8'
   },
   137: {
-    '3.3.0': 'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-polygon-v3_3'
+    '3.3.0': 'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-polygon-v3_3',
+    '3.3.8': 'https://api.thegraph.com/subgraphs/name/pooltogether/polygon-v3_3_8'
   }
 }
 

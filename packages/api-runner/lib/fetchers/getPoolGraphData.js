@@ -27,7 +27,7 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
   const data = await Promise.all(
     subgraphVersions.map((version) => {
       const client = subgraphClients[version]
-      const poolAddresses = addressesByVersion[version]
+      const poolAddresses = addressesByVersion[version].map((addr) => addr.toLowerCase())
 
       return client.request(query, { poolAddresses }).catch((e) => {
         console.error(e)

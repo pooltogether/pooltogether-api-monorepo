@@ -12,6 +12,12 @@ export function usePoolContracts(chainId) {
 
 export function usePoolContract(chainId, poolAddress) {
   const poolContracts = usePoolContracts(chainId)
+  console.log(
+    poolAddress,
+    poolContracts.find(
+      (contract) => contract.prizePool.address.toLowerCase() === poolAddress.toLowerCase()
+    )
+  )
   return poolContracts.find(
     (contract) => contract.prizePool.address.toLowerCase() === poolAddress.toLowerCase()
   )
