@@ -824,6 +824,11 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.3.tgz#a6811defb64805cb30ec2755537fd007cfabb3bd"
   integrity sha512-O19Eu972v0CJ6ebCWhaJgfIUs/rcbLpsMVEbW/KXyKWarEc0vtzXBEn8B7g9brGJHY75I587wrCutz+V1J+BRw==
 
+"@pooltogether/current-pool-data@3.4.4":
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.4.tgz#72425a1b54da9b2e94dba50bb2cb6d44deb8a112"
+  integrity sha512-lY8RT0g1k22WTS5ydCLoMuEgOX26o3itb/f8hWSJkYfC3TsFz2OCL7PkwiU5/VxcbXws6e3180u/U+t/w+0WkA==
+
 "@pooltogether/etherplex@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@pooltogether/etherplex/-/etherplex-1.1.1.tgz#330f326ce8fbfd4f4aae70d5fd02d5baa3e9195e"
