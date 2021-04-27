@@ -51,6 +51,7 @@
     "lodash.remove": "^4.7.0"
   },
   "peerDependencies": {
+    "@pooltogether/utilities": "0.0.4",
     "@babel/core": "^7.13.15",
     "@babel/plugin-proposal-object-rest-spread": "^7.13.8",
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
