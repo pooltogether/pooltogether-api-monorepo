@@ -12,6 +12,23 @@ export const DEFAULT_TOKEN_PRECISION = 18
 
 export const ETHEREUM_NETWORKS = [1, 3, 4, 5, 42]
 
+export const NETWORK = Object.freeze({
+  'mainnet': 1,
+  'homestead': 1,
+  'ropsten': 3,
+  'rinkeby': 4,
+  'goerli': 5,
+  'kovan': 42,
+  'bsc': 56,
+  'poa-sokol': 77,
+  'bsc-testnet': 97,
+  'poa': 99,
+  'xdai': 100,
+  'matic': 137,
+  'polygon': 137,
+  'mumbai': 80001
+})
+
 export const CUSTOM_CONTRACT_ADDRESSES = {
   1: {
     Usdt: '0xdac17f958d2ee523a2206206994597c13d831ec7',

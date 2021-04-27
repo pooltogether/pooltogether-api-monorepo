@@ -21,7 +21,8 @@ import {
   ERC20_BLOCK_LIST,
   CUSTOM_CONTRACT_ADDRESSES,
   DEFAULT_TOKEN_PRECISION,
-  SECONDS_PER_DAY
+  SECONDS_PER_DAY,
+  NETWORK
 } from 'lib/constants'
 
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
@@ -78,7 +79,9 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         .prizePeriodStartedAt()
         .prizePeriodRemainingSeconds()
         .prizePeriodSeconds()
-        .estimateRemainingBlocksToPrize(SECONDS_PER_BLOCK[chainId] || SECONDS_PER_BLOCK[1])
+        .estimateRemainingBlocksToPrize(
+          SECONDS_PER_BLOCK[chainId] || SECONDS_PER_BLOCK[NETWORK.mainnet]
+        )
     )
 
     // TODO: Uniswap data

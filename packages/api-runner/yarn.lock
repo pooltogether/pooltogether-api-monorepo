@@ -758,7 +758,12 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/current-pool-data@3.4.4", "@pooltogether/current-pool-data@^3.4.3":
+"@pooltogether/current-pool-data@3.4.6":
+  version "3.4.6"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.6.tgz#e45773962a07d68a51344d50de165defb3e7c679"
+  integrity sha512-FBanBSBGvD+Gxvp56p9Y3qk6a7fB/muxoTx6ONB57NUYnQgA9OdpxibuIO9AXcsMEzp76LXV8mHuvFTWvgpUYQ==
+
+"@pooltogether/current-pool-data@^3.4.3":
   version "3.4.4"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.4.tgz#72425a1b54da9b2e94dba50bb2cb6d44deb8a112"
   integrity sha512-lY8RT0g1k22WTS5ydCLoMuEgOX26o3itb/f8hWSJkYfC3TsFz2OCL7PkwiU5/VxcbXws6e3180u/U+t/w+0WkA==
