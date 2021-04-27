@@ -371,8 +371,10 @@ const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
   const cToken = pool.tokens.cToken
   const underlyingToken = pool.tokens.underlyingToken
   let compApy = '0'
+  let yieldAmountUnformatted = pool.prize.amountUnformatted
   if (cToken) {
     try {
+      // Calculate value of COMP
       const cTokenData = await fetch('https://api.compound.finance/api/v2/ctoken', {
         method: 'POST',
         body: JSON.stringify({
@@ -398,21 +400,23 @@ const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
           totalValueUsdScaled: toScaledUsdBigNumber(totalValueUsd)
         }
       }
+
+      // Calculate yield
+      yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
+        pool.prize.amountUnformatted,
+        pool.tokens.ticket.totalSupplyUnformatted.add(
+          pool.tokens.sponsorship.totalSupplyUnformatted
+        ),
+        cToken.supplyRatePerBlock,
+        pool.tokens.ticket.decimals,
+        pool.prize.estimatedRemainingBlocksToPrize,
+        pool.reserve?.rate
+      )
     } catch (e) {
       console.warn(e.message)
     }
   }
 
-  // TODO: Show actual calculations for prize estimates - right now we don't account for
-  // the reserve in the yield estimates.
-  const yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
-    pool.prize.amountUnformatted,
-    pool.tokens.ticket.totalSupplyUnformatted.add(pool.tokens.sponsorship.totalSupplyUnformatted),
-    pool.tokens.cToken.supplyRatePerBlock,
-    pool.tokens.ticket.decimals,
-    pool.prize.estimatedRemainingBlocksToPrize,
-    pool.reserve?.rate
-  )
   const yieldAmount = ethers.utils.formatUnits(yieldAmountUnformatted, underlyingToken.decimals)
 
   const yieldAmountFormattedString = stringWithPrecision(yieldAmount, {
