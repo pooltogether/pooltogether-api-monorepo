@@ -2,6 +2,11 @@ import merge from 'lodash.merge'
 import cloneDeep from 'lodash.clonedeep'
 import { ethers } from 'ethers'
 import { formatUnits, parseUnits } from '@ethersproject/units'
+import {
+  calculateEstimatedCompoundPrizeWithYieldUnformatted,
+  calculatedEstimatedAccruedCompValueUnformatted,
+  addBigNumbers
+} from '@pooltogether/utilities'
 
 import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
 import { getTokenPriceData } from 'lib/fetchers/getTokenPriceData'
@@ -39,12 +44,11 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   pools = combineLootBoxData(chainId, pools, lootBoxData)
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
-
   const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
     ? TESTNET_USD_AMOUNT
     : MAINNET_USD_AMOUNT
   pools = combineTokenPricesData(pools, tokenPriceGraphData, defaultTokenPriceUsd)
-  pools = calculateTotalPrizeValuePerPool(pools)
+  pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools, fetch))
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateTokenFaucetApr(pools)
   pools = addPoolMetadata(pools, poolContracts)
@@ -228,8 +232,8 @@ const amountMultByUsd = (amount, usd) => amount.mul(Math.round(usd * 100)).div(1
  * TODO: Assumes sablier stream is the same as the "yield" token for calculations
  * @param {*} pools
  */
-const calculateTotalPrizeValuePerPool = (pools) => {
-  return pools.map((_pool) => {
+const calculateTotalPrizeValuePerPool = async (pools, fetch) => {
+  return pools.map(async (_pool) => {
     let pool = cloneDeep(_pool)
     // Calculate erc20 values
     pool = calculateExternalErc20TotalValuesUsd(pool)
@@ -238,16 +242,20 @@ const calculateTotalPrizeValuePerPool = (pools) => {
     pool = calculateLootBoxTotalValuesUsd(pool)
 
     // Calculate yield prize
-    pool = calculateYieldTotalValuesUsd(pool)
+    pool = await calculateYieldTotalValuesUsd(pool, fetch)
 
     // Calculate sablier prize
     pool = calculateSablierTotalValueUsd(pool)
 
     // Calculate total
-    pool.prize.totalExternalAwardsValueUsdScaled = addBigNumbers([
-      pool.prize.lootBox.totalValueUsdScaled,
-      pool.prize.erc20Awards.totalValueUsdScaled
-    ])
+    pool.prize.totalExternalAwardsValueUsdScaled = addBigNumbers(
+      [
+        pool.prize.lootBox.totalValueUsdScaled,
+        pool.prize.erc20Awards.totalValueUsdScaled,
+        pool.prize.yield?.comp?.totalValueUsdScaled
+      ].filter(Boolean)
+    )
+
     pool.prize.totalExternalAwardsValueUsd = formatUnits(
       pool.prize.totalExternalAwardsValueUsdScaled,
       2
@@ -357,22 +365,72 @@ const calculateLootBoxTotalValuesUsd = (_pool) => {
  * @param {*} _pool
  * @returns
  */
-const calculateYieldTotalValuesUsd = (_pool) => {
+const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
   const pool = cloneDeep(_pool)
-  const yieldAmount = stringWithPrecision(
-    calculateEstimatedPoolPrize({
-      ticketSupply: pool.tokens.ticket.totalSupplyUnformatted,
-      totalSponsorship: pool.tokens.sponsorship.totalSupplyUnformatted,
-      awardBalance: pool.prize.amountUnformatted,
-      underlyingCollateralDecimals: pool.tokens.underlyingToken.decimals,
-      supplyRatePerBlock: pool.tokens.cToken?.supplyRatePerBlock,
-      prizePeriodRemainingSeconds: pool.prize.prizePeriodRemainingSeconds
-    }),
-    { precision: pool.tokens.underlyingToken.decimals - 1 }
-  )
-  pool.prize.yield = {
-    amount: yieldAmount
+
+  const cToken = pool.tokens.cToken
+  const underlyingToken = pool.tokens.underlyingToken
+  let compApy = '0'
+  let yieldAmountUnformatted = pool.prize.amountUnformatted
+  if (cToken) {
+    try {
+      // Calculate value of COMP
+      const cTokenData = await fetch('https://api.compound.finance/api/v2/ctoken', {
+        method: 'POST',
+        body: JSON.stringify({
+          addresses: [cToken.address]
+        })
+      })
+      const response = await cTokenData.json()
+      compApy = response.cToken[0]?.comp_supply_apy.value || '0'
+      const totalCompValueUsdUnformatted = calculatedEstimatedAccruedCompValueUnformatted(
+        compApy,
+        pool.tokens.ticket.totalSupplyUnformatted.add(
+          pool.tokens.sponsorship.totalSupplyUnformatted
+        ),
+        pool.prize.prizePeriodRemainingSeconds
+      )
+      const totalValueUsd = ethers.utils.formatUnits(
+        totalCompValueUsdUnformatted,
+        underlyingToken.decimals
+      )
+      pool.prize.yield = {
+        comp: {
+          totalValueUsd,
+          totalValueUsdScaled: toScaledUsdBigNumber(totalValueUsd)
+        }
+      }
+
+      // Calculate yield
+      yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
+        pool.prize.amountUnformatted,
+        pool.tokens.ticket.totalSupplyUnformatted.add(
+          pool.tokens.sponsorship.totalSupplyUnformatted
+        ),
+        cToken.supplyRatePerBlock,
+        pool.tokens.ticket.decimals,
+        pool.prize.estimatedRemainingBlocksToPrize,
+        pool.reserve?.rate
+      )
+    } catch (e) {
+      console.warn(e.message)
+    }
   }
+
+  const yieldAmount = ethers.utils.formatUnits(yieldAmountUnformatted, underlyingToken.decimals)
+
+  const yieldAmountFormattedString = stringWithPrecision(yieldAmount, {
+    precision: pool.tokens.underlyingToken.decimals - 1
+  })
+
+  pool.prize.yield = pool.prize.yield
+    ? {
+        ...pool.prize.yield,
+        amount: yieldAmountFormattedString
+      }
+    : {
+        amount: yieldAmountFormattedString
+      }
   pool.prize.yield.amountUnformatted = parseUnits(
     pool.prize.yield.amount,
     pool.tokens.underlyingToken.decimals
@@ -474,16 +532,6 @@ const calculateSablierTotalValueUsd = (_pool) => {
 
   return pool
 }
-
-/**
- * Adds a list of BigNumbers
- * @param {*} totals an array of scaled BigNumbers, specifically USD values
- * @returns
- */
-const addBigNumbers = (totals) =>
-  totals.reduce((total, usdScaled) => {
-    return usdScaled.add(total)
-  }, ethers.constants.Zero)
 
 /**
  * Scaled math that adds the USD value of a token if it is available

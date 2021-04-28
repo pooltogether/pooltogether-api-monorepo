@@ -6,5 +6,8 @@
   "description": "API for PoolTogether data",
   "devDependencies": {
     "lerna": "^4.0.0"
+  },
+  "dependencies": {
+    "@pooltogether/evm-chains-extended": "^0.4.3"
   }
 }

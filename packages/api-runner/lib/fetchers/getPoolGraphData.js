@@ -27,7 +27,7 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
   const data = await Promise.all(
     subgraphVersions.map((version) => {
       const client = subgraphClients[version]
-      const poolAddresses = addressesByVersion[version]
+      const poolAddresses = addressesByVersion[version].map((addr) => addr.toLowerCase())
 
       return client.request(query, { poolAddresses }).catch((e) => {
         console.error(e)
@@ -115,7 +115,7 @@ const formatPoolGraphData = (prizePool, chainId) => {
       registry: {
         // TODO: Remove. Hardcoded for a bug in the subgraph.
         address:
-          prizePool.reserveRegistry === ethers.constants.Zero
+          prizePool.reserveRegistry === ethers.constants.AddressZero && chainId === 1
             ? '0x3e8b9901dbfe766d3fe44b36c180a1bca2b9a295'
             : prizePool.reserveRegistry
       }
