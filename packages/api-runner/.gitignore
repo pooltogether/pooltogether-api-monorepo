@@ -8,4 +8,4 @@ wasm-pack.log
 worker/
 node_modules/
 .cargo-ok
-.prettierrc
+yarn-error.log

@@ -3,7 +3,7 @@ import { contractAddresses } from '@pooltogether/current-pool-data'
 import { getLootBoxSubgraphClient } from 'lib/hooks/useSubgraphClients'
 import { lootBoxQuery } from 'lib/queries/lootBoxQuery'
 
-export const getGraphLootBoxData = async (chainId, tokenIds, fetch) => {
+export const getLootBoxGraphData = async (chainId, tokenIds, fetch) => {
   if (tokenIds.length === 0) return []
 
   const graphQLClient = getLootBoxSubgraphClient(chainId, fetch)
