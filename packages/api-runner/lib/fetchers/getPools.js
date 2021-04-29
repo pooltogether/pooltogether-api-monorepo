@@ -9,13 +9,13 @@ import {
 } from '@pooltogether/utilities'
 
 import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
-import { getTokenPriceData } from 'lib/fetchers/getTokenPriceData'
-import { calculateEstimatedPoolPrize } from 'lib/services/calculateEstimatedPoolPrize'
-import { getGraphLootBoxData } from 'lib/fetchers/getGraphLootBoxData'
-import { stringWithPrecision } from 'lib/utils/stringWithPrecision'
-import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
+import { getLootBoxGraphData } from 'lib/fetchers/getLootBoxGraphData'
+import { getLootBoxChainData } from 'lib/fetchers/getLootBoxChainData'
 import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
 import { getPoolChainData } from 'lib/fetchers/getPoolChainData'
+import { getTokenPriceData } from 'lib/fetchers/getTokenPriceData'
+import { stringWithPrecision } from 'lib/utils/stringWithPrecision'
+import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
 
 const MAINNET_USD_AMOUNT = 0
 const TESTNET_USD_AMOUNT = 1
@@ -39,9 +39,12 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
   const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
   let pools = combinePoolData(poolGraphData, poolChainData)
+
   const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
-  const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds, fetch)
-  pools = combineLootBoxData(chainId, pools, lootBoxData)
+  const lootBoxGraphData = await getLootBoxGraphData(chainId, lootBoxTokenIds, fetch)
+  pools = combineLootBoxData(chainId, pools, lootBoxGraphData)
+  pools = await getLootBoxChainData(pools, chainId, fetch)
+
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
   const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
@@ -77,12 +80,12 @@ const combinePoolData = (poolGraphData, poolChainData) => {
  * Adds loot box data to each pool
  * @param {*} chainId
  * @param {*} _pools
- * @param {*} lootBoxData
+ * @param {*} lootBoxGraphData
  * @returns
  */
-const combineLootBoxData = (chainId, _pools, lootBoxData) => {
+const combineLootBoxData = (chainId, _pools, lootBoxGraphData) => {
   const pools = cloneDeep(_pools)
-  pools.forEach((pool) => combineLootBoxDataWithPool(chainId, pool, lootBoxData))
+  pools.forEach((pool) => combineLootBoxDataWithPool(chainId, pool, lootBoxGraphData))
   return pools
 }
 
@@ -90,17 +93,17 @@ const combineLootBoxData = (chainId, _pools, lootBoxData) => {
  * Adds loot box data to a single pool
  * @param {*} chainId
  * @param {*} pool
- * @param {*} lootBoxData
+ * @param {*} lootBoxGraphData
  * @returns
  */
-export const combineLootBoxDataWithPool = (chainId, pool, lootBoxData) => {
-  if (lootBoxData.lootBoxes?.length > 0) {
+export const combineLootBoxDataWithPool = (chainId, pool, lootBoxGraphData) => {
+  if (lootBoxGraphData.lootBoxes?.length > 0) {
     if (!pool.prize.lootBox) return
-    const lootBoxGraphData = lootBoxData.lootBoxes.find(
+    const lootBoxData = lootBoxGraphData.lootBoxes.find(
       (lootBox) => lootBox.tokenId === pool.prize.lootBox.id
     )
-    if (!lootBoxGraphData) return
-    const formattedLootBox = formatLootBox(chainId, lootBoxGraphData)
+    if (!lootBoxData) return
+    const formattedLootBox = formatLootBox(chainId, lootBoxData)
     pool.prize.lootBox = {
       ...pool.prize.lootBox,
       ...formattedLootBox
@@ -114,10 +117,10 @@ export const combineLootBoxDataWithPool = (chainId, pool, lootBoxData) => {
  * @param {*} lootBoxGraphData
  * @returns
  */
-export const formatLootBox = (chainId, lootBoxGraphData) => ({
-  erc1155Tokens: lootBoxGraphData.erc1155Balances,
-  erc721Tokens: lootBoxGraphData.erc721Tokens,
-  erc20Tokens: lootBoxGraphData.erc20Balances
+export const formatLootBox = (chainId, lootBoxData) => ({
+  erc1155Tokens: lootBoxData.erc1155Balances,
+  erc721Tokens: lootBoxData.erc721Tokens,
+  erc20Tokens: lootBoxData.erc20Balances
     .filter((erc20) => !ERC20_BLOCK_LIST[chainId]?.includes(erc20.erc20Entity.id.toLowerCase()))
     .map((erc20) => ({
       ...erc20.erc20Entity,

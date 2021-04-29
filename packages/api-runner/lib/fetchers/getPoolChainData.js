@@ -94,12 +94,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         TokenFaucetABI,
         pool.tokenListener.address
       )
-      batchCalls.push(
-        tokenFaucetContract
-          .dripRatePerSecond()
-          .asset()
-          .measure()
-      )
+      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
     }
 
     // External ERC20 awards
@@ -124,11 +119,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract
-              .balanceOf(pool.prizePool.address)
-              .name()
-              .symbol()
-              .ownerOf(tokenId)
+            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -212,11 +203,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         tokenFaucetDripAssetAddress
       )
       batchCalls.push(
-        dripErc20Contract
-          .balanceOf(pool.tokenListener.address)
-          .decimals()
-          .symbol()
-          .name()
+        dripErc20Contract.balanceOf(pool.tokenListener.address).decimals().symbol().name()
       )
     }
 
@@ -230,12 +217,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(
-        sablierErc20Stream
-          .decimals()
-          .name()
-          .symbol()
-      )
+      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
     }
 
     // Reserve
@@ -256,10 +238,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
 
   // Get External Erc721 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([
-    ...erc721AwardsToFetchMetadataFor.map(async (erc721Award) => ({
-      id: getErc721BatchName(erc721Award.address, erc721Award.tokenId),
-      uri: await getErc721TokenUri(chainId, fetch, erc721Award.address, erc721Award.tokenId)
-    })),
+    ...erc721AwardsToFetchMetadataFor.map(async (erc721Award) => {
+      return {
+        id: getErc721BatchName(erc721Award.address, erc721Award.tokenId),
+        uri: await getErc721TokenUri(chainId, fetch, erc721Award.address, erc721Award.tokenId)
+      }
+    }),
     // TODO: Split award is only supported on some versions of prizeStrategies
     ...poolGraphData.map(async (graphPool) => {
       pool = getPool(graphPool)
