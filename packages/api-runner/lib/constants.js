@@ -31,12 +31,15 @@ export const NETWORK = Object.freeze({
 
 export const CUSTOM_CONTRACT_ADDRESSES = {
   1: {
-    Usdt: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    Stablecoin: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     Sablier: '0xA4fc358455Febe425536fd1878bE67FfDBDEC59a'
   },
   4: {
-    Usdt: '0x3b00ef435fa4fcff5c209a37d1f3dcff37c705ad',
+    Stablecoin: '0x3b00ef435fa4fcff5c209a37d1f3dcff37c705ad',
     Sablier: '0xc04Ad234E01327b24a831e3718DBFcbE245904CC'
+  },
+  137: {
+    Stablecoin: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
   }
 }
 
