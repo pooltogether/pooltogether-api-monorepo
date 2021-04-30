@@ -58,7 +58,7 @@ async function useCache(event, promise, cacheAgeSeconds) {
 
     // Cache the query for multiple pools for a longer period of time
     // as it's much heavier on the CPU usage and can be blocked by Cloudflare
-    response.headers.set('Cache-Control', `max-age=${cacheAgeSeconds}`)
+    response.headers.set('Cache-Control', `s-maxage=${cacheAgeSeconds}`)
 
     // CORS Headers
     response.headers.set('Access-Control-Allow-Origin', `*`)
