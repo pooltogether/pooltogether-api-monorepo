@@ -47,7 +47,7 @@ const getPool = (graphPool) => {
 /**
  *
  * @param {*} chainId
- * @param {*} poolContracts
+ * @param {*} poolGraphData
  * @param {*} poolGraphData
  * @returns
  */
@@ -83,8 +83,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
           SECONDS_PER_BLOCK[chainId] || SECONDS_PER_BLOCK[NETWORK.mainnet]
         )
     )
-
-    // TODO: Uniswap data
 
     // Token Listener
     // NOTE: If it's not a token faucet, this will break everything
