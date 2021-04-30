@@ -94,9 +94,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
       )
       batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
     }
-    // Custom yield source
-    if (pool.prizePool.yieldSource) {
-    }
 
     // External ERC20 awards
     if (pool.prize.externalErc20Awards.length > 0) {
