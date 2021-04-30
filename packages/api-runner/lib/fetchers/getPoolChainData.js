@@ -47,7 +47,7 @@ const getPool = (graphPool) => {
 /**
  *
  * @param {*} chainId
- * @param {*} poolContracts
+ * @param {*} poolGraphData
  * @param {*} poolGraphData
  * @returns
  */
@@ -84,8 +84,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         )
     )
 
-    // TODO: Uniswap data
-
     // Token Listener
     // NOTE: If it's not a token faucet, this will break everything
     if (pool.tokenListener.address) {
@@ -95,6 +93,9 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         pool.tokenListener.address
       )
       batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+    }
+    // Custom yield source
+    if (pool.prizePool.yieldSource) {
     }
 
     // External ERC20 awards
