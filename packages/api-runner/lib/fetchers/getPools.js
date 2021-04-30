@@ -10,12 +10,13 @@ import {
 
 import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
 import { getTokenPriceData } from 'lib/fetchers/getTokenPriceData'
-import { calculateEstimatedPoolPrize } from 'lib/services/calculateEstimatedPoolPrize'
 import { getGraphLootBoxData } from 'lib/fetchers/getGraphLootBoxData'
 import { stringWithPrecision } from 'lib/utils/stringWithPrecision'
 import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
 import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
 import { getPoolChainData } from 'lib/fetchers/getPoolChainData'
+import { getCustomYieldSourceData } from 'lib/fetchers/getCustomYieldSourceData'
+import { calculateYieldTotalValuesUsd } from 'lib/utils/calculateYieldTotalValuesUsd'
 
 const MAINNET_USD_AMOUNT = 0
 const TESTNET_USD_AMOUNT = 1
@@ -39,6 +40,7 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
   const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
   let pools = combinePoolData(poolGraphData, poolChainData)
+  pools = await getCustomYieldSourceData(chainId, pools, fetch)
   const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
   const lootBoxData = await getGraphLootBoxData(chainId, lootBoxTokenIds, fetch)
   pools = combineLootBoxData(chainId, pools, lootBoxData)
@@ -261,10 +263,13 @@ const calculateTotalPrizeValuePerPool = async (pools, fetch) => {
       2
     )
 
-    pool.prize.totalInternalAwardsUsdScaled = addBigNumbers([
-      pool.prize.yield.totalValueUsdScaled,
-      pool.prize.sablierStream.totalValueUsdScaled
-    ])
+    pool.prize.totalInternalAwardsUsdScaled = addBigNumbers(
+      [
+        pool.prize.yield?.totalValueUsdScaled,
+        pool.prize.sablierStream.totalValueUsdScaled,
+        pool.prize.stake?.totalValueUsdScaled
+      ].filter(Boolean)
+    )
     pool.prize.totalInternalAwardsUsd = formatUnits(pool.prize.totalInternalAwardsUsdScaled, 2)
 
     pool.prize.totalValueUsdScaled = addBigNumbers([
@@ -356,94 +361,6 @@ const calculateLootBoxTotalValuesUsd = (_pool) => {
   }
   pool.prize.lootBox.totalValueUsdScaled = lootBoxTotalValueUsdScaled
   pool.prize.lootBox.totalValueUsd = formatUnits(lootBoxTotalValueUsdScaled, 2)
-
-  return pool
-}
-
-/**
- * Calculates the total yield values, $0 if no yield or no token prices
- * @param {*} _pool
- * @returns
- */
-const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
-  const pool = cloneDeep(_pool)
-
-  const cToken = pool.tokens.cToken
-  const underlyingToken = pool.tokens.underlyingToken
-  let compApy = '0'
-  let yieldAmountUnformatted = pool.prize.amountUnformatted
-  if (cToken) {
-    try {
-      // Calculate value of COMP
-      const cTokenData = await fetch('https://api.compound.finance/api/v2/ctoken', {
-        method: 'POST',
-        body: JSON.stringify({
-          addresses: [cToken.address]
-        })
-      })
-      const response = await cTokenData.json()
-      compApy = response.cToken[0]?.comp_supply_apy.value || '0'
-      const totalCompValueUsdUnformatted = calculatedEstimatedAccruedCompValueUnformatted(
-        compApy,
-        pool.tokens.ticket.totalSupplyUnformatted.add(
-          pool.tokens.sponsorship.totalSupplyUnformatted
-        ),
-        pool.prize.prizePeriodRemainingSeconds
-      )
-      const totalValueUsd = ethers.utils.formatUnits(
-        totalCompValueUsdUnformatted,
-        underlyingToken.decimals
-      )
-      pool.prize.yield = {
-        comp: {
-          totalValueUsd,
-          totalValueUsdScaled: toScaledUsdBigNumber(totalValueUsd)
-        }
-      }
-
-      // Calculate yield
-      yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
-        pool.prize.amountUnformatted,
-        pool.tokens.ticket.totalSupplyUnformatted.add(
-          pool.tokens.sponsorship.totalSupplyUnformatted
-        ),
-        cToken.supplyRatePerBlock,
-        pool.tokens.ticket.decimals,
-        pool.prize.estimatedRemainingBlocksToPrize,
-        pool.reserve?.rate
-      )
-    } catch (e) {
-      console.warn(e.message)
-    }
-  }
-
-  const yieldAmount = ethers.utils.formatUnits(yieldAmountUnformatted, underlyingToken.decimals)
-
-  const yieldAmountFormattedString = stringWithPrecision(yieldAmount, {
-    precision: pool.tokens.underlyingToken.decimals - 1
-  })
-
-  pool.prize.yield = pool.prize.yield
-    ? {
-        ...pool.prize.yield,
-        amount: yieldAmountFormattedString
-      }
-    : {
-        amount: yieldAmountFormattedString
-      }
-  pool.prize.yield.amountUnformatted = parseUnits(
-    pool.prize.yield.amount,
-    pool.tokens.underlyingToken.decimals
-  )
-  const yieldTotalValueUnformatted = amountMultByUsd(
-    pool.prize.yield.amountUnformatted,
-    pool.tokens.underlyingToken.usd
-  )
-  pool.prize.yield.totalValueUsd = formatUnits(
-    yieldTotalValueUnformatted,
-    pool.tokens.underlyingToken.decimals
-  )
-  pool.prize.yield.totalValueUsdScaled = toScaledUsdBigNumber(pool.prize.yield.totalValueUsd)
 
   return pool
 }
@@ -620,8 +537,7 @@ const calculateTokenFaucetApr = (pools) =>
     const pool = cloneDeep(_pool)
     if (pool.tokens.tokenFaucetDripToken?.usd) {
       const { amountUnformatted, usd } = pool.tokens.tokenFaucetDripToken
-      if (amountUnformatted === ethers.constants.Zero) {
-      } else {
+      if (amountUnformatted !== ethers.constants.Zero) {
         const { dripRatePerSecond } = pool.tokenListener
         const totalDripPerDay = Number(dripRatePerSecond) * SECONDS_PER_DAY
         const totalDripDailyValue = totalDripPerDay * usd
