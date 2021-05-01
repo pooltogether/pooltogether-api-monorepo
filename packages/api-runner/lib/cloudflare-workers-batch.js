@@ -3,7 +3,8 @@ import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherp
 const RPC_URLS = {
   1: 'https://mainnet.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19', // TODO: lock this app ID down
   4: 'https://rinkeby.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19',
-  137: 'https://blue-wandering-sunset.matic.quiknode.pro/d42812c1b86a63689c034bda650c4c5daf6eb075/',
+  137: 'https://matic-mainnet.chainstacklabs.com',
+  // 137: 'https://matic-mainnet.chainstacklabs.com',
   80001: 'https://rpc-mumbai.maticvigil.com/v1/c0d152023d5f8fa74422a77a0cb065e20260380b'
 }
 
@@ -20,12 +21,21 @@ export const batch = async (chainId, fetch, ...batchCalls) => {
     method: 'eth_call'
   }
 
-  const callResponse = await fetch(RPC_URLS[chainId], {
-    method: 'POST',
-    body: JSON.stringify(tx),
-    headers: { 'Content-Type': 'application/json' }
-  })
+  let callResponse
+  console.log(RPC_URLS[chainId])
+  console.log('getting matic')
+  try {
+    callResponse = await fetch(RPC_URLS[chainId], {
+      method: 'POST',
+      body: JSON.stringify(tx),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  } catch (e) {
+    console.log(e.message)
+  }
+
   const body = await callResponse.json()
+  console.log('matic response')
   const decoded = decodeData(result, calls, body.result)
 
   return decoded
