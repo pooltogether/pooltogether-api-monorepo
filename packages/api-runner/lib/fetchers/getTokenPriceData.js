@@ -43,6 +43,22 @@ const _calculateUsd = (token) => {
 }
 
 export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
+  // On polygon return mock data from last successful request
+  if (chainId === 137) {
+    return {
+      '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
+      '0x85e16156eb86a134ac6db5754be6c5e1c7f1aa59': undefined,
+      '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
+        derivedETH: '0.0002738011536430973713419631510944318',
+        id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        usd: 0.0013690057682154868
+      },
+      'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
+      '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
+      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { usd: 1 }
+    }
+  }
+
   // Only supported on mainnet
   if (chainId !== 1) {
     return {}
