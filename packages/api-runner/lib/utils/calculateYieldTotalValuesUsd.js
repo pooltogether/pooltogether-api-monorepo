@@ -1,9 +1,10 @@
 import cloneDeep from 'lodash.clonedeep'
 import {
   calculateEstimatedCompoundPrizeWithYieldUnformatted,
-  calculatedEstimatedAccruedCompValueUnformatted,
+  calculatedEstimatedAccruedCompTotalValueUsdScaled,
   toScaledUsdBigNumber,
-  amountMultByUsd
+  amountMultByUsd,
+  toNonScaledUsdString
 } from '@pooltogether/utilities'
 import { formatUnits, parseUnits } from '@ethersproject/units'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
@@ -55,21 +56,19 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
         })
       })
       const response = await cTokenData.json()
-      console.log('comp response')
+      console.log('comp response', JSON.stringify(response))
 
       compApy = response.cToken[0]?.comp_supply_apy.value || '0'
-      const totalCompValueUsdUnformatted = calculatedEstimatedAccruedCompValueUnformatted(
+      const totalValueUsdScaled = calculatedEstimatedAccruedCompTotalValueUsdScaled(
         compApy,
-        pool.tokens.ticket.totalSupplyUnformatted.add(
-          pool.tokens.sponsorship.totalSupplyUnformatted
-        ),
+        pool.tokens.ticket.totalValueUsdScaled.add(pool.tokens.sponsorship.totalValueUsdScaled),
         pool.prize.prizePeriodRemainingSeconds
       )
-      const totalValueUsd = formatUnits(totalCompValueUsdUnformatted, underlyingToken.decimals)
+      const totalValueUsd = toNonScaledUsdString(totalValueUsdScaled)
       pool.prize.yield = {
         [YIELD_SOURCES.comp]: {
           totalValueUsd,
-          totalValueUsdScaled: toScaledUsdBigNumber(totalValueUsd)
+          totalValueUsdScaled
         }
       }
 
