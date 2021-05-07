@@ -798,10 +798,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.2.11":
-  version "1.2.11"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.2.11.tgz#16e384461585ca101470788551d78ee948d0d661"
-  integrity sha512-X0c+kKPLLfQiK6fsgBnqyO5H+sXcYVMj1memS1ESAWS35tN2AD+0YP25gnwhJfr24/Ywtluds3Cjh6lXElg6/w==
+"@pooltogether/api-runner@1.2.13":
+  version "1.2.13"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.2.13.tgz#3c1554807bcf431c3629155d2ae3cd5b4f90c7b3"
+  integrity sha512-WYqZTDnjQjiaaqW+QzdXpUeaHrzzxzZZo8ziW69JFokbP6nA6TKugMZJPzTx140hydidyMnVh4sWW75YLWf6OA==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
@@ -810,7 +810,7 @@
     "@pooltogether/evm-chains-extended" "^0.4.3"
     "@pooltogether/loot-box" "^1.1.0"
     "@pooltogether/pooltogether-contracts" "^3.3.8"
-    "@pooltogether/utilities" "0.0.4"
+    "@pooltogether/utilities" "0.0.7"
     ethers "5.1.3"
     graphql "^15.5.0"
     graphql-request "^3.4.0"
@@ -895,7 +895,16 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/uniform-random-number/-/uniform-random-number-1.0.0-beta.1.tgz#72257401fe8536e95f9f812f1d249262659084a7"
   integrity sha512-V4iqLOpNFNhnUqfKRlvqUeRwvKaODdz+qn4Qi65C3iMOnDb0J31tBvyhwKbhP4wauNuUN64WfepqkkxET9U7EQ==
 
-"@pooltogether/utilities@0.0.4", "@pooltogether/utilities@^0.0.4":
+"@pooltogether/utilities@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.7.tgz#76e9daf1fdeaa22f69ba817559822cbd9e42bde6"
+  integrity sha512-288YUKlkogvUW98FXIGEZWtGW5RjqqkavVWDyixKLEYYcg8dn/HwUiPho8LGO3G0kb9TUKObbrAGDMKcYGXRAA==
+  dependencies:
+    "@pooltogether/current-pool-data" "^3.4.3"
+    ethers "^5.1.2"
+    lodash.clonedeep "^4.5.0"
+
+"@pooltogether/utilities@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.4.tgz#ac347d63d5d842bc3c0969629ac7abded688f2ab"
   integrity sha512-kjF/uzpWB8puW0ru/dCrVtUc8pFB9XBVOJ5FsicS6aQ91Qdy1PpfPSywwL/I8wdaqGjg+D8L+9ULYRLHjajT3A==
