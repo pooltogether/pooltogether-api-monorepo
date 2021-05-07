@@ -2,11 +2,7 @@ import merge from 'lodash.merge'
 import cloneDeep from 'lodash.clonedeep'
 import { ethers } from 'ethers'
 import { formatUnits, parseUnits } from '@ethersproject/units'
-import {
-  calculateEstimatedCompoundPrizeWithYieldUnformatted,
-  calculatedEstimatedAccruedCompValueUnformatted,
-  addBigNumbers
-} from '@pooltogether/utilities'
+import { addBigNumbers } from '@pooltogether/utilities'
 
 import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
 import { getLootBoxGraphData } from 'lib/fetchers/getLootBoxGraphData'
