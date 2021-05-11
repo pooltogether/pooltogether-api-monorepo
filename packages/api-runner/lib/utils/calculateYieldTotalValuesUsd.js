@@ -69,14 +69,10 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
       )
 
       // Add in the value of any unclaimed COMP
-      if (pool.prize?.yield?.[YIELD_SOURCES.comp]?.unclaimedAmountUnformatted) {
+      if (pool.prize?.yield?.[YIELD_SOURCES.comp]?.unclaimedAmountUnformatted && pool.tokens.comp) {
         const unclaimedUsdAndAmountValues = calculateUsdValues(
           pool.prize.yield[YIELD_SOURCES.comp].unclaimedAmountUnformatted,
           pool.tokens.comp
-        )
-        console.log('Unclaimed COMP')
-        console.log(
-          `Without: ${totalValueUsdScaled.toString()}, unclaimedUsdScaled: ${unclaimedUsdAndAmountValues.totalValueUsdScaled.toString()}`
         )
         totalValueUsdScaled = totalValueUsdScaled.add(
           unclaimedUsdAndAmountValues.totalValueUsdScaled
