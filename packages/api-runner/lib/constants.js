@@ -32,11 +32,14 @@ export const NETWORK = Object.freeze({
 export const CUSTOM_CONTRACT_ADDRESSES = {
   1: {
     Stablecoin: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    Sablier: '0xA4fc358455Febe425536fd1878bE67FfDBDEC59a'
+    Sablier: '0xA4fc358455Febe425536fd1878bE67FfDBDEC59a',
+    CompoundComptroller: '0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B',
+    COMP: '0xc00e94Cb662C3520282E6f5717214004A7f26888'
   },
   4: {
     Stablecoin: '0x3b00ef435fa4fcff5c209a37d1f3dcff37c705ad',
-    Sablier: '0xc04Ad234E01327b24a831e3718DBFcbE245904CC'
+    Sablier: '0xc04Ad234E01327b24a831e3718DBFcbE245904CC',
+    CompoundComptroller: '0xb1983eE0064Fdb2A581966715DC9bA4D8B289A6A'
   },
   137: {
     Stablecoin: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
@@ -48,3 +51,5 @@ export const PRIZE_POOL_TYPES = {
   genericYield: 'genericYield',
   stake: 'stake'
 }
+
+export const COMP_DECIMALS = 18

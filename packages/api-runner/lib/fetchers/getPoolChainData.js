@@ -22,8 +22,12 @@ import {
   CUSTOM_CONTRACT_ADDRESSES,
   DEFAULT_TOKEN_PRECISION,
   SECONDS_PER_DAY,
-  NETWORK
+  NETWORK,
+  COMP_DECIMALS
 } from 'lib/constants'
+import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
+import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
+import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
@@ -92,7 +96,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         TokenFaucetABI,
         pool.tokenListener.address
       )
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(
+        tokenFaucetContract
+          .dripRatePerSecond()
+          .asset()
+          .measure()
+      )
     }
 
     // External ERC20 awards
@@ -117,7 +126,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+            erc721Contract
+              .balanceOf(pool.prizePool.address)
+              .name()
+              .symbol()
+              .ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -143,6 +156,17 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         pool.tokens.cToken.address
       )
       batchCalls.push(cTokenContract.supplyRatePerBlock())
+
+      // Compound Comptroller
+      if (chainId === NETWORK.mainnet) {
+        console.log('Get claimable COMP for:', pool.prizePool.address)
+        const comptrollerContract = contract(
+          'compoundComptroller',
+          CompoundComptrollerImplementationAbi,
+          CUSTOM_CONTRACT_ADDRESSES[chainId].CompoundComptroller
+        )
+        batchCalls.push(comptrollerContract.compAccrued(pool.prizePool.address))
+      }
     }
 
     // LootBox
@@ -201,7 +225,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         tokenFaucetDripAssetAddress
       )
       batchCalls.push(
-        dripErc20Contract.balanceOf(pool.tokenListener.address).decimals().symbol().name()
+        dripErc20Contract
+          .balanceOf(pool.tokenListener.address)
+          .decimals()
+          .symbol()
+          .name()
       )
     }
 
@@ -215,7 +243,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
+      batchCalls.push(
+        sablierErc20Stream
+          .decimals()
+          .name()
+          .symbol()
+      )
     }
 
     // Reserve
@@ -491,6 +524,25 @@ const formatPoolChainData = (
         cToken: {
           ...formattedPoolChainData?.tokens?.cToken,
           supplyRatePerBlock: cTokenData.supplyRatePerBlock[0]
+        }
+      }
+
+      if (chainId === NETWORK.mainnet) {
+        formattedPoolChainData.prize.yield = {
+          [YIELD_SOURCES.comp]: {
+            unclaimedAmountUnformatted: firstBatchValues.compoundComptroller.compAccrued[0],
+            unclaimedAmount: formatUnits(
+              firstBatchValues.compoundComptroller.compAccrued[0],
+              COMP_DECIMALS
+            )
+          }
+        }
+
+        formattedPoolChainData.tokens.comp = {
+          address: CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].COMP,
+          decimals: COMP_DECIMALS,
+          name: 'Compound',
+          symbol: 'COMP'
         }
       }
     }
