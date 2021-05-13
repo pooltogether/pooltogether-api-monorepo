@@ -2,7 +2,7 @@ import merge from 'lodash.merge'
 import cloneDeep from 'lodash.clonedeep'
 import { ethers } from 'ethers'
 import { formatUnits, parseUnits } from '@ethersproject/units'
-import { addBigNumbers } from '@pooltogether/utilities'
+import { addBigNumbers, toScaledUsdBigNumber, toNonScaledUsdString } from '@pooltogether/utilities'
 
 import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
 import { getLootBoxGraphData } from 'lib/fetchers/getLootBoxGraphData'
@@ -14,6 +14,7 @@ import { stringWithPrecision } from 'lib/utils/stringWithPrecision'
 import { secondsSinceEpoch } from 'lib/utils/secondsSinceEpoch'
 import { getCustomYieldSourceData } from 'lib/fetchers/getCustomYieldSourceData'
 import { calculateYieldTotalValuesUsd } from 'lib/utils/calculateYieldTotalValuesUsd'
+import { PRIZE_POOL_TYPES, SECONDS_PER_WEEK } from '@pooltogether/current-pool-data'
 
 const MAINNET_USD_AMOUNT = 0
 const TESTNET_USD_AMOUNT = 1
@@ -53,6 +54,7 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   pools = combineTokenPricesData(pools, tokenPriceGraphData, defaultTokenPriceUsd)
   pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools, fetch))
   pools = calculateTotalValueLockedPerPool(pools)
+  pools = calculateWeeklyPrizes(pools)
   pools = calculateTokenFaucetApr(pools)
   pools = addPoolMetadata(pools, poolContracts)
 
@@ -466,14 +468,6 @@ const addScaledTokenValueToTotal = (total, token) => {
 }
 
 /**
- * Converts a USD string to a scaled up big number to account for cents
- * @param {*} usdValue a String ex. "100.23"
- * @returns a BigNumber ex. 10023
- */
-const toScaledUsdBigNumber = (usdValue) =>
-  parseUnits(stringWithPrecision(usdValue, { precision: 2 }), 2)
-
-/**
  * Calculates & adds the tvl of each pool to pools
  * Calculates the tvl of all pools
  * @param {*} pools
@@ -565,3 +559,104 @@ const addPoolMetadata = (_pools, poolContracts) => {
   })
   return pools
 }
+
+/**
+ * Calculate weekly prizes per pool
+ * @param {*} _pools
+ * @returns
+ */
+const calculateWeeklyPrizes = (_pools) => {
+  return _pools.map(calculateWeeklyPrize)
+}
+
+/**
+ * Calculates the estimated weekly prize of the provided pool
+ * Staking pools: Only one iteration of the pool is counted since
+ *    we can't guarantee there's another prize
+ * TODO: Prizes that come from Sablier need an extra check to see if
+ *    the prize will end within the week timeframe.
+ *
+ * @param {*} _pool
+ * @returns
+ */
+const calculateWeeklyPrize = (_pool) => {
+  const pool = cloneDeep(_pool)
+
+  const prizePeriod = pool.prize.prizePeriodSeconds.toString()
+  const secondsPerWeek = SECONDS_PER_WEEK
+  const accuracyScaling = 1000000
+
+  const prizePeriodsPerWeek = ethers.BigNumber.from(secondsPerWeek)
+    .mul(accuracyScaling)
+    .div(prizePeriod)
+
+  let weeklyTotalValueUsdScaled
+  if (pool.prizePool.type === PRIZE_POOL_TYPES.stake) {
+    weeklyTotalValueUsdScaled = calculateStakePoolWeeklyTotalValueUsdScaled(
+      pool.prize.totalValueUsdScaled,
+      pool.prize.totalInternalAwardsUsdScaled,
+      prizePeriodsPerWeek,
+      accuracyScaling
+    )
+  } else {
+    weeklyTotalValueUsdScaled = calculateWeeklyTotalValueUsdScaled(
+      pool.prize.totalValueUsdScaled,
+      pool.prize.totalInternalAwardsUsdScaled,
+      prizePeriodsPerWeek,
+      accuracyScaling
+    )
+  }
+
+  const weeklyTotalValueUsd = toNonScaledUsdString(weeklyTotalValueUsdScaled)
+
+  pool.prize.weeklyTotalValueUsd = weeklyTotalValueUsd
+  pool.prize.weeklyTotalValueUsdScaled = weeklyTotalValueUsdScaled
+
+  return pool
+}
+
+/**
+ * Estimates the weekly prize for stake pools.
+ * Only accounts for a maximum of 1 prize per week since we can't guarantee
+ * there will be another prize.
+ */
+const calculateStakePoolWeeklyTotalValueUsdScaled = (
+  totalValueUsdScaled,
+  internalValueUsdScaled,
+  prizePeriodsPerWeek,
+  accuracyScaling
+) => {
+  if (prizePeriodsPerWeek < 1) {
+    return calculateWeeklyTotalValueUsdScaled(
+      totalValueUsdScaled,
+      internalValueUsdScaled,
+      prizePeriodsPerWeek,
+      accuracyScaling
+    )
+  } else {
+    return totalValueUsdScaled
+  }
+}
+
+/**
+ * Estimate the weekly prize based on the current total prize and the expected
+ * internal prize for the next X prizes.
+ *
+ * prizePeriodsPerWeek * internalValueUsdScaled + (totalValueUsdScaled - internalValueUsdScaled)
+ * @param {*} totalValueUsdScaled
+ * @param {*} internalValueUsdScaled
+ * @param {*} prizePeriodsPerWeek
+ * @param {*} accuracyScaling
+ * @returns
+ */
+const calculateWeeklyTotalValueUsdScaled = (
+  totalValueUsdScaled,
+  internalValueUsdScaled,
+  prizePeriodsPerWeek,
+  accuracyScaling
+) =>
+  prizePeriodsPerWeek
+    .mul(internalValueUsdScaled)
+    .sub(internalValueUsdScaled.mul(accuracyScaling))
+    .add(totalValueUsdScaled.mul(accuracyScaling))
+    .div(accuracyScaling)
