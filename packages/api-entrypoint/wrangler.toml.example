@@ -2,8 +2,10 @@ name = "pooltogether-api"
 type = "webpack"
 
 account_id = ""
-zone_id = ""
-route = "*.pooltogether-api.com/*"
 workers_dev = true
 webpack_config = "webpack.config.js"
-vars = { ENVIRONMENT = 'dev' }
+
+# Required for publishing
+[env.production]
+zone_id = ""
+route = "*.pooltogether-api.com/*"
