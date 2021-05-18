@@ -29,6 +29,7 @@ import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
 import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 
+const getCompoundComptrollerName = (prizePoolAddress) => `compound-comptroller-${prizePoolAddress}`
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
 const getSablierErc20BatchName = (prizePoolAddress, streamId) =>
@@ -161,7 +162,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
       if (chainId === NETWORK.mainnet) {
         console.log('Get claimable COMP for:', pool.prizePool.address)
         const comptrollerContract = contract(
-          'compoundComptroller',
+          getCompoundComptrollerName(pool.prizePool.address),
           CompoundComptrollerImplementationAbi,
           CUSTOM_CONTRACT_ADDRESSES[chainId].CompoundComptroller
         )
@@ -528,11 +529,12 @@ const formatPoolChainData = (
       }
 
       if (chainId === NETWORK.mainnet) {
+        const compoundComptrollerKey = getCompoundComptrollerName(pool.prizePool.address)
         formattedPoolChainData.prize.yield = {
           [YIELD_SOURCES.comp]: {
-            unclaimedAmountUnformatted: firstBatchValues.compoundComptroller.compAccrued[0],
+            unclaimedAmountUnformatted: firstBatchValues[compoundComptrollerKey].compAccrued[0],
             unclaimedAmount: formatUnits(
-              firstBatchValues.compoundComptroller.compAccrued[0],
+              firstBatchValues[compoundComptrollerKey].compAccrued[0],
               COMP_DECIMALS
             )
           }
