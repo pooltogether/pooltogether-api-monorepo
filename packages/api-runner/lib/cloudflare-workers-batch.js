@@ -3,10 +3,8 @@ import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherp
 const RPC_URLS = {
   1: 'https://mainnet.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19', // TODO: lock this app ID down
   4: 'https://rinkeby.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19',
-  // 137: 'https://matic-mainnet.chainstacklabs.com',
-  137: 'https://blue-wandering-sunset.matic.quiknode.pro/a18ea462a3952f814f2288f0430050ebd203cb35/',
-  // 137: 'https://matic-mainnet.chainstacklabs.com',
-  80001: 'https://rpc-mumbai.maticvigil.com/v1/c0d152023d5f8fa74422a77a0cb065e20260380b'
+  137: 'https://polygon-mainnet.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19',
+  80001: 'https://polygon-mumbai.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19'
 }
 
 export const batch = async (chainId, fetch, ...batchCalls) => {
