@@ -49,9 +49,9 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
       '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
       '0x85e16156eb86a134ac6db5754be6c5e1c7f1aa59': undefined,
       '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
-        derivedETH: '0.0002738011536430973713419631510944318',
+        derivedETH: '0.0006555576548927038397327620248452385',
         id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-        usd: 0.0013690057682154868
+        usd: 1.8
       },
       'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
       '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
