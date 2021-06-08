@@ -22,7 +22,7 @@ export const batch = async (chainId, fetch, ...batchCalls) => {
 
   let callResponse
   console.log(RPC_URLS[chainId])
-  console.log('getting matic')
+  console.log('getting rpc/infura ...')
   try {
     callResponse = await fetch(RPC_URLS[chainId], {
       method: 'POST',
@@ -34,7 +34,7 @@ export const batch = async (chainId, fetch, ...batchCalls) => {
   }
 
   const body = await callResponse.json()
-  console.log('matic response')
+  console.log('rpc/infura response:')
   const decoded = decodeData(result, calls, body.result)
 
   return decoded

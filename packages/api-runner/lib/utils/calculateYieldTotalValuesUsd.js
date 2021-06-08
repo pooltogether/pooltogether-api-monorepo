@@ -51,7 +51,7 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
   if (cToken) {
     try {
       // Calculate value of COMP
-      console.log('getting comp')
+      console.log('getting comp ...')
       const cTokenData = await fetch('https://api.compound.finance/api/v2/ctoken', {
         method: 'POST',
         body: JSON.stringify({
@@ -59,7 +59,7 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
         })
       })
       const response = await cTokenData.json()
-      console.log('comp response', JSON.stringify(response))
+      console.log('comp response:', JSON.stringify(response))
 
       compApy = response.cToken[0]?.comp_supply_apy.value || '0'
       let totalValueUsdScaled = calculatedEstimatedAccruedCompTotalValueUsdScaled(
@@ -152,9 +152,8 @@ const calculateAaveYieldTotalValues = (_pool, fetch) => {
   const underlyingTokensPerYearUnformatted = poolDepositsTotalSupplyUnformatted
     .mul(apyUnformatted)
     .div(decimalsUnformatted)
-  const underlyingTokensPerSecondUnformatted = underlyingTokensPerYearUnformatted.div(
-    SECONDS_PER_YEAR
-  )
+  const underlyingTokensPerSecondUnformatted =
+    underlyingTokensPerYearUnformatted.div(SECONDS_PER_YEAR)
 
   let amountUnformatted
   if (oneOverPoolReserveRateUnformatted.isZero()) {

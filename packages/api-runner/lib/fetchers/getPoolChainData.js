@@ -16,6 +16,7 @@ import LootBoxControllerAbi from '@pooltogether/loot-box/abis/LootBoxController'
 import { SablierAbi } from 'abis/SablierAbi'
 import { ERC20Abi } from 'abis/ERC20Abi'
 import { CustomERC721Abi as ERC721Abi } from 'abis/CustomERC721'
+import { CustomERC1155Abi as ERC1155Abi } from 'abis/CustomERC1155'
 import { batch } from 'lib/cloudflare-workers-batch'
 import {
   ERC20_BLOCK_LIST,
@@ -35,14 +36,13 @@ const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
 const getSablierErc20BatchName = (prizePoolAddress, streamId) =>
   `sablier-${prizePoolAddress}-${streamId}`
 const getErc721BatchName = (prizeAddress, tokenId) => `erc721Award-${prizeAddress}-${tokenId}`
+const getErc1155BatchName = (prizeAddress, tokenId) => `erc1155Award-${prizeAddress}-${tokenId}`
 const getCTokenBatchName = (prizeAddress, tokenAddress) => `cToken-${prizeAddress}-${tokenAddress}`
 const getLootBoxBatchName = (lootBoxAddress, lootBoxId) => `lootBox-${lootBoxAddress}-${lootBoxId}`
 const getRegistryBatchName = (registryAddress, prizePoolAddress) =>
   `registry-${registryAddress}-${prizePoolAddress}`
 const getReserveBatchName = (reserveAddress, prizePoolAddress) =>
   `reserve-${reserveAddress}-${prizePoolAddress}`
-
-// TODO: fetchExternalErc1155Awards
 
 const getPool = (graphPool) => {
   const poolAddressKey = Object.keys(graphPool)[0]
@@ -60,6 +60,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
   let pool
   let batchCalls = []
   const erc721AwardsToFetchMetadataFor = []
+  const erc1155AwardsToFetchMetadataFor = []
 
   // First set of calls
   poolGraphData.forEach((graphPool) => {
@@ -97,15 +98,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         TokenFaucetABI,
         pool.tokenListener.address
       )
-      batchCalls.push(
-        tokenFaucetContract
-          .dripRatePerSecond()
-          .asset()
-          .measure()
-      )
+      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
     }
 
     // External ERC20 awards
+    console.log(pool.prize)
     if (pool.prize.externalErc20Awards.length > 0) {
       pool.prize.externalErc20Awards.forEach((erc20) => {
         const erc20Contract = contract(
@@ -118,7 +115,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     }
 
     // External ERC721 awards
-    if (pool.prize.externalErc721Awards.length > 0) {
+    if (pool.prize.externalErc721Awards?.length > 0) {
       pool.prize.externalErc721Awards.forEach((erc721) => {
         erc721.tokenIds.forEach((tokenId) => {
           const erc721Contract = contract(
@@ -127,13 +124,26 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract
-              .balanceOf(pool.prizePool.address)
-              .name()
-              .symbol()
-              .ownerOf(tokenId)
+            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
+        })
+      })
+    }
+
+    // External ERC1155 awards
+    if (pool.prize.externalErc1155Awards?.length > 0) {
+      pool.prize.externalErc1155Awards.forEach((erc1155) => {
+        erc1155.tokenIds.forEach((tokenId) => {
+          const erc1155Contract = contract(
+            getErc1155BatchName(erc1155.address, tokenId),
+            ERC1155Abi,
+            erc1155.address
+          )
+          batchCalls.push(
+            erc1155Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+          )
+          erc1155AwardsToFetchMetadataFor.push({ address: erc1155.address, tokenId })
         })
       })
     }
@@ -173,9 +183,15 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     // LootBox
 
     const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
-    if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
-      const lootBox = pool.prize.externalErc721Awards.find(
+    const has721s = pool.prize.externalErc721Awards?.length > 0
+    const has1155s = pool.prize.externalErc1155Awards?.length > 0
+    if (lootBoxAddress && (has721s || has1155s)) {
+      let lootBox = pool.prize.externalErc721Awards.find(
         (erc721) => erc721.address === lootBoxAddress
+      )
+      console.log({ lootBox })
+      lootBox = pool.prize.externalErc1155Awards.find(
+        (erc1155) => erc1155.address === lootBoxAddress
       )
 
       if (lootBox) {
@@ -226,11 +242,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         tokenFaucetDripAssetAddress
       )
       batchCalls.push(
-        dripErc20Contract
-          .balanceOf(pool.tokenListener.address)
-          .decimals()
-          .symbol()
-          .name()
+        dripErc20Contract.balanceOf(pool.tokenListener.address).decimals().symbol().name()
       )
     }
 
@@ -244,12 +256,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(
-        sablierErc20Stream
-          .decimals()
-          .name()
-          .symbol()
-      )
+      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
     }
 
     // Reserve
@@ -268,12 +275,18 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
 
   const secondBatchValues = await batch(chainId, fetch, ...batchCalls)
 
-  // Get External Erc721 Metadata (unfortunately many batch calls)
+  // Get External Erc721 & Erc1155 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([
     ...erc721AwardsToFetchMetadataFor.map(async (erc721Award) => {
       return {
         id: getErc721BatchName(erc721Award.address, erc721Award.tokenId),
         uri: await getErc721TokenUri(chainId, fetch, erc721Award.address, erc721Award.tokenId)
+      }
+    }),
+    ...erc1155AwardsToFetchMetadataFor.map(async (erc1155Award) => {
+      return {
+        id: getErc1155BatchName(erc1155Award.address, erc1155Award.tokenId),
+        uri: await getErc1155TokenUri(chainId, fetch, erc1155Award.address, erc1155Award.tokenId)
       }
     }),
     // TODO: Split award is only supported on some versions of prizeStrategies
@@ -326,6 +339,34 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
       fetch,
       erc721Address,
       erc721Contract,
+      tokenId,
+      'tokenMetadata'
+    )
+  }
+  return tokenURI
+}
+
+const getErc1155TokenUri = async (chainId, fetch, erc1155Address, tokenId) => {
+  const erc1155Contract = contract(
+    getErc1155BatchName(erc1155Address, tokenId),
+    ERC1155Abi,
+    erc1155Address
+  )
+  let tokenURI = await _tryMetadataMethod(
+    chainId,
+    fetch,
+    erc1155Address,
+    erc1155Contract,
+    tokenId,
+    'tokenURI'
+  )
+
+  if (!tokenURI) {
+    tokenURI = await _tryMetadataMethod(
+      chainId,
+      fetch,
+      erc1155Address,
+      erc1155Contract,
       tokenId,
       'tokenMetadata'
     )
@@ -433,9 +474,8 @@ const formatPoolChainData = (
         formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted,
         tokenFaucetDripToken.decimals
       )
-      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted = formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(
-        SECONDS_PER_DAY
-      )
+      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted =
+        formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
       formattedPoolChainData.tokenListener.dripRatePerDay = formatUnits(
         formattedPoolChainData.tokenListener.dripRatePerDayUnformatted,
         tokenFaucetDripToken.decimals
@@ -485,6 +525,32 @@ const formatPoolChainData = (
             }
             delete erc721Award.tokenIds
             return erc721Award
+          })
+        )
+        .flat()
+    }
+
+    // External ERC1155 awards
+    // NOTE: editing pool graph data here to merge the token amounts in
+    // This is undesirable as it goes against the pattern for merging poolChainData & poolGraphData
+    // but it is the simplist way to merge the arrays.
+    if (pool.prize.externalErc1155Awards.length > 0) {
+      pool.prize.externalErc1155Awards = pool.prize.externalErc1155Awards
+        .map((erc1155) =>
+          erc1155.tokenIds.map((tokenId) => {
+            const erc1155Uri = additionalBatchCalls.find(
+              (response) => response.id === getErc1155BatchName(erc1155.address, tokenId)
+            )?.uri
+            const erc1155AwardData = firstBatchValues[getErc1155BatchName(erc1155.address, tokenId)]
+
+            const erc1155Award = {
+              ...erc1155,
+              amount: erc1155AwardData.balanceOf[0],
+              id: tokenId,
+              uri: erc1155Uri
+            }
+            delete erc1155Award.tokenIds
+            return erc1155Award
           })
         )
         .flat()
@@ -551,11 +617,18 @@ const formatPoolChainData = (
 
     // LootBox
     const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
-    if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
-      const lootBoxes = remove(
+    const has721s = pool.prize.externalErc721Awards?.length > 0
+    const has1155s = pool.prize.externalErc1155Awards?.length > 0
+    if (lootBoxAddress && (has721s || has1155s)) {
+      let lootBoxes = remove(
         pool.prize.externalErc721Awards,
         (erc721) => erc721.address === lootBoxAddress
       )
+      lootBoxes = remove(
+        pool.prize.externalErc1155Awards,
+        (erc1155) => erc1155.address === lootBoxAddress
+      )
+
       if (lootBoxes) {
         const lootBoxId = lootBoxes[0].id
         const computedAddress =

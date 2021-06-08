@@ -13,7 +13,6 @@ export async function pools(request, fetch = nodeFetch) {
   const pathname = path(request).split('.')[0]
   const chainId = parseInt(pathname.split('/')[2], 10)
   const poolContracts = usePoolContracts(chainId)
-  console.log(poolContracts)
 
   const pools = await usePools(chainId, poolContracts, fetch)
   console.log('Done!')
