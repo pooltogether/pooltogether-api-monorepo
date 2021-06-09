@@ -24,9 +24,9 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
 
   const query = prizePoolsQuery(blockNumber)
 
-  console.log('getting pool data from the graph')
-  console.log('getting pool data from the graph')
-  console.log('getting pool data from the graph ...')
+  // console.log('getting pool data from the graph')
+  // console.log('getting pool data from the graph')
+  // console.log('getting pool data from the graph ...')
   const data = await Promise.all(
     subgraphVersions.map((version) => {
       const client = subgraphClients[version]
@@ -39,8 +39,8 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
     })
   )
 
-  console.log('got pool data from the graph')
-  console.log('got pool data from the graph !')
+  // console.log('got pool data from the graph')
+  // console.log('got pool data from the graph !')
 
   return data.filter(Boolean).flatMap(({ prizePools }) =>
     prizePools.map((prizePool) => ({

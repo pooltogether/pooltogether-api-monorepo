@@ -95,12 +95,12 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
     query = `${query}\n${selection}`
   }
 
-  console.log('getting token prices from the graph ...')
-  console.log('getting token prices from the graph ...')
+  // console.log('getting token prices from the graph ...')
+  // console.log('getting token prices from the graph ...')
   const response = query
     ? await graphQLClient.request(gql`query uniswapTokensQuery { ${query} }`)
     : {}
-  console.log('got token prices from graph')
+  // console.log('got token prices from graph')
 
   // unpack the data into a useful object
   let data = {}
