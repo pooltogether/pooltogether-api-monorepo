@@ -21,7 +21,7 @@ export const KNOWN_YIELD_SOURCE_ADDRESSES = Object.freeze({
       '0x6e159b199423383572b7cb05fbbd54103a827f2b',
       '0xba71a9907e88925f59a3658c3a7618440df6406e'
     ],
-    [YIELD_SOURCES.sushi]: []
+    [YIELD_SOURCES.sushi]: ['0x9858ac37e385e52da6385d828cfe55a182d8ffa6']
   },
   137: {
     [YIELD_SOURCES.aave]: [
@@ -113,6 +113,9 @@ const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) 
     case YIELD_SOURCES.aave: {
       return await getPoolsWithAaveYieldSourceData(chainId, _pools, fetch)
     }
+    case YIELD_SOURCES.sushi: {
+      return await getPoolsWithSushiYieldSourceData(chainId, _pools, fetch)
+    }
     default: {
       return Promise.resolve(null)
     }
@@ -152,3 +155,19 @@ const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
 
 const getAaveMarketId = (underlyingAssetAddress, poolAddress) =>
   `${underlyingAssetAddress}${poolAddress}`
+
+const getPoolsWithSushiYieldSourceData = async (chainId, _pools, fetch) => {
+  try {
+    return _pools.map((_pool) => {
+      const pool = cloneDeep(_pool)
+      pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
+      pool.prizePool.yieldSource[YIELD_SOURCES.sushi] = {
+        additionalApy: 0 // put dripped SUSHI or other incentive APYs here
+      }
+      return pool
+    })
+  } catch (e) {
+    console.error(e.message)
+    return _pools
+  }
+}
