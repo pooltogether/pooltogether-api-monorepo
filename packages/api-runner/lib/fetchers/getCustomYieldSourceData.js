@@ -160,7 +160,7 @@ const getPoolsWithSushiYieldSourceData = async (chainId, _pools, fetch) => {
   try {
     return _pools.map((_pool) => {
       const pool = cloneDeep(_pool)
-      pool.prizePool.yieldSource.apy = 0.0106 // Past 30 days average APR as of 2021-06-09
+      pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
       pool.prizePool.yieldSource[YIELD_SOURCES.sushi] = {
         additionalApy: 0 // put dripped SUSHI or other incentive APYs here
       }
