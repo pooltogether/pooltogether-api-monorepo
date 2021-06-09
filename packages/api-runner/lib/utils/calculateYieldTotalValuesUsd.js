@@ -27,7 +27,10 @@ export const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
     case PRIZE_POOL_TYPES.genericYield: {
       switch (_pool.prizePool.yieldSource?.type) {
         case YIELD_SOURCES.aave: {
-          return await calculateAaveYieldTotalValues(_pool, fetch)
+          return await calculateGenericYieldTotalValues(_pool, fetch)
+        }
+        case YIELD_SOURCES.sushi: {
+          return await calculateGenericYieldTotalValues(_pool, fetch)
         }
         default: {
           return calculateClaimableYieldPrizeTotalValues(_pool)
@@ -123,13 +126,11 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
   return pool
 }
 
-const calculateAaveYieldTotalValues = (_pool, fetch) => {
+const calculateGenericYieldTotalValues = (_pool, fetch) => {
   const pool = cloneDeep(_pool)
 
   const underlyingToken = _pool.tokens.underlyingToken
   const apy = _pool.prizePool.yieldSource.apy
-  // TODO: Use for additional tokens aave drips
-  // const aaveAdditionalApy = _pool.prizePool.yieldSource.aave.additionalApy
 
   const poolDepositsTotalSupplyUnformatted = pool.tokens.ticket.totalSupplyUnformatted.add(
     pool.tokens.sponsorship.totalSupplyUnformatted
@@ -167,10 +168,6 @@ const calculateAaveYieldTotalValues = (_pool, fetch) => {
       .div(decimalsUnformatted)
   }
 
-  // TODO: Use for additional tokens aave drips
-  // const aaveTotalValueUsd = null
-  // const aaveTotalValueUsdScaled = null
-
   const estimatedUsdAndAmountValues = calculateUsdValues(amountUnformatted, underlyingToken)
 
   const usdAndAmountValues = calculateUsdValues(
@@ -184,14 +181,30 @@ const calculateAaveYieldTotalValues = (_pool, fetch) => {
     estimatedPrize: {
       ...estimatedUsdAndAmountValues
     }
-    // TODO: Use for additional tokens aave drips
-    // [YIELD_SOURCES.aave]: {
-    //   totalValueUsd: aaveTotalValueUsd,
-    //   totalValueUsdScaled: aaveTotalValueUsdScaled
-    // }
   }
   return pool
 }
+
+// const calculateAaveYieldExtendedValues = (_pool, fetch) => {
+// const pool = cloneDeep(_pool)
+
+// TODO: Use for additional tokens aave drips
+// const aaveAdditionalApy = _pool.prizePool.yieldSource.aave.additionalApy
+
+// TODO: Use for additional tokens aave drips
+// const aaveTotalValueUsd = null
+// const aaveTotalValueUsdScaled = null
+
+// pool.prize.yield = {
+// ...pool.prize.yield,
+// TODO: Use for additional tokens aave drips
+// [YIELD_SOURCES.aave]: {
+//   totalValueUsd: aaveTotalValueUsd,
+//   totalValueUsdScaled: aaveTotalValueUsdScaled
+// }
+// }
+//   return pool
+// }
 
 const calculateStakePrizeTotalValues = (_pool) => {
   const pool = cloneDeep(_pool)
