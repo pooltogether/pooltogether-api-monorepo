@@ -1,5 +1,7 @@
 import cloneDeep from 'lodash.clonedeep'
 
+import { getSushiYieldSourceData } from 'lib/fetchers/getSushiYieldSourceData'
+
 // NOTE: address for chainId 1 is just aave v2, we may need to expand in the future
 const AAVE_POOL_ADDRESSES = {
   1: '0xb53c1a33016b2dc2ff3653530bff1848a515c8c5',
@@ -158,27 +160,31 @@ const getAaveMarketId = (underlyingAssetAddress, poolAddress) =>
 
 const getPoolsWithSushiYieldSourceData = async (chainId, _pools, fetch) => {
   try {
-    return _pools.map((_pool) => {
+    return _pools.map(async (_pool) => {
       const pool = cloneDeep(_pool)
-      console.log(pool)
       const sushiTokenValueUsd = pool.tokens.underlyingToken.usd
+      console.log(pool)
 
-      const {
-        data: { bar }
-      } = useQuery(barQuery)
-
-      const {
-        data: { factory }
-      } = useQuery(factoryQuery)
+      const sushiData = await getSushiYieldSourceData(chainId, fetch)
+      console.log(sushiData)
+      const { factory, bar } = sushiData
 
       // pool.tokenListener.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
 
       // Pulled from https://github.com/sushiswap/sushiswap-analytics/blob/main/src/pages/bar/index.js#L163-L169
-      const oneDayVolume = factory.volumeUSD - factory.oneDay.volumeUSD
+      console.log(bar)
+      console.log(factory)
+      console.log(factory.volumeUSD)
+      const oneDayVolume = factory.volumeUSD
+      // const oneDayVolume = factory.volumeUSD - factory.oneDay.volumeUSD
+      console.log(oneDayVolume)
+      console.log(bar.totalSupply)
+      console.log(bar.ratio)
+      console.log(sushiTokenValueUsd)
 
       const apr =
         (((oneDayVolume * 0.05 * 0.01) / bar.totalSupply) * 365) / (bar.ratio * sushiTokenValueUsd)
-
+      console.log(apr)
       // TODO: Rename. APY is a misnomer here, should be APR
       pool.prizePool.yieldSource.apy = apr
       // pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
@@ -186,6 +192,7 @@ const getPoolsWithSushiYieldSourceData = async (chainId, _pools, fetch) => {
       pool.prizePool.yieldSource[YIELD_SOURCES.sushi] = {
         additionalApy: 0 // put dripped SUSHI or other incentive APYs here
       }
+      console.log(pool.prizePool.yieldSource.apy)
 
       return pool
     })

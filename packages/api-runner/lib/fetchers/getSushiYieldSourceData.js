@@ -5,7 +5,7 @@ import {
   getSushiExchangeSubgraphClient
 } from 'lib/hooks/useSubgraphClients'
 
-export const getSushiYieldSourceData = async (chainId, addresses, fetch, blockNumber = -1) => {
+export const getSushiYieldSourceData = async (chainId, fetch) => {
   // Only supported on mainnet
   if (chainId !== 1) {
     return {}
@@ -17,20 +17,17 @@ export const getSushiYieldSourceData = async (chainId, addresses, fetch, blockNu
   if (!sushiBarGraphQLClient) return null
 
   console.log('getting sushibar and exchange data from the graph ...')
-  const sushiBarResponse = await sushiBarGraphQLClient.request(sushiBarQuery)
-  const sushiExchangeResponse = await sushiExchangeGraphQLClient.request(sushiFactoryQuery)
-
+  const bar = await sushiBarGraphQLClient.request(sushiBarQuery)
+  console.log(bar)
+  const factory = await sushiExchangeGraphQLClient.request(sushiFactoryQuery)
   console.log('got sushibar & exchange from graph')
 
-  console.log(sushiBarResponse)
-  console.log(sushiExchangeResponse)
+  console.log(factory)
 
-  const data = {
-    sushiBarResponse,
-    sushiExchangeResponse
+  return {
+    ...bar,
+    ...factory
   }
-
-  return data
 }
 
 const sushiBarQuery = gql`
@@ -48,8 +45,6 @@ export const sushiFactoryQuery = gql`
     factory(id: $id) {
       id
       volumeUSD
-      oneDay
-      twoDay
     }
   }
 `

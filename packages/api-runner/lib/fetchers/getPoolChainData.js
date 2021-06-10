@@ -25,7 +25,6 @@ import {
   NETWORK,
   COMP_DECIMALS
 } from 'lib/constants'
-import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
 import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 

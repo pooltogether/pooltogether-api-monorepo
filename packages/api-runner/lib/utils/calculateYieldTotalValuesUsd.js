@@ -6,13 +6,10 @@ import {
   amountMultByUsd,
   toNonScaledUsdString
 } from '@pooltogether/utilities'
-import { formatUnits, parseUnits } from '@ethersproject/units'
+import { formatUnits } from '@ethersproject/units'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { ethers } from 'ethers'
 import { PRIZE_POOL_TYPES, SECONDS_PER_YEAR } from '@pooltogether/current-pool-data'
-import { contract } from '@pooltogether/etherplex'
-import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
-import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 
 /**
  * Calculates the total yield values, $0 if no yield or no token prices
