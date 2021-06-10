@@ -160,10 +160,33 @@ const getPoolsWithSushiYieldSourceData = async (chainId, _pools, fetch) => {
   try {
     return _pools.map((_pool) => {
       const pool = cloneDeep(_pool)
-      pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
+      console.log(pool)
+      const sushiTokenValueUsd = pool.tokens.underlyingToken.usd
+
+      const {
+        data: { bar }
+      } = useQuery(barQuery)
+
+      const {
+        data: { factory }
+      } = useQuery(factoryQuery)
+
+      // pool.tokenListener.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
+
+      // Pulled from https://github.com/sushiswap/sushiswap-analytics/blob/main/src/pages/bar/index.js#L163-L169
+      const oneDayVolume = factory.volumeUSD - factory.oneDay.volumeUSD
+
+      const apr =
+        (((oneDayVolume * 0.05 * 0.01) / bar.totalSupply) * 365) / (bar.ratio * sushiTokenValueUsd)
+
+      // TODO: Rename. APY is a misnomer here, should be APR
+      pool.prizePool.yieldSource.apy = apr
+      // pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
+
       pool.prizePool.yieldSource[YIELD_SOURCES.sushi] = {
         additionalApy: 0 // put dripped SUSHI or other incentive APYs here
       }
+
       return pool
     })
   } catch (e) {

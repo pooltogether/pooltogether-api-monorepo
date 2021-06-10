@@ -2,7 +2,9 @@ import { GraphQLClient } from 'graphql-request'
 import {
   LOOTBOX_GRAPH_URIS,
   POOLTOGETHER_SUBGRAPHS,
-  UNISWAP_GRAPH_URIS
+  UNISWAP_GRAPH_URIS,
+  SUSHI_BAR_GRAPH_URIS,
+  SUSHI_EXCHANGE_GRAPH_URIS
 } from 'lib/constants/subgraphUris'
 
 export const useSubgraphClients = (chainId, versions) => {
@@ -15,6 +17,12 @@ export const getSubgraphVersionsFromContracts = (poolContracts) => [
 
 export const getUniswapSubgraphClient = (chainId, fetch) =>
   new GraphQLClient(UNISWAP_GRAPH_URIS[chainId], { fetch })
+
+export const getSushiBarSubgraphClient = (chainId, fetch) =>
+  new GraphQLClient(SUSHI_BAR_GRAPH_URIS[chainId], { fetch })
+
+export const getSushiExchangeSubgraphClient = (chainId, fetch) =>
+  new GraphQLClient(SUSHI_EXCHANGE_GRAPH_URIS[chainId], { fetch })
 
 export const getSubgraphClientsByVersionFromContracts = (poolContracts, chainId, fetch) =>
   getSubgraphVersionsFromContracts(poolContracts).reduce(

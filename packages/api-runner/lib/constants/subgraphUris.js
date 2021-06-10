@@ -30,3 +30,11 @@ export const UNISWAP_GRAPH_URIS = {
   4: 'https://api.thegraph.com/subgraphs/name/blockrockettech/uniswap-v2-subgraph-rinkeby',
   137: 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap'
 }
+
+export const SUSHI_BAR_GRAPH_URIS = {
+  1: 'https://api.thegraph.com/subgraphs/name/sushiswap/sushi-bar'
+}
+
+export const SUSHI_EXCHANGE_GRAPH_URIS = {
+  1: 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange'
+}
