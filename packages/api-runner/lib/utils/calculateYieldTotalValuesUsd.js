@@ -138,10 +138,13 @@ const calculateGenericYieldTotalValues = (_pool, fetch) => {
 
   // Format to same decimal places, so we keep accuracy for floats
   const poolReserveRate = _pool.reserve?.rate
-  const oneOverPoolReserveRateUnformatted = ethers.utils.parseUnits(
-    (1 - parseFloat(poolReserveRate)).toFixed(Number(underlyingToken.decimals)),
+  const poolReserveRateUnformatted = ethers.utils.parseUnits(
+    parseFloat(poolReserveRate).toFixed(Number(underlyingToken.decimals)),
     underlyingToken.decimals
   )
+  const oneMinusPoolReserveRateUnformatted = ethers.utils
+    .parseUnits('1', underlyingToken.decimals)
+    .sub(poolReserveRateUnformatted)
 
   const remainingSeconds = _pool.prize.prizePeriodRemainingSeconds
 
@@ -153,19 +156,23 @@ const calculateGenericYieldTotalValues = (_pool, fetch) => {
   const underlyingTokensPerYearUnformatted = poolDepositsTotalSupplyUnformatted
     .mul(apyUnformatted)
     .div(decimalsUnformatted)
-  const underlyingTokensPerSecondUnformatted =
-    underlyingTokensPerYearUnformatted.div(SECONDS_PER_YEAR)
+  const underlyingTokensPerSecondNormalized = underlyingTokensPerYearUnformatted
+    .mul(parseUnits('1', 18)) // Normalize
+    .div(SECONDS_PER_YEAR)
 
   let amountUnformatted
-  if (oneOverPoolReserveRateUnformatted.isZero()) {
-    amountUnformatted = ethers.constants.Zero
-  } else if (oneOverPoolReserveRateUnformatted.eq(ethers.constants.One)) {
-    amountUnformatted = underlyingTokensPerSecondUnformatted.mul(remainingSeconds)
-  } else {
-    amountUnformatted = underlyingTokensPerSecondUnformatted
+  if (poolReserveRateUnformatted.isZero()) {
+    amountUnformatted = underlyingTokensPerSecondNormalized
       .mul(remainingSeconds)
-      .mul(oneOverPoolReserveRateUnformatted)
+      .div(parseUnits('1', 18)) // Denormalize
+  } else if (poolReserveRateUnformatted.eq(ethers.constants.One)) {
+    amountUnformatted = ethers.constants.Zero
+  } else {
+    amountUnformatted = underlyingTokensPerSecondNormalized
+      .mul(remainingSeconds)
+      .mul(oneMinusPoolReserveRateUnformatted)
       .div(decimalsUnformatted)
+      .div(parseUnits('1', 18)) // Denormalize
   }
 
   const estimatedUsdAndAmountValues = calculateUsdValues(amountUnformatted, underlyingToken)
