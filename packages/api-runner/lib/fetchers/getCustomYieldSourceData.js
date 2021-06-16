@@ -110,14 +110,14 @@ const fetchYieldSourceDataForAllPools = async (chainId, _pools, fetch) => {
 
 const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) => {
   switch (yieldSource) {
-    case YIELD_SOURCES.aave: {
-      return await getPoolsWithAaveYieldSourceData(chainId, _pools, fetch)
-    }
+    // case YIELD_SOURCES.aave: {
+    //   return await getPoolsWithAaveYieldSourceData(chainId, _pools, fetch)
+    // }
     case YIELD_SOURCES.sushi: {
       return await getPoolsWithSushiYieldSourceData(chainId, _pools, fetch)
     }
     default: {
-      return Promise.resolve(null)
+      return Promise.resolve(_pools)
     }
   }
 }

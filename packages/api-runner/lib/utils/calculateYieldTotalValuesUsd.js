@@ -26,9 +26,9 @@ export const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
     }
     case PRIZE_POOL_TYPES.genericYield: {
       switch (_pool.prizePool.yieldSource?.type) {
-        case YIELD_SOURCES.aave: {
-          return await calculateGenericYieldTotalValues(_pool, fetch)
-        }
+        // case YIELD_SOURCES.aave: {
+        //   return await calculateGenericYieldTotalValues(_pool, fetch)
+        // }
         case YIELD_SOURCES.sushi: {
           return await calculateGenericYieldTotalValues(_pool, fetch)
         }
@@ -130,7 +130,12 @@ const calculateGenericYieldTotalValues = (_pool, fetch) => {
   const pool = cloneDeep(_pool)
 
   const underlyingToken = _pool.tokens.underlyingToken
-  const apy = _pool.prizePool.yieldSource.apy
+  const apy = _pool.prizePool?.yieldSource?.apy
+
+  // If there was an error fetching the apy
+  if (!apy) {
+    return pool
+  }
 
   const poolDepositsTotalSupplyUnformatted = pool.tokens.ticket.totalSupplyUnformatted.add(
     pool.tokens.sponsorship.totalSupplyUnformatted
