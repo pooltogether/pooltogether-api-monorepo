@@ -26,9 +26,9 @@ export const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
     }
     case PRIZE_POOL_TYPES.genericYield: {
       switch (_pool.prizePool.yieldSource?.type) {
-        // case YIELD_SOURCES.aave: {
-        //   return await calculateGenericYieldTotalValues(_pool, fetch)
-        // }
+        case YIELD_SOURCES.aave: {
+          return await calculateGenericYieldTotalValues(_pool, fetch)
+        }
         case YIELD_SOURCES.sushi: {
           return await calculateGenericYieldTotalValues(_pool, fetch)
         }
