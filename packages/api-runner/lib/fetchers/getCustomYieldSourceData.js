@@ -137,7 +137,8 @@ const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
 
     // TEMPORARY
     const HARDCODED_APR = {
-      '0x65c8827229fbd63f9de9fdfd400c9d264066a336': 0.0287
+      '0x65c8827229fbd63f9de9fdfd400c9d264066a336': 0.0287,
+      '0x887e17d791dcb44bfdda3023d26f7a04ca9c7ef4': 0.08
     }
 
     return _pools.map((_pool) => {
