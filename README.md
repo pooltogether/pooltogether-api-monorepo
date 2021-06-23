@@ -8,6 +8,14 @@ Example: the DAI pool's data would be:
 
 https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 
+## Reason for monorepo
+
+The main bulk of logic in `api-runner` sits outside of the Cloudflare worker `api-entrypoint` for two main reasons:
+
+1. It's handy to be able to run it in the node REPL, as the Cloudflare worker environment is Rust emulating JS which proves difficult for debugging
+
+2. It's set up to be identical to the other libraries we create and use, being built independently with Rollup and then consumed by the `api-entrypoint`
+
 ## Instructions
 
 #### Installation
