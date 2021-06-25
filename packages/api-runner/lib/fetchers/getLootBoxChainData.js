@@ -21,7 +21,7 @@ export const getLootBoxChainData = async (pools, chainId, fetch) => {
     const lootBoxErc721Tokens = pool.prize.lootBox.erc721Tokens
 
     // LootBox ERC721 awards
-    if (lootBoxErc721Tokens.length > 0) {
+    if (lootBoxErc721Tokens?.length > 0) {
       lootBoxErc721Tokens.forEach((erc721) => {
         const tokenId = erc721.tokenId
         const address = erc721.erc721Entity.id
@@ -101,7 +101,7 @@ const updatePoolsWithLootBoxChainData = (pools, additionalBatchCalls) => {
 
     const erc721Tokens = pool.prize.lootBox.erc721Tokens
 
-    if (erc721Tokens.length > 0) {
+    if (erc721Tokens?.length > 0) {
       erc721Tokens.forEach((erc721) => {
         const tokenId = erc721.tokenId
         const address = erc721.erc721Entity.id

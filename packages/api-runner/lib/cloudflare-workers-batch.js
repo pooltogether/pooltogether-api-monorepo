@@ -24,7 +24,7 @@ export const batch = async (chainId, fetch, ...batchCalls) => {
   // console.log(RPC_URLS[chainId])
   // console.log('getting matic')
   try {
-    callResponse = await fetch(RPC_URLS[chainId], {
+    callResponse = await fetch(RPC_URLS[Number(chainId)], {
       method: 'POST',
       body: JSON.stringify(tx),
       headers: { 'Content-Type': 'application/json' }
