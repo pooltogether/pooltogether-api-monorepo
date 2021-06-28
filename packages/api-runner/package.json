@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.5.0",
+  "version": "1.4.1",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "Gain more insight when testing the API code in a regular node enviroment",
@@ -14,6 +14,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
+    "reinstall": "rm -rf node_modules && yarn install",
     "build": "rollup -c rollup.config.js",
     "watch": "rollup -w rollup.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
