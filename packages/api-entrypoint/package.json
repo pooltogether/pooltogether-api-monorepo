@@ -6,10 +6,9 @@
   "description": "API resources for calculating PoolTogether prize values, etc.",
   "main": "index.js",
   "scripts": {
-    "start": "wrangler dev",
-    "dev": "wrangler dev",
-    "publish": "wrangler publish --env production",
-    "publish-testnet": "wrangler publish --env testnets",
+    "start-prod": "wrangler dev --env production",
+    "start-dev": "wrangler dev --env dev",
+    "publish-prod": "wrangler publish --env production",
     "publish-dev": "wrangler publish --env dev",
     "reinstall": "rm -rf node_modules && yarn install",
     "build": "webpack",

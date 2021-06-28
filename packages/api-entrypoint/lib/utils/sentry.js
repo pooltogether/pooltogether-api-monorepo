@@ -1,25 +1,8 @@
-// Get the key from the "DSN" at: https://sentry.io/settings/<org>/projects/<project>/keys/
-// The "DSN" will be in the form: https://<SENTRY_KEY>@sentry.io/<SENTRY_PROJECT_ID>
-// eg, https://0000aaaa1111bbbb2222cccc3333dddd@sentry.io/123456
-const SENTRY_PROJECT_ID = '5832514'
-const SENTRY_KEY = '4539f33a2b744bd78a36c38a9e0659f9'
-
-// Useful if you have multiple apps within a project – not necessary, only used in TAGS and SERVER_NAME below
-const APP = 'pooltogether-api'
-
-// https://docs.sentry.io/error-reporting/configuration/?platform=javascript#environment
-const ENV = 'development'
-
-// https://docs.sentry.io/error-reporting/configuration/?platform=javascript#release
-// A string describing the version of the release – we just use: git rev-parse --verify HEAD
-// You can use this to associate files/source-maps: https://docs.sentry.io/cli/releases/#upload-files
-const RELEASE = '0'
-
 // https://docs.sentry.io/enriching-error-data/context/?platform=javascript#tagging-events
-const TAGS = { app: APP }
+const TAGS = { app: APP_NAME }
 
 // https://docs.sentry.io/error-reporting/configuration/?platform=javascript#server-name
-const SERVER_NAME = `${APP}-${ENV}`
+const SERVER_NAME = `${APP_NAME}-${ENVIRONMENT_NAME}`
 
 // Indicates the name of the SDK client
 const CLIENT_NAME = 'bustle-cf-sentry'
@@ -52,10 +35,10 @@ export async function log(err, request) {
         'X-Sentry-Auth': [
           'Sentry sentry_version=7',
           `sentry_client=${CLIENT_NAME}/${CLIENT_VERSION}`,
-          `sentry_key=${SENTRY_KEY}`,
-        ].join(', '),
+          `sentry_key=${SENTRY_KEY}`
+        ].join(', ')
       },
-      body,
+      body
     })
     if (res.status === 200) {
       return
@@ -68,7 +51,7 @@ export async function log(err, request) {
 function toSentryEvent(err, request) {
   const errType = err.name || (err.contructor || {}).name
   const frames = parse(err)
-  const extraKeys = Object.keys(err).filter(key => !['name', 'message', 'stack'].includes(key))
+  const extraKeys = Object.keys(err).filter((key) => !['name', 'message', 'stack'].includes(key))
   return {
     event_id: uuidv4(),
     message: errType + ': ' + (err.message || '<no message>'),
@@ -77,18 +60,18 @@ function toSentryEvent(err, request) {
         {
           type: errType,
           value: err.message,
-          stacktrace: frames.length ? { frames: frames.reverse() } : undefined,
-        },
-      ],
+          stacktrace: frames.length ? { frames: frames.reverse() } : undefined
+        }
+      ]
     },
     extra: extraKeys.length
       ? {
-          [errType]: extraKeys.reduce((obj, key) => ({ ...obj, [key]: err[key] }), {}),
+          [errType]: extraKeys.reduce((obj, key) => ({ ...obj, [key]: err[key] }), {})
         }
       : undefined,
     tags: TAGS,
     platform: 'javascript',
-    environment: ENV,
+    environment: ENVIRONMENT_NAME,
     server_name: SERVER_NAME,
     timestamp: Date.now() / 1000,
     request:
@@ -98,10 +81,10 @@ function toSentryEvent(err, request) {
             url: request.url,
             query_string: request.query,
             headers: request.headers,
-            data: request.body,
+            data: request.body
           }
         : undefined,
-    release: RELEASE,
+    release: SENTRY_RELEASE
   }
 }
 
@@ -109,7 +92,7 @@ function parse(err) {
   return (err.stack || '')
     .split('\n')
     .slice(1)
-    .map(line => {
+    .map((line) => {
       if (line.match(/^\s*[-]{4,}$/)) {
         return { filename: line }
       }
@@ -125,7 +108,7 @@ function parse(err) {
         filename: lineMatch[2] || undefined,
         lineno: +lineMatch[3] || undefined,
         colno: +lineMatch[4] || undefined,
-        in_app: lineMatch[5] !== 'native' || undefined,
+        in_app: lineMatch[5] !== 'native' || undefined
       }
     })
     .filter(Boolean)
@@ -136,5 +119,5 @@ function uuidv4() {
   crypto.getRandomValues(bytes)
   bytes[6] = (bytes[6] & 0x0f) | 0x40
   bytes[8] = (bytes[8] & 0x3f) | 0x80
-  return [...bytes].map(b => ('0' + b.toString(16)).slice(-2)).join('') // to hex
+  return [...bytes].map((b) => ('0' + b.toString(16)).slice(-2)).join('') // to hex
 }

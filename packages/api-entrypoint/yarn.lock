@@ -1122,19 +1122,19 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.5.0.tgz#bb58ab864f14da785d3300d26be71c0b21ccbccd"
-  integrity sha512-7o1KCmyX6kIqhzkWkT2YPvsktuCUrAedE1lfOWJRR9BXGIg2bb7ty+n06UzagG1cwQHSnvwKkf6y/UGBJGgo1A==
+"@pooltogether/api-runner@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.4.0.tgz#2d0841fad18820af0958bc7437842c79dfdb9729"
+  integrity sha512-JSaWBwUMdyLAztcYWpuLcI/H7qZod/FiZ6GfXWhRfxOcubhnhtp0Zr9v1aZPRkABDhnRxl55MbSOgj4I6I2rKQ==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
-    "@pooltogether/current-pool-data" "3.4.23"
+    "@pooltogether/current-pool-data" "3.4.21"
     "@pooltogether/etherplex" "1.1.1"
     "@pooltogether/evm-chains-extended" "^0.4.3"
     "@pooltogether/loot-box" "^1.1.0"
     "@pooltogether/pooltogether-contracts" "^3.3.8"
-    "@pooltogether/utilities" "^0.0.26"
+    "@pooltogether/utilities" "0.0.26"
     ethers "5.1.3"
     graphql "^15.5.0"
     graphql-request "^3.4.0"
@@ -1147,11 +1147,6 @@
   version "3.4.21"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.21.tgz#17a51c4aea7af06909bf1423a60578785459bb27"
   integrity sha512-4Ss5S9iykyI4tfy055pdESNMBqtOuelryMDsCzCI2bB7i0as4Ki1ljXR0AiMnvlp+e9kJO2AxNcnNghoZYUq1w==
-
-"@pooltogether/current-pool-data@3.4.23":
-  version "3.4.23"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.23.tgz#865894e3eedd04e9384cfd7a2025394b7cd45f4a"
-  integrity sha512-bJNKDri+7GXT5RcBY1HMrEoMdiuDGtSiD2yZvSgk1ta9pB4E9kUuUn+S3OAKvEdN8TqiTxaxAGltSLXxckEo0g==
 
 "@pooltogether/current-pool-data@^3.4.3":
   version "3.4.3"
@@ -1224,7 +1219,7 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/uniform-random-number/-/uniform-random-number-1.0.0-beta.1.tgz#72257401fe8536e95f9f812f1d249262659084a7"
   integrity sha512-V4iqLOpNFNhnUqfKRlvqUeRwvKaODdz+qn4Qi65C3iMOnDb0J31tBvyhwKbhP4wauNuUN64WfepqkkxET9U7EQ==
 
-"@pooltogether/utilities@^0.0.26":
+"@pooltogether/utilities@0.0.26", "@pooltogether/utilities@^0.0.26":
   version "0.0.26"
   resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.26.tgz#f80636e60521421893ca22ffca182119cb7120a4"
   integrity sha512-Fzx77yYGd3EM6/bk46Z81z/b5/GP5SZo7qHBiNB5wDLboWPOS5YHyp3LMNlnLvVWAzpugvHEbYoXQDoFWqjHCg==

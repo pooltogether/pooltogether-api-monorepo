@@ -4,7 +4,8 @@ import { updatePools } from 'lib/services/updatePools'
 import { NETWORK } from '@pooltogether/utilities'
 import { log } from 'lib/utils/sentry'
 
-const ENVIRONMENT = process.env.ENVIRONMENT_NAME
+const DEFAULT_CACHE_AGE = 60
+const ENVIRONMENT = ENVIRONMENT_NAME
 const Enviroment = Object.keys({
   production: 'production',
   testnets: 'testnets',
@@ -32,7 +33,7 @@ function getPathName(request) {
   return pathname
 }
 
-async function getResponse(event, promise, cacheAgeSeconds = 0) {
+async function getResponse(event, promise, cacheAgeSeconds = DEFAULT_CACHE_AGE) {
   const request = event.request
   const cacheUrl = new URL(request.url)
 
@@ -77,21 +78,40 @@ async function getResponse(event, promise, cacheAgeSeconds = 0) {
 // ROUTE HANDLERS
 
 async function multiPoolHandler(event) {
-  const request = event.request
-  return getResponse(event, getPools(request))
+  try {
+    const request = event.request
+    return getResponse(event, getPools(event, request))
+  } catch (e) {
+    event.waitUntil(log(e, event.request))
+    return new Response(e.message, { status: 500 })
+  }
 }
 
 async function singlePoolHandler(event) {
-  const request = event.request
-  return getResponse(event, getPool(request))
+  try {
+    const request = event.request
+    return getResponse(event, getPool(event, request))
+  } catch (e) {
+    event.waitUntil(log(e, event.request))
+    return new Response(e.message, { status: 500 })
+  }
 }
 
+// NOTE: Manual update endpoint.
+// This is handled by the cron but is useful for debugging.
+// Uncomment the route in handleRequest to use.
 async function updatePoolsHandler(event) {
-  const request = event.request
-  const _url = new URL(request.url)
-  const pathname = _url.pathname
-  const chainId = Number(pathname.split('/')[2])
-  return getResponse(event, updatePools(chainId))
+  try {
+    const request = event.request
+    const _url = new URL(request.url)
+    const pathname = _url.pathname
+    const chainId = Number(pathname.split('/')[2])
+    await updatePools(event, chainId)
+    return new Response(`Success updating ${chainId}`, { status: 200 })
+  } catch (e) {
+    event.waitUntil(log(e, event.request))
+    return new Response(e.message, { status: 500 })
+  }
 }
 
 addEventListener('fetch', (event) => {
@@ -101,34 +121,21 @@ addEventListener('fetch', (event) => {
 // CRON JOB
 
 function getChainIds() {
-  if (ENVIRONMENT === Enviroment.production || ENVIRONMENT === Enviroment.dev) {
-    return [NETWORK.mainnet, NETWORK.polygon]
-  } else {
-    return [NETWORK.rinkeby]
-  }
+  return [NETWORK.mainnet, NETWORK.rinkeby, NETWORK.polygon]
 }
 
 async function updatePoolsScheduledHandler(event) {
   try {
     const chainIds = getChainIds()
-    const promises = chainIds.map((chainId) => updatePools(chainId))
-    return await Promise.all(promises)
-  } catch (e) {
-    event.waitUntil(log(e, event.request))
-    return false
-  }
-}
+    const promises = chainIds.map((chainId) => updatePools(event, chainId))
+    const responses = await Promise.allSettled(promises)
 
-async function getPokemon(event) {
-  try {
-    const r = await fetch('https://pokeapi.co/api/v2/pokemon/ditto')
-    const data = await r.json()
-    await updatePools(NETWORK.mainnet)
-    await updatePools(NETWORK.polygon)
-    await updatePools(NETWORK.rinkeby)
-    // await POOLS.put('test', JSON.stringify(p))
-    event.waitUntil(POOLS.put('ditto', JSON.stringify(data)))
-    event.waitUntil(POOLS.put('lastUpdated-a', JSON.stringify(Date.now())))
+    responses.map((response) => {
+      if (response.status === 'rejected') {
+        event.waitUntil(log(response.reason, event.request))
+      }
+    })
+
     return true
   } catch (e) {
     event.waitUntil(log(e, event.request))
@@ -138,17 +145,6 @@ async function getPokemon(event) {
 
 addEventListener('scheduled', (event) => {
   event.waitUntil(updatePoolsScheduledHandler(event))
-  // const promises = updatePoolsScheduledHandler(event)
-  // promises.map()
-  // event.waitUntil(updatePools(NETWORK.mainnet)
-  // const promise = await updatePools(NETWORK.mainnet)
-  // console.log(promise)
-  // event.waitUntil(promise)
-  // event.waitUntil(updatePools(NETWORK.mainnet))
-  // event.waitUntil(Promise.resolve(true))
-  // event.waitUntil(POOLS.put('TEST', 'TESSSTTTTT'))
-  // event.waitUntil(getPokemon(event))
-  // event.respondWith(new Response('Success', { status: 200 }))
 })
 
 /**

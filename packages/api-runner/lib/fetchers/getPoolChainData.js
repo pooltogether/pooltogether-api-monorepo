@@ -97,7 +97,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         TokenFaucetABI,
         pool.tokenListener.address
       )
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(
+        tokenFaucetContract
+          .dripRatePerSecond()
+          .asset()
+          .measure()
+      )
     }
 
     // External ERC20 awards
@@ -122,7 +127,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+            erc721Contract
+              .balanceOf(pool.prizePool.address)
+              .name()
+              .symbol()
+              .ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -130,7 +139,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     }
 
     // Sablier
-    if (pool.prize.sablierStream.id) {
+    if (pool.prize.sablierStream?.id) {
       // TODO: Add sablier to contract addresses package
       const sablierContract = contract(
         pool.prize.sablierStream.id,
@@ -217,7 +226,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         tokenFaucetDripAssetAddress
       )
       batchCalls.push(
-        dripErc20Contract.balanceOf(pool.tokenListener.address).decimals().symbol().name()
+        dripErc20Contract
+          .balanceOf(pool.tokenListener.address)
+          .decimals()
+          .symbol()
+          .name()
       )
     }
 
@@ -231,7 +244,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
+      batchCalls.push(
+        sablierErc20Stream
+          .decimals()
+          .name()
+          .symbol()
+      )
     }
 
     // Reserve
@@ -415,8 +433,9 @@ const formatPoolChainData = (
         formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted,
         tokenFaucetDripToken.decimals
       )
-      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted =
-        formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
+      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted = formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(
+        SECONDS_PER_DAY
+      )
       formattedPoolChainData.tokenListener.dripRatePerDay = formatUnits(
         formattedPoolChainData.tokenListener.dripRatePerDayUnformatted,
         tokenFaucetDripToken.decimals
@@ -472,7 +491,7 @@ const formatPoolChainData = (
     }
 
     // Sablier
-    if (pool.prize.sablierStream.id) {
+    if (pool.prize.sablierStream?.id) {
       const sablierStreamData = firstBatchValues[pool.prize.sablierStream.id]
       const sablierStreamTokenData =
         secondBatchValues[getSablierErc20BatchName(prizePoolAddress, pool.prize.sablierStream.id)]
@@ -537,7 +556,7 @@ const formatPoolChainData = (
         pool.prize.externalErc721Awards,
         (erc721) => erc721.address === lootBoxAddress
       )
-      if (lootBoxes) {
+      if (lootBoxes && lootBoxes.length >= 1) {
         const lootBoxId = lootBoxes[0].id
         const computedAddress =
           firstBatchValues[getLootBoxBatchName(lootBoxAddress, lootBoxId)].computeAddress[0]

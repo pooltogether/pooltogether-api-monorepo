@@ -1,1 +1,1 @@
-export const getPoolKey = (chainId, poolAddress) => `${chainId}-${poolAddress.toLowerCase()}`
+export const getPoolsKey = (chainId, poolAddress) => `Network ${chainId} - Pools`
