@@ -13,18 +13,30 @@ https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 #### Installation
 
 1. `yarn global add @cloudflare/wrangler` and then log in `wrangler login`
-2. In `packages/api-entrypoint` run: `cp wrangler.toml.example wrangler.toml` and fill out `account_id` inside wrangler.toml
-3. In `packages/api-entrypoint` run: `yarn install`
-4. In `packages/api-runner` run: `yarn install`
 
-#### Development
+#### Setup
+
+For each of the workers in [packages](./packages), you will need to:
+
+1. run: `cp wrangler.toml.example wrangler.toml` and fill out `account_id` & Sentry variables inside wrangler.toml
+2. run: `yarn`
+
+#### Development ([pool-updater](./packages/api-pool-updater/README.md))
 
 1. In `packages/api-runner` run: `yarn link`
-2. In `packages/api-entrypoint` run: `yarn link "@pooltogether/api-runner"`
-3. In `packages/api-entrypoint` run: `yarn start`
-4. API is available at `http://127.0.0.1:8787/`
+2. In `packages/api-pool-updater` run: `yarn link "@pooltogether/api-runner"`
+3. In `packages/api-runner` run: `yarn build`
+4. In `packages/api-pool-updater` run: `yarn start`
+5. API is available at `http://127.0.0.1:8787/update`
 
-#### Development (alternative)
+Updated values will be reflected in the development KV on Cloudflare.
+
+#### Development ([entrypoint](./packages/api-entrypoint/README.md))
+
+1. In `packages/api-entrypoint` run: `yarn dev-prod`
+2. API is available at `http://127.0.0.1:8787/`
+
+#### Development ([api-runner](./packages/api-runner/README.md))
 
 Errors displayed from the entry point aren't the most useful - running in an isolated node environment gives you some more details!
 
@@ -40,10 +52,10 @@ Errors displayed from the entry point aren't the most useful - running in an iso
 
 #### Publishing
 
-1. In `packages/api-runner/package.json` bump the package version
-2. In `packages/api-runner` run: `yarn build && yarn publish`
-3. Ensure `zone_id` and `route` are configured in `packages/api-entrypoint/wrangler.toml`
-4. In `packages/api-entrypoint` run: `wrangler publish`
+[Publishing @pooltogether/api-runner](./packages/api-runner/README.md)
+[Publishing API Entry point](./packages/api-entrypoint/README.md#deploying)
+[Publishing Pool Updaters](./packages/api-pool-updater/README.md#deploying-a-single-network)
+[Publishing Yield Source Data](./packages/api-pool-updater/README.md#deploying)
 
 ##### TODO:
 

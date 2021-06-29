@@ -2,24 +2,29 @@
 
 This repo contains a Cloudflare Worker that is the entry point to the PoolTogether API. This worker is what users will be interacting with.
 
-## Development
+## Instructions
 
 > Note: The worker is currently configured to point to a development KV when run locally. Data may be stale as there are no cron jobs keeping this up to date.
 
-###### To run locally
+###### Setup
 
-1. Copy `wrangler.example.toml` to `wrangler.toml` and fill in `account_id` and the Sentry variables.
-2. `yarn`
-3. `yarn dev`
+1. `cp wrangler.example.toml wrangler.toml`
+2. Fill in `account_id` and the Sentry variables.
 
-###### To run locally with the production KV
+###### Installation
 
-> Note: Not dangerous. This worker only exposes reads.
+1. `yarn`
 
-1. Copy `wrangler.example.toml` to `wrangler.toml` and fill in `account_id` and the Sentry variables.
-2. `yarn`
-3. `yarn dev-prod`
+###### Local Development
 
-###### To deploy
+1. `yarn dev`
+
+###### Local Development with the production KV
+
+> Note: This is not dangerous. This worker only exposes read functions.
+
+1. `yarn dev-prod`
+
+###### Deploying
 
 `yarn publish`
