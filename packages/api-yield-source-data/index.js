@@ -1,9 +1,13 @@
 import { log } from '../../utils/sentry'
-import { getCachedResponse } from '../../utils/getCachedResponse'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { getCurrentDateString } from '../../utils/getCurrentDateString'
-import { getPool } from './getPool'
-import { getPools } from './getPools'
+import { getAave } from './getAave'
+import { getCompound } from './getCompound'
+
+export const YIELD_SOURCES = Object.freeze({
+  aave: 'aave',
+  compound: 'compound'
+})
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
@@ -23,21 +27,34 @@ async function handleRequest(event) {
     const _url = new URL(request.url)
     const pathname = _url.pathname
 
-    const singlePoolRegex = /\/pools\/[\d]*\/[A-Za-z0-9]*/
-    const multiPoolRegex = /\/pools\/[\d]*/
-
     // Read routes
-    if (singlePoolRegex.test(pathname)) {
-      return getCachedResponse(event, getPool(event, request), 5)
-    } else if (multiPoolRegex.test(pathname)) {
-      return getCachedResponse(event, getPools(event, request), 5)
+    if (pathname.startsWith(`/${YIELD_SOURCES.aave}`)) {
+      return getCachedResponse(event, getYieldSourceData(YIELD_SOURCES.aave))
+    } else if (pathname.startsWith(`/${YIELD_SOURCES.compound}`)) {
+      return getCachedResponse(event, getYieldSourceData(YIELD_SOURCES.compound))
+      // Manual update
+    } else if (pathname.startsWith(`/update`)) {
+      try {
+        await handleSchedule(event)
+        return new Response('Successfully updated', {
+          ...DEFAULT_HEADERS,
+          status: 200
+        })
+      } catch (e) {
+        event.waitUntil(log(e, e.request))
+        return new Response('Error updating', {
+          ...DEFAULT_HEADERS,
+          status: 500
+        })
+      }
     }
 
-    const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a`
-    return new Response(errorMsg, {
+    const notFoundResponse = new Response('Yield source not found', {
       ...DEFAULT_HEADERS,
-      status: 500
+      status: 404
     })
+    notFoundResponse.headers.set('Content-Type', 'text/plain')
+    return notFoundResponse
   } catch (e) {
     event.waitUntil(log(e, e.request))
 
@@ -48,6 +65,11 @@ async function handleRequest(event) {
     errorResponse.headers.set('Content-Type', 'text/plain')
     return errorResponse
   }
+}
+
+async function getYieldSourceData(yieldSource) {
+  const storedData = JSON.parse(await YIELD_SOURCE.get('data'))
+  return storedData[yieldSource]
 }
 
 /**

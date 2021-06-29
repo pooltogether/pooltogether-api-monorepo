@@ -126,44 +126,22 @@ const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) 
 
 const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
   try {
-    // TODO: Uncomment when api is fixed
-    // console.log('getting aave')
-    // const response = await fetch('https://aave-api-v2.aave.com/data/markets-data', {
-    //   method: 'GET'
-    // })
-    // const aaveMarketData = await response.json()
-    // const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
-    // console.log('aave response')
-
-    // TEMPORARY
-    const HARDCODED_APR = {
-      '0x65c8827229fbd63f9de9fdfd400c9d264066a336': 0.0287,
-      '0x887e17d791dcb44bfdda3023d26f7a04ca9c7ef4': 0.08
-    }
+    const response = await fetch('https://yield-source-data.chuck4816.workers.dev/aave')
+    const aaveMarketData = await response.json()
+    const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
 
     return _pools.map((_pool) => {
-      // TEMPORARY
-      const apr = HARDCODED_APR[_pool.prizePool.address]
-      if (apr) {
-        const pool = cloneDeep(_pool)
-        pool.prizePool.yieldSource.apy = apr
-        return pool
-      } else {
-        return _pool
+      const underlyingToken = _pool.tokens.underlyingToken
+      const relevantMarketData = aaveMarketData.reserves.find(
+        (market) => market.id === getAaveMarketId(underlyingToken.address, aavePoolAddress)
+      )
+      if (!relevantMarketData) return _pool
+      const pool = cloneDeep(_pool)
+      pool.prizePool.yieldSource.apy = relevantMarketData.liquidityRate
+      pool.prizePool.yieldSource[YIELD_SOURCES.aave] = {
+        additionalApy: relevantMarketData.aIncentivesAPY
       }
-
-      // TODO: Uncomment when api is fixed
-      // const underlyingToken = _pool.tokens.underlyingToken
-      // const relevantMarketData = aaveMarketData.reserves.find(
-      //   (market) => market.id ===  getAaveMarketId(underlyingToken.address, aavePoolAddress)
-      // )
-      // if (!relevantMarketData) return _pool
-      // const pool = cloneDeep(_pool)
-      // pool.prizePool.yieldSource.apy = relevantMarketData.liquidityRate
-      // pool.prizePool.yieldSource[YIELD_SOURCES.aave] = {
-      //   additionalApy: relevantMarketData.aIncentivesAPY
-      // }
-      // return pool
+      return pool
     })
   } catch (e) {
     console.error(e.message)

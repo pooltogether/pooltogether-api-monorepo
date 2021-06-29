@@ -9,6 +9,7 @@ export default {
   output: {
     dir: 'dist',
     format: 'cjs'
+    // sourcemap: 'inline'
   },
   preserveModules: true,
   external: [

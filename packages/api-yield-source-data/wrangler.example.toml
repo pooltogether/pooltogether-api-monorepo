@@ -1,0 +1,21 @@
+type = "webpack"
+name = "yield-source-data"
+workers_dev = true
+
+account_id = "" # Production account
+# account_id = "" # Personal Account
+
+kv_namespaces = [{ binding = "YIELD_SOURCE", id = "23b2296b7dd344ac9fcea058b615d0ed", preview_id = "23b2296b7dd344ac9fcea058b615d0ed" }]
+
+[triggers]
+crons = ["0 * * * *"]
+
+[vars]
+APP_NAME = 'yield-source-data'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'yield-source-data'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'

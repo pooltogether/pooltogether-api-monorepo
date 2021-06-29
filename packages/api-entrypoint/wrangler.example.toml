@@ -1,0 +1,31 @@
+name = "white-snow-944a"
+type = "webpack"
+workers_dev = true
+
+account_id = "" # Production account
+# account_id = "" # Personal Account
+
+kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
+
+[vars]
+APP_NAME = 'pooltogether-api'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'api-entrypoint'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
+
+[env.production]
+kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "e01e5ae04e134d779382f36ca2ff6cda" }]
+
+[env.production.vars]
+APP_NAME = 'pooltogether-api'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'api-entrypoint'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
