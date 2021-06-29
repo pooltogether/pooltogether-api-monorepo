@@ -8,6 +8,12 @@ Example: the DAI pool's data would be:
 
 https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 
+## Architecture
+
+[Architecture overview](https://miro.com/app/board/o9J_l8uMoQg=/)
+
+![Architecture overview](architecture-overview.png)
+
 ## Instructions
 
 #### Installation
