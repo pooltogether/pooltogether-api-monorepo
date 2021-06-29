@@ -38,7 +38,9 @@ Updated values will be reflected in the development KV on Cloudflare.
 
 #### Development ([api-runner](./packages/api-runner/README.md))
 
-Errors displayed from the entry point aren't the most useful - running in an isolated node environment gives you some more details!
+It's handy to be able to run it in the node REPL, as the Cloudflare worker environment is Rust emulating JS which proves difficult for debugging.
+
+It's set up to be identical to the other libraries we create and use, being built independently with Rollup and then consumed by the pool updater.
 
 1. To run in dev mode, `cd packages/api-entrypoint` and run: `yarn start`
 2. To publish to production, `cd packages/api-entrypoint` and run `yarn publish`
