@@ -23,7 +23,7 @@ This worker aggregates data from external sources and stores them in the KV so w
 
 ###### Deploying a single network
 
-`yarn publish <network name>` ex. `yarn publish mainnet`
+`wrangler publish --env <network name>` ex. `wrangler publish --env mainnet`
 
 ###### Deploying workers for all networks
 
