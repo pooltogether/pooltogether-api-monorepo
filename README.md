@@ -60,10 +60,10 @@ It's set up to be identical to the other libraries we create and use, being buil
 
 #### Publishing
 
-[Publishing @pooltogether/api-runner](./packages/api-runner/README.md)
-[Publishing API Entry point](./packages/api-entrypoint/README.md#deploying)
-[Publishing Pool Updaters](./packages/api-pool-updater/README.md#deploying-a-single-network)
-[Publishing Yield Source Data](./packages/api-pool-updater/README.md#deploying)
+- [Publishing @pooltogether/api-runner](./packages/api-runner/README.md)
+- [Publishing API Entry point](./packages/api-entrypoint/README.md#deploying)
+- [Publishing Pool Updaters](./packages/api-pool-updater/README.md#deploying-a-single-network)
+- [Publishing Yield Source Data](./packages/api-pool-updater/README.md#deploying)
 
 ##### TODO:
 
