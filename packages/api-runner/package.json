@@ -18,7 +18,8 @@
     "build": "rollup -c rollup.config.js",
     "watch": "rollup -w rollup.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write '**/*.{js,css,json,md}'"
+    "format": "prettier --write '**/*.{js,css,json,md}'",
+    "prepublish": "yarn build"
   },
   "devDependencies": {
     "@babel/core": "^7.13.15",
