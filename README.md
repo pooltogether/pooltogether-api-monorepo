@@ -49,7 +49,7 @@ It's handy to be able to run it in the node REPL, as the Cloudflare worker envir
 It's set up to be identical to the other libraries we create and use, being built independently with Rollup and then consumed by the pool updater.
 
 1. To run in dev mode, `cd packages/api-entrypoint` and run: `yarn start`
-2. To publish to production, `cd packages/api-entrypoint` and run `yarn publish`
+2. To publish to production, `cd packages/api-entrypoint` and run `wrangler publish`
 3. To test the functionality:
 
 - `cd packages/api-runner`

@@ -9,7 +9,6 @@
     "dev": "wrangler dev",
     "start-prod": "wrangler dev --env production",
     "dev-prod": "wrangler dev --env production",
-    "publish": "wrangler publish",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'",
     "reinstall": "rm -rf node_modules && yarn install"

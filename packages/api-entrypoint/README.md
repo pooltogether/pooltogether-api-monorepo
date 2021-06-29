@@ -27,4 +27,4 @@ This repo contains a Cloudflare Worker that is the entry point to the PoolTogeth
 
 ###### Deploying
 
-`yarn publish`
+`wrangler publish`
