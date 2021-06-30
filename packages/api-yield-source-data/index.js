@@ -36,16 +36,20 @@ async function handleRequest(event) {
     } else if (pathname.startsWith(`/update`)) {
       try {
         await handleSchedule(event)
-        return new Response('Successfully updated', {
+        const successResponse = new Response('Successfully updated', {
           ...DEFAULT_HEADERS,
           status: 200
         })
+        successResponse.headers.set('Content-Type', 'text/plain')
+        return
       } catch (e) {
         event.waitUntil(log(e, e.request))
-        return new Response('Error updating', {
+        const errorResponse = new Response('Error updating', {
           ...DEFAULT_HEADERS,
           status: 500
         })
+        errorResponse.headers.set('Content-Type', 'text/plain')
+        return errorResponse
       }
     }
 

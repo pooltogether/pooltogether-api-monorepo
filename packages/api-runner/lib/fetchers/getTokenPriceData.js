@@ -59,15 +59,12 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
     }
   }
 
-  // Only supported on mainnet
-  if (chainId !== 1) {
-    return {}
-  }
-
   const knownStablecoinAddresses = KNOWN_STABLECOIN_ADDRESSES?.[chainId] || []
 
   const blockFilter = _getBlockFilter(blockNumber)
   const graphQLClient = getUniswapSubgraphClient(chainId, fetch)
+
+  console.log('unisubgtraph client', graphQLClient)
 
   if (!graphQLClient) return null
 
@@ -94,6 +91,10 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
 
     query = `${query}\n${selection}`
   }
+
+  console.log('filteredAddresses', filteredAddresses)
+
+  console.log(query)
 
   // console.log('getting token prices from the graph ...')
   // console.log('getting token prices from the graph ...')

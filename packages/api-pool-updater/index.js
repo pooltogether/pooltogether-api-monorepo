@@ -39,22 +39,26 @@ async function handleRequest(event) {
     if (pathname.startsWith(`/update`)) {
       try {
         await updatePools(event, CHAIN_ID)
-        return new Response(`Successfully updated ${CHAIN_ID}`, {
+        const successResponse = new Response(`Successfully updated ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,
           status: 200
         })
+        successResponse.headers.set('Content-Type', 'text/plain')
+        return successResponse
       } catch (e) {
         event.waitUntil(log(e, e.request))
-        return new Response(`Error updating ${CHAIN_ID}`, {
+        const errorResponse = new Response(`Error updating ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,
           status: 500
         })
+        errorResponse.headers.set('Content-Type', 'text/plain')
+        return errorResponse
       }
     }
 
-    const notFoundResponse = new Response('Yield source not found', {
+    const notFoundResponse = new Response('Invalid request', {
       ...DEFAULT_HEADERS,
-      status: 404
+      status: 500
     })
     notFoundResponse.headers.set('Content-Type', 'text/plain')
     return notFoundResponse

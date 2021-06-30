@@ -126,8 +126,12 @@ const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) 
 
 const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
   try {
-    const response = await fetch('https://yield-source-data.chuck4816.workers.dev/aave')
+    console.log('Pre aave')
+    // const response = await fetch('https://yield-source-data.chuck4816.workers.dev/aave')
+    const response = await fetch('https://aave-api-v2.aave.com/data/markets-data')
+    console.log('Post aave', JSON.stringify(response))
     const aaveMarketData = await response.json()
+    console.log('Post aave', aaveMarketData)
     const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
 
     return _pools.map((_pool) => {

@@ -10,9 +10,6 @@ import { formatUnits, parseUnits } from '@ethersproject/units'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { ethers } from 'ethers'
 import { PRIZE_POOL_TYPES, SECONDS_PER_YEAR } from '@pooltogether/current-pool-data'
-import { contract } from '@pooltogether/etherplex'
-import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
-import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 
 /**
  * Calculates the total yield values, $0 if no yield or no token prices
@@ -52,8 +49,22 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
   let compApy = '0'
   let yieldAmountUnformatted = pool.prize.amountUnformatted
 
-  const cTokenData = await fetch('https://yield-source-data.chuck4816.workers.dev/compound')
+  console.log('Pre cToken fetch')
+  // const cTokenData = await fetch('https://yield-source-data.chuck4816.workers.dev/compound')
+  const cTokenData = await fetch('https://api.compound.finance/api/v2/ctoken', {
+    method: 'POST',
+    body: JSON.stringify({
+      addresses: [
+        '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643', // cDAI
+        '0x39aa39c021dfbae8fac545936693ac917d5e7563', // cUSDC
+        '0x35a18000230da775cac24873d00ff85bccded550', // cUNI
+        '0x70e36f6bf80a52b3b46b3af8e106cc0ed743e8e4' // cCOMP
+      ]
+    })
+  })
+  console.log('Post cToken fetch', JSON.stringify(cTokenData))
   const response = await cTokenData.json()
+  console.log('Post cToken fetch', response)
 
   if (cToken) {
     const cTokenResponse = response.cToken.find(

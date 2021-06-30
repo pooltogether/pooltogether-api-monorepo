@@ -1,6 +1,8 @@
 name = "white-snow-944a"
 type = "webpack"
 workers_dev = true
+zone_id = ""
+route = "*.pooltogether-api.com/*"
 
 account_id = "" # Production account
 # account_id = "" # Personal Account

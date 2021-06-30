@@ -34,10 +34,12 @@ async function handleRequest(event) {
     }
 
     const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a`
-    return new Response(errorMsg, {
+    const invalidRequestResponse = new Response(errorMsg, {
       ...DEFAULT_HEADERS,
       status: 500
     })
+    invalidRequestResponse.headers.set('Content-Type', 'text/plain')
+    return invalidRequestResponse
   } catch (e) {
     event.waitUntil(log(e, e.request))
 
