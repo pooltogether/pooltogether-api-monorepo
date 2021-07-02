@@ -23,4 +23,4 @@ This worker aggregates data from external sources and stores them in the KV so w
 
 ###### Deploying
 
-1. `wrangler publish`
+1. `yarn publish-prod`

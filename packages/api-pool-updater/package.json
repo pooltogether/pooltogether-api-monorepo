@@ -4,10 +4,9 @@
   "description": "A worker to keep the KV fresh for pools",
   "main": "index.js",
   "scripts": {
-    "build": "wrangler build --env",
+    "build": "wrangler build",
     "dev": "wrangler dev --env",
     "start": "wrangler dev --env",
-    "publish": "wrangler publish --env",
     "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
@@ -18,6 +17,6 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "^1.4.3"
+    "@pooltogether/api-runner": "1.4.6"
   }
 }

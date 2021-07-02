@@ -824,10 +824,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.4.3.tgz#875c61f948f109f649b3e19b2dfbffcb8534727b"
-  integrity sha512-+wylYRLkYQnrHN9LqjmMMJcth/olwISi0Yzod75pg65VOhKOBgyJI8zpy6WSlPMsPKwoYTWHKH549xCN6Re5Uw==
+"@pooltogether/api-runner@1.4.6":
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.4.6.tgz#9534a9b69cab4e1796a40f34dd4f02451c1d059f"
+  integrity sha512-8Q5UZa6lgvZPeeIvIu0LunOamyIyCiyfcEpwTQDsgO2yL5sLyPkS3hYhIDVOcdZPHRNLHgvpbWRw8d0U1C/bRA==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"

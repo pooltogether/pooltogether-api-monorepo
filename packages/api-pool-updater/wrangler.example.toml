@@ -1,9 +1,7 @@
 type = "webpack"
-name = "pool-updater"
 workers_dev = true
 
 account_id = "" # Production account
-# account_id = "" # Personal Account
 
 [triggers]
 crons = ["0/2 * * * *"]
@@ -11,20 +9,14 @@ crons = ["0/2 * * * *"]
 [env.mainnet]
 name = "mainnet-pool-updater"
 kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
-zone_id = ""
-route = "mainnet.pooltogether-api.com/*"
 
 [env.rinkeby]
 name = "rinkeby-pool-updater"
 kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
-zone_id = ""
-route = "rinkeby.pooltogether-api.com/*"
 
 [env.polygon]
 name = "polygon-pool-updater"
 kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
-zone_id = ""
-route = "polygon.pooltogether-api.com/*"
 
 
 [env.mainnet.vars]

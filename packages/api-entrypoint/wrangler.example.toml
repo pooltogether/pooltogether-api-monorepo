@@ -5,7 +5,6 @@ zone_id = ""
 route = "*.pooltogether-api.com/*"
 
 account_id = "" # Production account
-# account_id = "" # Personal Account
 
 kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
 

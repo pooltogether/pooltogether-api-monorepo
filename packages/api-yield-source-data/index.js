@@ -1,13 +1,10 @@
 import { log } from '../../utils/sentry'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { getCurrentDateString } from '../../utils/getCurrentDateString'
+import { getCachedResponse } from '../../utils/getCachedResponse'
 import { getAave } from './getAave'
 import { getCompound } from './getCompound'
-
-export const YIELD_SOURCES = Object.freeze({
-  aave: 'aave',
-  compound: 'compound'
-})
+import { YIELD_SOURCES } from '../../utils/constants'
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
@@ -41,7 +38,7 @@ async function handleRequest(event) {
           status: 200
         })
         successResponse.headers.set('Content-Type', 'text/plain')
-        return
+        return successResponse
       } catch (e) {
         event.waitUntil(log(e, e.request))
         const errorResponse = new Response('Error updating', {

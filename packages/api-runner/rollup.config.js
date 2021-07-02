@@ -34,7 +34,10 @@ export default {
     alias({
       entries: [
         { find: 'lib', replacement: path.resolve(__dirname, 'lib/') },
-        { find: 'abis', replacement: path.resolve(__dirname, 'abis/') }
+        { find: 'abis', replacement: path.resolve(__dirname, 'abis/') },
+        { find: '', replacement: path.resolve(__dirname, '') }
+        // { find: 'lib', replacement: 'lib' },
+        // { find: 'abis', replacement: 'abis' }
       ]
     })
   ]

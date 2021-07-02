@@ -19,6 +19,10 @@ This worker aggregates data from external sources and stores them in the KV so w
 
 ###### Local Development
 
+1. `wrangler dev --env <network name>` ex. `wrangler dev --env mainnet`
+
+   OR
+
 1. `yarn dev <network name>` ex. `yarn dev mainnet`
 
 ###### Deploying a single network

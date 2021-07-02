@@ -49,7 +49,7 @@ export const getPools = async (chainId, poolContracts, fetch) => {
 
   const erc20Addresses = getAllErc20Addresses(pools)
   const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
-  console.log('tokenPriceGraphData', chainId, erc20Addresses, JSON.stringify(tokenPriceGraphData))
+  // console.log('tokenPriceGraphData', chainId, erc20Addresses, JSON.stringify(tokenPriceGraphData))
 
   const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
     ? TESTNET_USD_AMOUNT

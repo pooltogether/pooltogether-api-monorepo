@@ -65,10 +65,9 @@ It's set up to be identical to the other libraries we create and use, being buil
 - [Publishing Pool Updaters](./packages/api-pool-updater/README.md#deploying-a-single-network)
 - [Publishing Yield Source Data](./packages/api-pool-updater/README.md#deploying)
 
-##### TODO:
+## Things to do before "releasing" the API
 
-- handle requests using various services / cloudflare, alchemy, infura, etc
-- allow querying other networks such polygon, bsc, rinkeby, etc
-- support any pool address
-- historical data querying based on a specific block number
-- write documentation on docs.pooltogether.com
+- Set up sourcemaps to get sent to Sentry
+- Support any pool address
+- Historical data querying based on a specific block number
+- Documentation on docs.pooltogether.com

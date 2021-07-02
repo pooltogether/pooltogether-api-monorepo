@@ -44,27 +44,25 @@ const _calculateUsd = (token) => {
 
 export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
   // On polygon return mock data from last successful request
-  if (chainId === 137) {
-    return {
-      '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
-      '0x85e16156eb86a134ac6db5754be6c5e1c7f1aa59': undefined,
-      '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
-        derivedETH: '0.0006555576548927038397327620248452385',
-        id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-        usd: 1.8
-      },
-      'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
-      '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
-      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { usd: 1 }
-    }
-  }
+  // if (chainId === 137) {
+  //   return {
+  //     '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
+  //     '0x85e16156eb86a134ac6db5754be6c5e1c7f1aa59': undefined,
+  //     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
+  //       derivedETH: '0.0006555576548927038397327620248452385',
+  //       id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+  //       usd: 1.8
+  //     },
+  //     'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
+  //     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
+  //     '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { usd: 1 }
+  //   }
+  // }
 
   const knownStablecoinAddresses = KNOWN_STABLECOIN_ADDRESSES?.[chainId] || []
 
   const blockFilter = _getBlockFilter(blockNumber)
   const graphQLClient = getUniswapSubgraphClient(chainId, fetch)
-
-  console.log('unisubgtraph client', graphQLClient)
 
   if (!graphQLClient) return null
 
@@ -91,10 +89,6 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
 
     query = `${query}\n${selection}`
   }
-
-  console.log('filteredAddresses', filteredAddresses)
-
-  console.log(query)
 
   // console.log('getting token prices from the graph ...')
   // console.log('getting token prices from the graph ...')
