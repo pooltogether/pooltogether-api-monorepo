@@ -20,6 +20,7 @@ export const getPools = async (event, request) => {
 
     const poolAddresses = getDefaultPoolAddresses(chainId)
     const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
+    if (!storedPools) return null
     const pools = poolAddresses
       .map((poolAddress) => storedPools.find((pool) => pool.prizePool.address === poolAddress))
       .filter(Boolean)

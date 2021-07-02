@@ -10,6 +10,7 @@ export const getPool = async (event, request) => {
     const poolAddress = pathname.split('/')[3].toLowerCase()
 
     const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
+    if (!storedPools) return null
     const pool = storedPools.find((pool) => pool.prizePool.address === poolAddress)
 
     if (!pool) return null
