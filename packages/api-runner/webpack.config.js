@@ -23,21 +23,18 @@ module.exports = (env) => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                plugins: [
-                  '@babel/plugin-transform-destructuring',
-                  '@babel/plugin-proposal-object-rest-spread',
-                  '@babel/plugin-transform-template-literals',
-                  '@babel/plugin-proposal-optional-chaining'
-                ],
-                babelrc: false
-              }
-            },
-            'source-map-loader'
-          ]
+          use: {
+            loader: 'babel-loader',
+            options: {
+              plugins: [
+                '@babel/plugin-transform-destructuring',
+                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/plugin-transform-template-literals',
+                '@babel/plugin-proposal-optional-chaining'
+              ],
+              babelrc: false
+            }
+          }
         }
       ]
     }

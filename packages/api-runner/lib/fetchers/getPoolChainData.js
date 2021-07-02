@@ -528,6 +528,15 @@ const formatPoolChainData = (
         }
       }
 
+      console.log(
+        'cTokenData',
+        JSON.stringify(cTokenData),
+        'Chain ID: ',
+        chainId,
+        typeof chainId,
+        typeof NETWORK.mainnet
+      )
+
       if (chainId === NETWORK.mainnet) {
         const compoundComptrollerKey = getCompoundComptrollerName(pool.prizePool.address)
         formattedPoolChainData.prize.yield = {

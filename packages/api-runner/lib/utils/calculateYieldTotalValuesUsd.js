@@ -10,7 +10,6 @@ import { formatUnits, parseUnits } from '@ethersproject/units'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { ethers } from 'ethers'
 import { PRIZE_POOL_TYPES, SECONDS_PER_YEAR } from '@pooltogether/current-pool-data'
-import { YIELD_SOURCES as PT_API_YIELD_SOURCES } from '../../../../utils/constants'
 
 /**
  * Calculates the total yield values, $0 if no yield or no token prices
@@ -50,12 +49,8 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
   let compApy = '0'
   let yieldAmountUnformatted = pool.prize.amountUnformatted
 
-  const cTokenData = await fetch(
-    `https://yield.pooltogether-api.com/${PT_API_YIELD_SOURCES.compound}`
-  )
-  console.log('cTokenData', JSON.stringify(cTokenData))
+  const cTokenData = await fetch('https://yield.pooltogether-api.com/compound')
   const response = await cTokenData.json()
-  console.log('cTokenData', JSON.stringify(response))
 
   if (cToken) {
     const cTokenResponse = response.cToken.find(

@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash.clonedeep'
-import { YIELD_SOURCES as PT_API_YIELD_SOURCES } from '../../../../utils/constants'
 
 // NOTE: address for chainId 1 is just aave v2, we may need to expand in the future
 const AAVE_POOL_ADDRESSES = {
@@ -80,25 +79,25 @@ const fetchYieldSourceDataForAllPools = async (chainId, _pools, fetch) => {
     ...new Set(_pools.map((_pool) => _pool.prizePool?.yieldSource?.type).filter(Boolean))
   ]
 
-  const poolsWithYieldSourceDataByYieldSource = await Promise.allSettled(
+  const poolsWithYieldSourceDataByYieldSource = await Promise.all(
     uniqueYieldSources.map(async (yieldSource) => {
-      const relevantPools = _pools.filter(
-        (_pool) => _pool.prizePool?.yieldSource?.type === yieldSource
-      )
-      const pools = await getPoolsWithYieldSourceData(chainId, yieldSource, relevantPools, fetch)
-      return {
-        [yieldSource]: pools
+      try {
+        const relevantPools = _pools.filter(
+          (_pool) => _pool.prizePool?.yieldSource?.type === yieldSource
+        )
+        const pools = await getPoolsWithYieldSourceData(chainId, yieldSource, relevantPools, fetch)
+        return {
+          [yieldSource]: pools
+        }
+      } catch (e) {
+        console.warn(e.message)
+        return {}
       }
     })
   )
 
   const flatPoolsWithYieldSourceData = poolsWithYieldSourceDataByYieldSource
-    .map((poolResponse) => {
-      if (poolResponse.status === 'rejected') {
-        throw new Error(poolResponse.message)
-      }
-      return Object.values(poolResponse.value)
-    })
+    .map((keyedPools) => Object.values(keyedPools))
     .flat(2)
 
   return _pools.map((_pool) => {
@@ -126,25 +125,28 @@ const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) 
 // Custom yield source data fetching
 
 const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
-  const response = await fetch(`https://yield.pooltogether-api.com/${PT_API_YIELD_SOURCES.aave}`)
-  console.log('aaveMarketData', JSON.stringify(response))
-  const aaveMarketData = await response.json()
-  console.log('aaveMarketData', JSON.stringify(aaveMarketData))
-  const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
+  try {
+    const response = await fetch('https://yield.pooltogether-api.com/aave')
+    const aaveMarketData = await response.json()
+    const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
 
-  return _pools.map((_pool) => {
-    const underlyingToken = _pool.tokens.underlyingToken
-    const relevantMarketData = aaveMarketData.reserves.find(
-      (market) => market.id === getAaveMarketId(underlyingToken.address, aavePoolAddress)
-    )
-    if (!relevantMarketData) return _pool
-    const pool = cloneDeep(_pool)
-    pool.prizePool.yieldSource.apy = relevantMarketData.liquidityRate
-    pool.prizePool.yieldSource[YIELD_SOURCES.aave] = {
-      additionalApy: relevantMarketData.aIncentivesAPY
-    }
-    return pool
-  })
+    return _pools.map((_pool) => {
+      const underlyingToken = _pool.tokens.underlyingToken
+      const relevantMarketData = aaveMarketData.reserves.find(
+        (market) => market.id === getAaveMarketId(underlyingToken.address, aavePoolAddress)
+      )
+      if (!relevantMarketData) return _pool
+      const pool = cloneDeep(_pool)
+      pool.prizePool.yieldSource.apy = relevantMarketData.liquidityRate
+      pool.prizePool.yieldSource[YIELD_SOURCES.aave] = {
+        additionalApy: relevantMarketData.aIncentivesAPY
+      }
+      return pool
+    })
+  } catch (e) {
+    console.error(e.message)
+    return _pools
+  }
 }
 
 const getAaveMarketId = (underlyingAssetAddress, poolAddress) =>

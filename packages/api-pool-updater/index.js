@@ -9,7 +9,7 @@ import { updatePools } from './updatePools'
  */
 async function updatePoolsScheduledHandler(event) {
   try {
-    await updatePools(event, CHAIN_ID)
+    await updatePools(event, Number(CHAIN_ID))
     return true
   } catch (e) {
     event.waitUntil(log(e, event.request))
@@ -38,7 +38,7 @@ async function handleRequest(event) {
     // Read routes
     if (pathname.startsWith(`/update`)) {
       try {
-        await updatePools(event, CHAIN_ID)
+        await updatePools(event, Number(CHAIN_ID))
         const successResponse = new Response(`Successfully updated ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,
           status: 200
