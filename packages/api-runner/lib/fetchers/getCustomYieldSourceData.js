@@ -81,20 +81,17 @@ const fetchYieldSourceDataForAllPools = async (chainId, _pools, fetch) => {
 
   const poolsWithYieldSourceDataByYieldSource = await Promise.all(
     uniqueYieldSources.map(async (yieldSource) => {
-      try {
-        const relevantPools = _pools.filter(
-          (_pool) => _pool.prizePool?.yieldSource?.type === yieldSource
-        )
-        const pools = await getPoolsWithYieldSourceData(chainId, yieldSource, relevantPools, fetch)
-        return {
-          [yieldSource]: pools
-        }
-      } catch (e) {
-        console.warn(e.message)
-        return {}
+      const relevantPools = _pools.filter(
+        (_pool) => _pool.prizePool?.yieldSource?.type === yieldSource
+      )
+      const pools = await getPoolsWithYieldSourceData(chainId, yieldSource, relevantPools, fetch)
+      return {
+        [yieldSource]: pools
       }
     })
-  )
+  ).catch((e) => {
+    throw e
+  })
 
   const flatPoolsWithYieldSourceData = poolsWithYieldSourceDataByYieldSource
     .map((keyedPools) => Object.values(keyedPools))
@@ -125,45 +122,35 @@ const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) 
 // Custom yield source data fetching
 
 const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
-  try {
-    const response = await fetch('https://yield.pooltogether-api.com/aave')
-    const aaveMarketData = await response.json()
-    const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
+  const response = await fetch('https://yield.pooltogether-api.com/aave')
+  const aaveMarketData = await response.json()
+  const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]
 
-    return _pools.map((_pool) => {
-      const underlyingToken = _pool.tokens.underlyingToken
-      const relevantMarketData = aaveMarketData.reserves.find(
-        (market) => market.id === getAaveMarketId(underlyingToken.address, aavePoolAddress)
-      )
-      if (!relevantMarketData) return _pool
-      const pool = cloneDeep(_pool)
-      pool.prizePool.yieldSource.apy = relevantMarketData.liquidityRate
-      pool.prizePool.yieldSource[YIELD_SOURCES.aave] = {
-        additionalApy: relevantMarketData.aIncentivesAPY
-      }
-      return pool
-    })
-  } catch (e) {
-    console.error(e.message)
-    return _pools
-  }
+  return _pools.map((_pool) => {
+    const underlyingToken = _pool.tokens.underlyingToken
+    const relevantMarketData = aaveMarketData.reserves.find(
+      (market) => market.id === getAaveMarketId(underlyingToken.address, aavePoolAddress)
+    )
+    if (!relevantMarketData) return _pool
+    const pool = cloneDeep(_pool)
+    pool.prizePool.yieldSource.apy = relevantMarketData.liquidityRate
+    pool.prizePool.yieldSource[YIELD_SOURCES.aave] = {
+      additionalApy: relevantMarketData.aIncentivesAPY
+    }
+    return pool
+  })
 }
 
 const getAaveMarketId = (underlyingAssetAddress, poolAddress) =>
   `${underlyingAssetAddress}${poolAddress}`
 
 const getPoolsWithSushiYieldSourceData = async (chainId, _pools, fetch) => {
-  try {
-    return _pools.map((_pool) => {
-      const pool = cloneDeep(_pool)
-      pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
-      pool.prizePool.yieldSource[YIELD_SOURCES.sushi] = {
-        additionalApy: 0 // put dripped SUSHI or other incentive APYs here
-      }
-      return pool
-    })
-  } catch (e) {
-    console.error(e.message)
-    return _pools
-  }
+  return _pools.map((_pool) => {
+    const pool = cloneDeep(_pool)
+    pool.prizePool.yieldSource.apy = 0.106 // Past 30 days average APR as of 2021-06-09
+    pool.prizePool.yieldSource[YIELD_SOURCES.sushi] = {
+      additionalApy: 0 // put dripped SUSHI or other incentive APYs here
+    }
+    return pool
+  })
 }
