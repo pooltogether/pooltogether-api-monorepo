@@ -10,24 +10,25 @@ import { formatUnits, parseUnits } from '@ethersproject/units'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { ethers } from 'ethers'
 import { PRIZE_POOL_TYPES, SECONDS_PER_YEAR } from '@pooltogether/current-pool-data'
+import { fetch } from '../../index'
 
 /**
  * Calculates the total yield values, $0 if no yield or no token prices
  * @param {*} _pool
  * @returns
  */
-export const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
+export const calculateYieldTotalValuesUsd = async (_pool) => {
   switch (_pool.prizePool.type) {
     case PRIZE_POOL_TYPES.compound: {
-      return await calculateCompoundYieldTotalValues(_pool, fetch)
+      return await calculateCompoundYieldTotalValues(_pool)
     }
     case PRIZE_POOL_TYPES.genericYield: {
       switch (_pool.prizePool.yieldSource?.type) {
         case YIELD_SOURCES.aave: {
-          return await calculateGenericYieldTotalValues(_pool, fetch)
+          return await calculateGenericYieldTotalValues(_pool)
         }
         case YIELD_SOURCES.sushi: {
-          return await calculateGenericYieldTotalValues(_pool, fetch)
+          return await calculateGenericYieldTotalValues(_pool)
         }
         default: {
           return calculateClaimableYieldPrizeTotalValues(_pool)
@@ -41,7 +42,7 @@ export const calculateYieldTotalValuesUsd = async (_pool, fetch) => {
   }
 }
 
-const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
+const calculateCompoundYieldTotalValues = async (_pool) => {
   const pool = cloneDeep(_pool)
 
   const cToken = pool.tokens.cToken
@@ -111,7 +112,7 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
   return pool
 }
 
-const calculateGenericYieldTotalValues = (_pool, fetch) => {
+const calculateGenericYieldTotalValues = (_pool) => {
   const pool = cloneDeep(_pool)
 
   const underlyingToken = _pool.tokens.underlyingToken

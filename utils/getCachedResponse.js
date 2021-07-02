@@ -21,9 +21,8 @@ export async function getCachedResponse(event, promise, cacheAgeSeconds = DEFAUL
     // Must use Response constructor to inherit all of response's fields
     response = new Response(jsonBody, DEFAULT_HEADERS)
 
-    // Cache the query for multiple pools for a longer period of time
-    // as it's much heavier on the CPU usage and can be blocked by Cloudflare
-    response.headers.set('Cache-Control', `s-maxage=${cacheAgeSeconds}`)
+    // Cache the query for a period of time
+    response.headers.set('Cache-Control', `max-age=${cacheAgeSeconds}`)
 
     // CORS Headers
     response.headers.set('Access-Control-Allow-Origin', `*`)
@@ -31,8 +30,7 @@ export async function getCachedResponse(event, promise, cacheAgeSeconds = DEFAUL
     response.headers.set('Access-Control-Request-Method', `*`)
     response.headers.set('Vary', `Accept-Encoding, Origin`)
 
-    // Use waitUntil so you can return the response without blocking on
-    // writing to cache
+    // Use waitUntil so you can return the response without blocking on writing to cache
     event.waitUntil(cache.put(cacheKey, response.clone()))
   } else {
     console.log('cache hit!')

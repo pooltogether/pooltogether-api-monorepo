@@ -1,6 +1,6 @@
 import { log } from '../../utils/sentry'
 import { getPools } from '@pooltogether/api-runner'
-import { getPoolsKey } from '../../utils/getPoolsKey'
+import { getPoolsKey } from '../../utils/kvKeys'
 
 /**
  * Call getPools and store the response in cloudflares KV

@@ -1,7 +1,7 @@
 import { setInfuraId } from '@pooltogether/api-runner'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
-import { updatePools } from './updatePools'
+import { updatePods } from './updatePods'
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
@@ -9,7 +9,7 @@ addEventListener('fetch', (event) => {
 
 addEventListener('scheduled', (event) => {
   try {
-    event.waitUntil(updatePoolsScheduledHandler(event))
+    event.waitUntil(updatePodsScheduledHandler(event))
   } catch (e) {
     event.waitUntil(log(e, event.request))
   }
@@ -20,11 +20,11 @@ addEventListener('scheduled', (event) => {
  * @param {*} event
  * @returns
  */
-async function updatePoolsScheduledHandler(event) {
+async function updatePodsScheduledHandler(event) {
   setInfuraId(INFURA_ID)
   setFetch(fetch)
   try {
-    await updatePools(event, Number(CHAIN_ID))
+    await updatePods(event, Number(CHAIN_ID))
     return true
   } catch (e) {
     event.waitUntil(log(e, event.request))
@@ -47,7 +47,7 @@ async function handleRequest(event) {
     // Read routes
     if (pathname.startsWith(`/update`)) {
       try {
-        await updatePools(event, Number(CHAIN_ID))
+        await updatePods(event, Number(CHAIN_ID))
         const successResponse = new Response(`Successfully updated ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,
           status: 200

@@ -56,7 +56,7 @@ const getPool = (graphPool) => {
  * @param {*} poolGraphData
  * @returns
  */
-export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
+export const getPoolChainData = async (chainId, poolGraphData) => {
   let pool
   let batchCalls = []
   const erc721AwardsToFetchMetadataFor = []
@@ -204,7 +204,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
   })
 
   // First big batch call
-  const firstBatchValues = await batch(chainId, fetch, ...batchCalls)
+  const firstBatchValues = await batch(chainId, ...batchCalls)
 
   batchCalls = []
 
@@ -266,14 +266,14 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     }
   })
 
-  const secondBatchValues = await batch(chainId, fetch, ...batchCalls)
+  const secondBatchValues = await batch(chainId, ...batchCalls)
 
   // Get External Erc721 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([
     ...erc721AwardsToFetchMetadataFor.map(async (erc721Award) => {
       return {
         id: getErc721BatchName(erc721Award.address, erc721Award.tokenId),
-        uri: await getErc721TokenUri(chainId, fetch, erc721Award.address, erc721Award.tokenId)
+        uri: await getErc721TokenUri(chainId, erc721Award.address, erc721Award.tokenId)
       }
     }),
     // TODO: Split award is only supported on some versions of prizeStrategies
@@ -288,7 +288,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
       try {
         return {
           id: pool.prizeStrategy.address,
-          data: await batch(chainId, fetch, prizeStrategyContract.splitExternalErc20Awards())
+          data: await batch(chainId, prizeStrategyContract.splitExternalErc20Awards())
         }
       } catch (e) {
         return null
@@ -305,7 +305,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
   )
 }
 
-const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
+const getErc721TokenUri = async (chainId, erc721Address, tokenId) => {
   const erc721Contract = contract(
     getErc721BatchName(erc721Address, tokenId),
     ERC721Abi,
@@ -313,7 +313,6 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
   )
   let tokenURI = await _tryMetadataMethod(
     chainId,
-    fetch,
     erc721Address,
     erc721Contract,
     tokenId,
@@ -323,7 +322,6 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
   if (!tokenURI) {
     tokenURI = await _tryMetadataMethod(
       chainId,
-      fetch,
       erc721Address,
       erc721Contract,
       tokenId,
@@ -335,7 +333,6 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
 
 const _tryMetadataMethod = async (
   chainId,
-  fetch,
   contractAddress,
   etherplexTokenContract,
   tokenId,
@@ -344,7 +341,7 @@ const _tryMetadataMethod = async (
   let tokenValues
 
   try {
-    tokenValues = await batch(chainId, fetch, etherplexTokenContract[method](tokenId))
+    tokenValues = await batch(chainId, etherplexTokenContract[method](tokenId))
 
     return tokenValues[contractAddress][method][0]
   } catch (e) {

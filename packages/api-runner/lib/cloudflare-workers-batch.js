@@ -1,5 +1,5 @@
 import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherplex'
-import { INFURA_ID } from '../index'
+import { fetch, INFURA_ID } from '../index'
 
 const getRpcUrl = (chainId) => {
   switch (chainId) {
@@ -14,7 +14,7 @@ const getRpcUrl = (chainId) => {
   }
 }
 
-export const batch = async (chainId, fetch, ...batchCalls) => {
+export const batch = async (chainId, ...batchCalls) => {
   // TODO: currently we assume any PoolTogether pool is on a network which supports multicall
   // so make sure to handle calls differently if the network doesn't support multicall!
   // (see Etherplex for calls fallback for non-multicall networks)

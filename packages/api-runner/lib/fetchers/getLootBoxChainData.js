@@ -9,10 +9,9 @@ const getErc721BatchName = (prizeAddress, tokenId) => `erc721Award-${prizeAddres
  *
  * @param {*} pools
  * @param {*} chainId
- * @param {*} fetch
  * @returns
  */
-export const getLootBoxChainData = async (pools, chainId, fetch) => {
+export const getLootBoxChainData = async (pools, chainId) => {
   const erc721AwardsToFetchMetadataFor = []
 
   pools.forEach((pool) => {
@@ -36,7 +35,7 @@ export const getLootBoxChainData = async (pools, chainId, fetch) => {
     ...erc721AwardsToFetchMetadataFor.map(async (erc721Award) => {
       return {
         id: getErc721BatchName(erc721Award.address, erc721Award.tokenId),
-        uri: await getErc721TokenUri(chainId, fetch, erc721Award.address, erc721Award.tokenId)
+        uri: await getErc721TokenUri(chainId, erc721Award.address, erc721Award.tokenId)
       }
     })
   ])
@@ -44,7 +43,7 @@ export const getLootBoxChainData = async (pools, chainId, fetch) => {
   return updatePoolsWithLootBoxChainData(pools, additionalBatchedCalls)
 }
 
-const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
+const getErc721TokenUri = async (chainId, erc721Address, tokenId) => {
   const erc721Contract = contract(
     getErc721BatchName(erc721Address, tokenId),
     ERC721Abi,
@@ -52,7 +51,6 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
   )
   let tokenURI = await _tryMetadataMethod(
     chainId,
-    fetch,
     erc721Address,
     erc721Contract,
     tokenId,
@@ -62,7 +60,6 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
   if (!tokenURI) {
     tokenURI = await _tryMetadataMethod(
       chainId,
-      fetch,
       erc721Address,
       erc721Contract,
       tokenId,
@@ -74,7 +71,6 @@ const getErc721TokenUri = async (chainId, fetch, erc721Address, tokenId) => {
 
 const _tryMetadataMethod = async (
   chainId,
-  fetch,
   contractAddress,
   etherplexTokenContract,
   tokenId,
@@ -83,7 +79,7 @@ const _tryMetadataMethod = async (
   let tokenValues
 
   try {
-    tokenValues = await batch(chainId, fetch, etherplexTokenContract[method](tokenId))
+    tokenValues = await batch(chainId, etherplexTokenContract[method](tokenId))
     const erc721BatchName = getErc721BatchName(contractAddress, tokenId)
     return tokenValues[erc721BatchName][method][0]
   } catch (e) {

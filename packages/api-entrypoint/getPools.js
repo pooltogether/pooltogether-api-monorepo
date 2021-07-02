@@ -1,5 +1,5 @@
 import { prizePoolContracts } from '@pooltogether/current-pool-data'
-import { getPoolsKey } from '../../utils/getPoolsKey'
+import { getPoolsKey } from '../../utils/kvKeys'
 import { log } from '../../utils/sentry'
 
 // /pools/[chainId].json

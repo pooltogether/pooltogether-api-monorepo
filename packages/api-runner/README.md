@@ -5,4 +5,5 @@ This library allows you to run the API locally for debugging via the node.js `no
 ## Development
 
 1. `setInfuraId(INFURA_ID)`
-2. `getPools(1)`
+2. `setFetch(fetch)`
+3. `getPools(1)`

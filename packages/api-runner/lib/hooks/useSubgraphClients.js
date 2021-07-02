@@ -4,6 +4,7 @@ import {
   POOLTOGETHER_SUBGRAPHS,
   UNISWAP_GRAPH_URIS
 } from 'lib/constants/subgraphUris'
+import { fetch } from '../../index'
 
 export const useSubgraphClients = (chainId, versions) => {
   return versions.map((version) => POOLTOGETHER_SUBGRAPHS[chainId][version])
@@ -13,10 +14,10 @@ export const getSubgraphVersionsFromContracts = (poolContracts) => [
   ...new Set(poolContracts.map((pool) => pool.subgraphVersion))
 ]
 
-export const getUniswapSubgraphClient = (chainId, fetch) =>
+export const getUniswapSubgraphClient = (chainId) =>
   new GraphQLClient(UNISWAP_GRAPH_URIS[chainId], { fetch })
 
-export const getSubgraphClientsByVersionFromContracts = (poolContracts, chainId, fetch) =>
+export const getSubgraphClientsByVersionFromContracts = (poolContracts, chainId) =>
   getSubgraphVersionsFromContracts(poolContracts).reduce(
     (accumulator, version) => ({
       ...accumulator,
@@ -39,7 +40,7 @@ export const getPoolAddressesBySubgraphVersionFromContracts = (poolContracts) =>
   }, {})
 }
 
-export const getLootBoxSubgraphClient = (chainId, fetch) =>
+export const getLootBoxSubgraphClient = (chainId) =>
   new GraphQLClient(LOOTBOX_GRAPH_URIS[chainId], {
     fetch
   })

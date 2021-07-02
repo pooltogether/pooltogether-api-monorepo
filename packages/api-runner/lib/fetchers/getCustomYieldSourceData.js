@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
+import { fetch } from '../../index'
 
 // NOTE: address for chainId 1 is just aave v2, we may need to expand in the future
 const AAVE_POOL_ADDRESSES = {
@@ -44,9 +45,9 @@ export const KNOWN_YIELD_SOURCE_ADDRESSES = Object.freeze({
  * @param {*} _pools
  * @returns
  */
-export const getCustomYieldSourceData = async (chainId, _pools, fetch) => {
+export const getCustomYieldSourceData = async (chainId, _pools) => {
   let pools = determineCustomYieldSources(chainId, _pools)
-  pools = await fetchYieldSourceDataForAllPools(chainId, pools, fetch)
+  pools = await fetchYieldSourceDataForAllPools(chainId, pools)
 
   return pools
 }
@@ -74,7 +75,7 @@ const determineYieldSource = (chainId, pool) => {
   }
 }
 
-const fetchYieldSourceDataForAllPools = async (chainId, _pools, fetch) => {
+const fetchYieldSourceDataForAllPools = async (chainId, _pools) => {
   const uniqueYieldSources = [
     ...new Set(_pools.map((_pool) => _pool.prizePool?.yieldSource?.type).filter(Boolean))
   ]
@@ -84,7 +85,7 @@ const fetchYieldSourceDataForAllPools = async (chainId, _pools, fetch) => {
       const relevantPools = _pools.filter(
         (_pool) => _pool.prizePool?.yieldSource?.type === yieldSource
       )
-      const pools = await getPoolsWithYieldSourceData(chainId, yieldSource, relevantPools, fetch)
+      const pools = await getPoolsWithYieldSourceData(chainId, yieldSource, relevantPools)
       return {
         [yieldSource]: pools
       }
@@ -105,13 +106,13 @@ const fetchYieldSourceDataForAllPools = async (chainId, _pools, fetch) => {
   })
 }
 
-const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) => {
+const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools) => {
   switch (yieldSource) {
     case YIELD_SOURCES.aave: {
-      return await getPoolsWithAaveYieldSourceData(chainId, _pools, fetch)
+      return await getPoolsWithAaveYieldSourceData(chainId, _pools)
     }
     case YIELD_SOURCES.sushi: {
-      return await getPoolsWithSushiYieldSourceData(chainId, _pools, fetch)
+      return await getPoolsWithSushiYieldSourceData(chainId, _pools)
     }
     default: {
       return Promise.resolve(_pools)
@@ -121,7 +122,7 @@ const getPoolsWithYieldSourceData = async (chainId, yieldSource, _pools, fetch) 
 
 // Custom yield source data fetching
 
-const getPoolsWithAaveYieldSourceData = async (chainId, _pools, fetch) => {
+const getPoolsWithAaveYieldSourceData = async (chainId, _pools) => {
   const response = await fetch('https://yield.pooltogether-api.com/aave')
   const aaveMarketData = await response.json()
   const aavePoolAddress = AAVE_POOL_ADDRESSES[chainId]

@@ -42,7 +42,7 @@ const _calculateUsd = (token) => {
   return 1 / derivedETH
 }
 
-export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
+export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
   // On polygon return mock data from last successful request
   if (chainId === 137) {
     return {
@@ -62,7 +62,7 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
   const knownStablecoinAddresses = KNOWN_STABLECOIN_ADDRESSES?.[chainId] || []
 
   const blockFilter = _getBlockFilter(blockNumber)
-  const graphQLClient = getUniswapSubgraphClient(chainId, fetch)
+  const graphQLClient = getUniswapSubgraphClient(chainId)
 
   if (!graphQLClient) return null
 

@@ -1,4 +1,4 @@
-import { getPoolsKey } from '../../utils/getPoolsKey'
+import { getPoolsKey } from '../../utils/kvKeys'
 import { log } from '../../utils/sentry'
 
 // /pool/[chainId]/[poolAddress].json
