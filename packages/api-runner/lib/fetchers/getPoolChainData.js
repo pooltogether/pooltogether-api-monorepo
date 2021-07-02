@@ -528,15 +528,6 @@ const formatPoolChainData = (
         }
       }
 
-      console.log(
-        'cTokenData',
-        JSON.stringify(cTokenData),
-        'Chain ID: ',
-        chainId,
-        typeof chainId,
-        typeof NETWORK.mainnet
-      )
-
       if (chainId === NETWORK.mainnet) {
         const compoundComptrollerKey = getCompoundComptrollerName(pool.prizePool.address)
         formattedPoolChainData.prize.yield = {
@@ -565,7 +556,7 @@ const formatPoolChainData = (
         pool.prize.externalErc721Awards,
         (erc721) => erc721.address === lootBoxAddress
       )
-      if (lootBoxes && lootBoxes.length >= 1) {
+      if (lootBoxes && lootBoxes.length > 0) {
         const lootBoxId = lootBoxes[0].id
         const computedAddress =
           firstBatchValues[getLootBoxBatchName(lootBoxAddress, lootBoxId)].computeAddress[0]

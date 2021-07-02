@@ -1,6 +1,5 @@
-import { usePools } from 'lib/hooks/usePool'
 import { usePoolContracts } from 'lib/hooks/usePoolContracts'
-import { usePoolByAddress } from 'lib/hooks/usePool'
+import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
 
 const nodeFetch = require('node-fetch')
 

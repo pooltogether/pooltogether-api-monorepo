@@ -14,6 +14,11 @@ https://pooltogether-api.com/pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a
 
 ![Architecture overview](architecture-overview.png)
 
+> Note: Workers on the same zones cannot make requests to each other.
+> So we break apart the workers into 2 different zones: `pooltogether-api.com`, `pooltogether-api.workers.dev`.
+> The entry point & yield source are on `pooltogether-api.com`.
+> The pool updaters are on `pooltogether-api.workers.dev`.
+
 ## Instructions
 
 #### Installation
@@ -27,12 +32,23 @@ For each of the workers in [packages](./packages), you will need to:
 1. run: `cp wrangler.toml.example wrangler.toml` and fill out `account_id` & Sentry variables inside wrangler.toml
 2. run: `yarn`
 
+#### Development Common Workflow
+
+1. In `packages/api-runner` run: `yarn link`
+2. In `packages/api-pool-updater` run: `yarn link "@pooltogether/api-runner"`
+3. In `packages/api-runner` run: `yarn build`
+4. In `packages/api-pool-updater` run: `yarn dev mainnet`
+5. In `packages/api-entrypoint` run: `yarn dev --port 8888`
+
+- `http://127.0.0.1:8787/update` to refresh the cache
+- `http://127.0.0.1:8888/pools/1` to fetch all pools on mainnet
+
 #### Development ([pool-updater](./packages/api-pool-updater/README.md))
 
 1. In `packages/api-runner` run: `yarn link`
 2. In `packages/api-pool-updater` run: `yarn link "@pooltogether/api-runner"`
 3. In `packages/api-runner` run: `yarn build`
-4. In `packages/api-pool-updater` run: `yarn start`
+4. In `packages/api-pool-updater` run: `yarn dev mainnet`
 5. API is available at `http://127.0.0.1:8787/update`
 
 Updated values will be reflected in the development KV on Cloudflare.

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "api-yield-source-data",
+  "name": "@pooltogether/api-yield-source-data",
   "version": "1.0.0",
   "description": "A cloudflare worker to keep the KV fresh with data from yield sources so we can estimate prizes",
   "main": "index.js",

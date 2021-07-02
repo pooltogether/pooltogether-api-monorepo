@@ -1,5 +1,5 @@
 {
-  "name": "api-pool-updater",
+  "name": "@pooltogether/api-pool-updater",
   "version": "1.0.0",
   "description": "A worker to keep the KV fresh for pools",
   "main": "index.js",
@@ -17,6 +17,6 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.4.6"
+    "@pooltogether/api-runner": "1.4.7"
   }
 }

@@ -1,4 +1,4 @@
-name = "white-snow-944a"
+name = "pooltogether-api"
 type = "webpack"
 workers_dev = true
 zone_id = ""

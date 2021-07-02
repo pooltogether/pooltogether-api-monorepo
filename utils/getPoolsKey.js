@@ -1,1 +1,1 @@
-export const getPoolsKey = (chainId) => `${chainId} - Pools`
+export const getPoolsKey = (chainId) => `${chainId}`
