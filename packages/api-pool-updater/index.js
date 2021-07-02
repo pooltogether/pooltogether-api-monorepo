@@ -1,21 +1,11 @@
+import { setInfuraId } from '@pooltogether/api-runner'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updatePools } from './updatePools'
 
-/**
- * Handle cloudflare cron job triggers by updating pools
- * @param {*} event
- * @returns
- */
-async function updatePoolsScheduledHandler(event) {
-  try {
-    await updatePools(event, Number(CHAIN_ID))
-    return true
-  } catch (e) {
-    event.waitUntil(log(e, event.request))
-    return false
-  }
-}
+addEventListener('fetch', (event) => {
+  event.respondWith(handleRequest(event))
+})
 
 addEventListener('scheduled', (event) => {
   try {
@@ -26,10 +16,27 @@ addEventListener('scheduled', (event) => {
 })
 
 /**
+ * Handle cloudflare cron job triggers by updating pools
+ * @param {*} event
+ * @returns
+ */
+async function updatePoolsScheduledHandler(event) {
+  setInfuraId(INFURA_ID)
+  try {
+    await updatePools(event, Number(CHAIN_ID))
+    return true
+  } catch (e) {
+    event.waitUntil(log(e, event.request))
+    return false
+  }
+}
+
+/**
  * Allow manual updates
  * @param {Event} event
  */
 async function handleRequest(event) {
+  setInfuraId(INFURA_ID)
   try {
     const request = event.request
     const _url = new URL(request.url)
@@ -73,7 +80,3 @@ async function handleRequest(event) {
     return errorResponse
   }
 }
-
-addEventListener('fetch', (event) => {
-  event.respondWith(handleRequest(event))
-})

@@ -1,10 +1,17 @@
 import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherplex'
+import { INFURA_ID } from '../index'
 
-const RPC_URLS = {
-  1: 'https://mainnet.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19', // TODO: lock this app ID down
-  4: 'https://rinkeby.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19',
-  137: 'https://polygon-mainnet.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19',
-  80001: 'https://polygon-mumbai.infura.io/v3/a0a574aaa9fc4fa8ad117dc7bc6ffc19'
+const getRpcUrl = (chainId) => {
+  switch (chainId) {
+    case 1:
+      return `https://mainnet.infura.io/v3/${INFURA_ID}`
+    case 4:
+      return `https://rinkeby.infura.io/v3/${INFURA_ID}`
+    case 137:
+      return `https://polygon-mainnet.infura.io/v3/${INFURA_ID}`
+    case 80001:
+      return `https://polygon-mumbai.infura.io/v3/${INFURA_ID}`
+  }
 }
 
 export const batch = async (chainId, fetch, ...batchCalls) => {
@@ -21,10 +28,10 @@ export const batch = async (chainId, fetch, ...batchCalls) => {
   }
 
   let callResponse
-  // console.log(RPC_URLS[chainId])
   // console.log('getting matic')
+
   try {
-    callResponse = await fetch(RPC_URLS[Number(chainId)], {
+    callResponse = await fetch(getRpcUrl(Number(chainId)), {
       method: 'POST',
       body: JSON.stringify(tx),
       headers: { 'Content-Type': 'application/json' }

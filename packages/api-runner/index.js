@@ -15,3 +15,6 @@ export async function getPools(chainId, fetch = nodeFetch) {
   const pools = await usePools(chainId, poolContracts, fetch)
   return pools
 }
+
+export let INFURA_ID = null
+export const setInfuraId = (id) => (INFURA_ID = id)

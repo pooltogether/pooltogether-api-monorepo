@@ -11,7 +11,7 @@ This worker aggregates data from external sources and stores them in the KV so w
 ###### Setup
 
 1. `cp wrangler.example.toml wrangler.toml`
-2. Fill in `account_id` and the Sentry variables.
+2. Fill in `account_id`, the Sentry logging variables and `INFURA_ID`.
 
 ###### Installation
 
