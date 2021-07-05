@@ -1,4 +1,4 @@
-import { setInfuraId } from '@pooltogether/api-runner'
+import { setInfuraId, setFetch } from '@pooltogether/api-runner'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updatePods } from './updatePods'
@@ -23,6 +23,7 @@ addEventListener('scheduled', (event) => {
 async function updatePodsScheduledHandler(event) {
   setInfuraId(INFURA_ID)
   setFetch(fetch)
+
   try {
     await updatePods(event, Number(CHAIN_ID))
     return true
@@ -39,30 +40,17 @@ async function updatePodsScheduledHandler(event) {
 async function handleRequest(event) {
   setInfuraId(INFURA_ID)
   setFetch(fetch)
+
   try {
     const request = event.request
     const _url = new URL(request.url)
     const pathname = _url.pathname
 
+    console.log(pathname)
+
     // Read routes
-    if (pathname.startsWith(`/update`)) {
-      try {
-        await updatePods(event, Number(CHAIN_ID))
-        const successResponse = new Response(`Successfully updated ${CHAIN_ID}`, {
-          ...DEFAULT_HEADERS,
-          status: 200
-        })
-        successResponse.headers.set('Content-Type', 'text/plain')
-        return successResponse
-      } catch (e) {
-        event.waitUntil(log(e, e.request))
-        const errorResponse = new Response(`Error updating ${CHAIN_ID}`, {
-          ...DEFAULT_HEADERS,
-          status: 500
-        })
-        errorResponse.headers.set('Content-Type', 'text/plain')
-        return errorResponse
-      }
+    if (pathname.startsWith(`/pods`)) {
+      return podsHandler(event)
     }
 
     const notFoundResponse = new Response('Invalid request', {
@@ -72,9 +60,31 @@ async function handleRequest(event) {
     notFoundResponse.headers.set('Content-Type', 'text/plain')
     return notFoundResponse
   } catch (e) {
+    console.log(e.message)
     event.waitUntil(log(e, e.request))
 
     const errorResponse = new Response('Error', {
+      ...DEFAULT_HEADERS,
+      status: 500
+    })
+    errorResponse.headers.set('Content-Type', 'text/plain')
+    return errorResponse
+  }
+}
+
+async function podsHandler(event) {
+  try {
+    await updatePods(event, Number(CHAIN_ID))
+    const successResponse = new Response(`Successfully updated pods on chain ${CHAIN_ID}`, {
+      ...DEFAULT_HEADERS,
+      status: 200
+    })
+    successResponse.headers.set('Content-Type', 'text/plain')
+    return successResponse
+  } catch (e) {
+    console.log(e.message)
+    event.waitUntil(log(e, e.request))
+    const errorResponse = new Response(`Error updating pods on chain ${CHAIN_ID}`, {
       ...DEFAULT_HEADERS,
       status: 500
     })

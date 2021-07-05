@@ -3,27 +3,36 @@ import { contract } from '@pooltogether/etherplex'
 import { batch } from 'lib/cloudflare-workers-batch'
 import { PodAbi } from '../../abis/Pod'
 
-export const getPod = async (chainId, podAddress) => {
+export const getPodContractAddresses = async (chainId, podAddress) => {
   const podContract = contract(podAddress, PodAbi, podAddress)
-  let batchCalls = []
+  const batchCalls = []
+  console.log('getPodContractAddresses', chainId, podAddress)
 
   batchCalls.push(
-    podContract
-      .owner()
-      .name()
-      .symbol()
-      .decimals()
-      .prizePool()
-      .manager()
-      .faucet()
-      .ticket()
-      .token()
-      .tokenDrop()
+    podContract.name()
+    // .owner()
+    // .symbol()
+    // .decimals()
+    // .prizePool()
+    // .manager()
+    // .faucet()
+    // .ticket()
+    // .token()
+    // .tokenDrop()
   )
 
-  const response = await batch(chainId, ...batchCalls)
+  let response
+  try {
+    response = await batch(chainId, ...batchCalls)
+  } catch (e) {
+    console.log('Error in getPodContractAddresses', e.message)
+    return null
+  }
+
+  console.log('getPodContractAddresses', chainId, podAddress, JSON.stringify(response))
 
   return {
+    address: podAddress,
     owner: response[podAddress].owner[0],
     name: response[podAddress].name[0],
     symbol: response[podAddress].symbol[0],

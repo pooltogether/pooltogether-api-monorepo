@@ -1,4 +1,4 @@
-# `Pooltogether API - Pool Updater`
+# `Pooltogether API - Contract Address Updater`
 
 This repo contains a Cloudflare Worker that is triggered by a cron job to keep the data in a Cloudflare KV store up to date. The worker also exposes `/update` which allows a manual trigger of the update.
 

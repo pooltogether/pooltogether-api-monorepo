@@ -87,7 +87,7 @@ const _tryMetadataMethod = async (
       `NFT at '${contractAddress}' with tokenId ${tokenId} likely does not support metadata using method: ${method}():`,
       e.message
     )
-    console.error(e)
+    console.log(e)
   }
 }
 

@@ -83,7 +83,7 @@ function toSentryEvent(err, request) {
             headers: request.headers,
             data: request.body
           }
-        : undefined,
+        : undefined
     // TODO: Version releases
     // release: version
   }

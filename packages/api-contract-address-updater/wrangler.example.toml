@@ -7,13 +7,13 @@ account_id = "" # Production account
 crons = ["0/2 * * * *"]
 
 [env.mainnet]
-name = "mainnet-pod-updater"
-kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }, { binding = "PODS", id = "b77bfde46fe6485081ae56f09cdd7e8b", preview_id = "114f3f50cc3c4285a92f052e56d2d2a9" }]
+name = "mainnet-contract-addresses-updater"
+kv_namespaces = [{ binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" }]
 
 
 [env.mainnet.vars]
 CHAIN_ID = '1'
-APP_NAME = 'mainnet-pod-updater'
+APP_NAME = 'mainnet-contract-addresses-updater'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
 SENTRY_PROJECT_ID = '5832514'

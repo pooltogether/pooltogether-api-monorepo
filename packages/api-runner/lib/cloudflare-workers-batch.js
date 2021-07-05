@@ -30,6 +30,8 @@ export const batch = async (chainId, ...batchCalls) => {
   let callResponse
   // console.log('getting matic')
 
+  console.log(JSON.stringify(podContract))
+
   callResponse = await fetch(getRpcUrl(Number(chainId)), {
     method: 'POST',
     body: JSON.stringify(tx),

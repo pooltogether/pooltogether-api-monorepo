@@ -1,6 +1,6 @@
 import { usePoolContracts } from 'lib/hooks/usePoolContracts'
 import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
-import { getPod as getPodChainData } from 'lib/contractAddresses/getPod'
+import { getPodContractAddresses as _getPodContractAddresses } from 'lib/contractAddresses/getPodContractAddresses'
 
 export async function getPool(chainId, poolAddress) {
   const pool = await usePoolByAddress(chainId, poolAddress)
@@ -15,8 +15,8 @@ export async function getPools(chainId) {
   return pools
 }
 
-export async function getPod(chainId, podAddress) {
-  return await getPodChainData(chainId, podAddress)
+export async function getPodContractAddresses(chainId, podAddress) {
+  return await _getPodContractAddresses(chainId, podAddress)
 }
 
 export let INFURA_ID = null

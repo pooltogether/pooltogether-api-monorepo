@@ -21,7 +21,7 @@ export const getLootBoxGraphData = async (chainId, tokenIds) => {
     const response = await graphQLClient.request(query, variables)
     return response
   } catch (error) {
-    console.error(error)
+    console.log(error)
     return []
   }
 }

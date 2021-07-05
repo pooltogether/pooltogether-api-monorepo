@@ -33,7 +33,7 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
       const poolAddresses = addressesByVersion[version].map((addr) => addr.toLowerCase())
 
       return client.request(query, { poolAddresses }).catch((e) => {
-        console.error(e)
+        console.log(e)
         return null
       })
     })

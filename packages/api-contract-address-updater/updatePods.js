@@ -1,5 +1,5 @@
 import { log } from '../../utils/sentry'
-import { getPod } from '@pooltogether/api-runner'
+import { getPodContractAddresses } from '@pooltogether/api-runner'
 import { getPodsKey } from '../../utils/kvKeys'
 
 /**
@@ -18,13 +18,20 @@ export const updatePods = async (event, chainId) => {
     throw new Error('Invalid addresses query parameter')
   }
 
+  console.log(podAddresses)
+
   // Fetch all pods
-  const responses = await Promise.allSettled(podAddresses.map((podAddress) => getPod(podAddresses)))
+  const responses = await Promise.allSettled(
+    podAddresses.map((podAddress) => getPodContractAddresses(Number(CHAIN_ID), podAddress))
+  )
+
+  console.log('Responses', JSON.stringify(responses))
 
   const pods = []
   responses.map((response) => {
     const { status, value, reason } = response
     if (status === 'rejected') {
+      console.log(reason)
       event.waitUntil(log(new Error(reason, event.request)))
     } else {
       pods.push(value)
@@ -32,10 +39,28 @@ export const updatePods = async (event, chainId) => {
   })
 
   if (!pods || pods.length === 0) {
-    event.waitUntil(log(new Error('No pods fetched during update'), event.request))
+    throw new Error('No pods fetched during update')
   }
 
-  event.waitUntil(PODS.put(getPodsKey(chainId)), {
+  let storedPods
+  try {
+    storedPods = JSON.parse(await CONTRACT_ADDRESSES.get(getPodsKey(chainId)))
+  } catch (e) {
+    console.warn('No Pods found in KV')
+    storedPods = {}
+  }
+
+  // Add newly fetched pods to store
+  pods.map((pod) => (storedPods[pod.address] = pod))
+
+  console.log(
+    'Put',
+    JSON.stringify(CONTRACT_ADDRESSES),
+    JSON.stringify(storedPods),
+    JSON.stringify(pods),
+    JSON.stringify(responses)
+  )
+  event.waitUntil(CONTRACT_ADDRESSES.put(getPodsKey(chainId)), JSON.stringify(storedPods), {
     metadata: {
       lastUpdated: new Date(Date.now()).toUTCString()
     }
