@@ -1,5 +1,7 @@
-import { log } from '../../utils/sentry'
 import { getPodContractAddresses } from '@pooltogether/api-runner'
+import { ethers } from 'ethers'
+
+import { log } from '../../utils/sentry'
 import { getPodsKey } from '../../utils/kvKeys'
 
 /**
@@ -17,15 +19,19 @@ export const updatePods = async (event, chainId) => {
   } catch (e) {
     throw new Error('Invalid addresses query parameter')
   }
-
-  console.log(podAddresses)
+  // Check for valid addresses
+  podAddresses = podAddresses.map((podAddress) => {
+    const address = podAddress.toLowerCase()
+    if (!ethers.utils.isAddress(address)) {
+      throw new Error(`${address} is not a valid address`)
+    }
+    return address
+  })
 
   // Fetch all pods
   const responses = await Promise.allSettled(
     podAddresses.map((podAddress) => getPodContractAddresses(Number(CHAIN_ID), podAddress))
   )
-
-  console.log('Responses', JSON.stringify(responses))
 
   const pods = []
   responses.map((response) => {
@@ -44,27 +50,26 @@ export const updatePods = async (event, chainId) => {
 
   let storedPods
   try {
-    storedPods = JSON.parse(await CONTRACT_ADDRESSES.get(getPodsKey(chainId)))
+    storedPods = (await CONTRACT_ADDRESSES.get(getPodsKey(chainId))) || {}
+    storedPods = JSON.parse(storedPods)
   } catch (e) {
     console.warn('No Pods found in KV')
     storedPods = {}
   }
 
   // Add newly fetched pods to store
-  pods.map((pod) => (storedPods[pod.address] = pod))
+  const updatedPods = {
+    ...storedPods
+  }
+  pods.map((pod) => (updatedPods[pod.address] = pod))
 
-  console.log(
-    'Put',
-    JSON.stringify(CONTRACT_ADDRESSES),
-    JSON.stringify(storedPods),
-    JSON.stringify(pods),
-    JSON.stringify(responses)
+  event.waitUntil(
+    CONTRACT_ADDRESSES.put(getPodsKey(chainId), JSON.stringify(updatedPods), {
+      metadata: {
+        lastUpdated: new Date(Date.now()).toUTCString()
+      }
+    })
   )
-  event.waitUntil(CONTRACT_ADDRESSES.put(getPodsKey(chainId)), JSON.stringify(storedPods), {
-    metadata: {
-      lastUpdated: new Date(Date.now()).toUTCString()
-    }
-  })
 
   return true
 }

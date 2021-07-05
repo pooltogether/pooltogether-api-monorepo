@@ -28,6 +28,7 @@ async function updatePodsScheduledHandler(event) {
     await updatePods(event, Number(CHAIN_ID))
     return true
   } catch (e) {
+    console.log(e)
     event.waitUntil(log(e, event.request))
     return false
   }
@@ -84,7 +85,7 @@ async function podsHandler(event) {
   } catch (e) {
     console.log(e.message)
     event.waitUntil(log(e, e.request))
-    const errorResponse = new Response(`Error updating pods on chain ${CHAIN_ID}`, {
+    const errorResponse = new Response(`Error updating pods on chain ${CHAIN_ID}.\n${e.message}`, {
       ...DEFAULT_HEADERS,
       status: 500
     })

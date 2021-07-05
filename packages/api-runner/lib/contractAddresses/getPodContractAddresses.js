@@ -5,31 +5,25 @@ import { PodAbi } from '../../abis/Pod'
 
 export const getPodContractAddresses = async (chainId, podAddress) => {
   const podContract = contract(podAddress, PodAbi, podAddress)
-  const batchCalls = []
-  console.log('getPodContractAddresses', chainId, podAddress)
+  let batchCalls = []
 
   batchCalls.push(
-    podContract.name()
-    // .owner()
-    // .symbol()
-    // .decimals()
-    // .prizePool()
-    // .manager()
-    // .faucet()
-    // .ticket()
-    // .token()
-    // .tokenDrop()
+    podContract
+      .owner()
+      .name()
+      .symbol()
+      .decimals()
+      .prizePool()
+      .manager()
+      .faucet()
+      .ticket()
+      .token()
+      .tokenDrop()
   )
 
-  let response
-  try {
-    response = await batch(chainId, ...batchCalls)
-  } catch (e) {
-    console.log('Error in getPodContractAddresses', e.message)
-    return null
-  }
+  const response = await batch(chainId, ...batchCalls)
 
-  console.log('getPodContractAddresses', chainId, podAddress, JSON.stringify(response))
+  console.log('getPodContractAddresses response', chainId, podAddress, JSON.stringify(response))
 
   return {
     address: podAddress,

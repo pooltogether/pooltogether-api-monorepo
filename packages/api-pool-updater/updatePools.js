@@ -15,11 +15,13 @@ export const updatePools = async (event, chainId) => {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))
   }
 
-  event.waitUntil(POOLS.put(getPoolsKey(chainId), JSON.stringify(pools)), {
-    metadata: {
-      lastUpdated: new Date(Date.now()).toUTCString()
-    }
-  })
+  event.waitUntil(
+    POOLS.put(getPoolsKey(chainId), JSON.stringify(pools), {
+      metadata: {
+        lastUpdated: new Date(Date.now()).toUTCString()
+      }
+    })
+  )
   // event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
   return true
 }
