@@ -28,9 +28,6 @@ export const batch = async (chainId, ...batchCalls) => {
   }
 
   let callResponse
-  // console.log('getting matic')
-
-  console.log('Pre fetch')
   callResponse = await fetch(getRpcUrl(Number(chainId)), {
     method: 'POST',
     body: JSON.stringify(tx),
@@ -38,9 +35,6 @@ export const batch = async (chainId, ...batchCalls) => {
   })
 
   const body = await callResponse.json()
-  console.log('Response', JSON.stringify(body))
-  // console.log('matic response')
   const decoded = decodeData(result, calls, body.result)
-
   return decoded
 }

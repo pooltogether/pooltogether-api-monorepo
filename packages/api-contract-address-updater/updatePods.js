@@ -1,5 +1,4 @@
 import { getPodContractAddresses } from '@pooltogether/api-runner'
-import { ethers } from 'ethers'
 
 import { log } from '../../utils/sentry'
 import { getPodsKey } from '../../utils/kvKeys'
@@ -7,27 +6,11 @@ import { getPodsKey } from '../../utils/kvKeys'
 /**
  * Call getPools and store the response in cloudflares KV
  * @param {*} event
- * @param {*} chainId The chain id to refresh pools for
+ * @param {*} chainId The chain id to refresh pods on
+ * @param {*} podAddresses The the pod addresses to update
  * @returns
  */
-export const updatePods = async (event, chainId) => {
-  const url = new URL(event.request.url)
-
-  let podAddresses = []
-  try {
-    podAddresses = url.searchParams.get('addresses').split(',')
-  } catch (e) {
-    throw new Error('Invalid addresses query parameter')
-  }
-  // Check for valid addresses
-  podAddresses = podAddresses.map((podAddress) => {
-    const address = podAddress.toLowerCase()
-    if (!ethers.utils.isAddress(address)) {
-      throw new Error(`${address} is not a valid address`)
-    }
-    return address
-  })
-
+export const updatePods = async (event, chainId, podAddresses) => {
   // Fetch all pods
   const responses = await Promise.allSettled(
     podAddresses.map((podAddress) => getPodContractAddresses(Number(CHAIN_ID), podAddress))
@@ -37,7 +20,6 @@ export const updatePods = async (event, chainId) => {
   responses.map((response) => {
     const { status, value, reason } = response
     if (status === 'rejected') {
-      console.log(reason)
       event.waitUntil(log(new Error(reason, event.request)))
     } else {
       pods.push(value)

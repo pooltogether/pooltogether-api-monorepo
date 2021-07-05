@@ -23,8 +23,6 @@ export const getPodContractAddresses = async (chainId, podAddress) => {
 
   const response = await batch(chainId, ...batchCalls)
 
-  console.log('getPodContractAddresses response', chainId, podAddress, JSON.stringify(response))
-
   return {
     address: podAddress,
     owner: response[podAddress].owner[0],

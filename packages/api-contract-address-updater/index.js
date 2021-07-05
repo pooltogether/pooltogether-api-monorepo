@@ -1,4 +1,7 @@
 import { setInfuraId, setFetch } from '@pooltogether/api-runner'
+import { podContractAddresses } from '@pooltogether/current-pool-data'
+import { ethers } from 'ethers'
+
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updatePods } from './updatePods'
@@ -9,7 +12,7 @@ addEventListener('fetch', (event) => {
 
 addEventListener('scheduled', (event) => {
   try {
-    event.waitUntil(updatePodsScheduledHandler(event))
+    event.waitUntil(updateScheduledHandler(event))
   } catch (e) {
     event.waitUntil(log(e, event.request))
   }
@@ -20,12 +23,13 @@ addEventListener('scheduled', (event) => {
  * @param {*} event
  * @returns
  */
-async function updatePodsScheduledHandler(event) {
+async function updateScheduledHandler(event) {
   setInfuraId(INFURA_ID)
   setFetch(fetch)
 
   try {
-    await updatePods(event, Number(CHAIN_ID))
+    const podAddresses = podContractAddresses[Number(CHAIN_ID)]
+    await updatePods(event, Number(CHAIN_ID), podAddresses)
     return true
   } catch (e) {
     console.log(e)
@@ -33,6 +37,8 @@ async function updatePodsScheduledHandler(event) {
     return false
   }
 }
+
+const PODS_URL = '/pods'
 
 /**
  * Allow manual updates
@@ -47,10 +53,8 @@ async function handleRequest(event) {
     const _url = new URL(request.url)
     const pathname = _url.pathname
 
-    console.log(pathname)
-
     // Read routes
-    if (pathname.startsWith(`/pods`)) {
+    if (pathname.startsWith(PODS_URL)) {
       return podsHandler(event)
     }
 
@@ -75,13 +79,35 @@ async function handleRequest(event) {
 
 async function podsHandler(event) {
   try {
-    await updatePods(event, Number(CHAIN_ID))
-    const successResponse = new Response(`Successfully updated pods on chain ${CHAIN_ID}`, {
-      ...DEFAULT_HEADERS,
-      status: 200
-    })
-    successResponse.headers.set('Content-Type', 'text/plain')
-    return successResponse
+    const request = event.request
+    const url = new URL(request.url)
+    const pathname = url.pathname
+    // Read routes
+    if (pathname.startsWith(`${PODS_URL}/update`)) {
+      let podAddresses = []
+      try {
+        podAddresses = url.searchParams.get('addresses').split(',')
+      } catch (e) {
+        throw new Error('Invalid addresses query parameter')
+      }
+      // Check for valid addresses
+      podAddresses = podAddresses.map((podAddress) => {
+        const address = podAddress.toLowerCase()
+        if (!ethers.utils.isAddress(address)) {
+          throw new Error(`${address} is not a valid address`)
+        }
+        return address
+      })
+      await updatePods(event, Number(CHAIN_ID), podAddresses)
+      const successResponse = new Response(`Successfully updated pods on chain ${CHAIN_ID}`, {
+        ...DEFAULT_HEADERS,
+        status: 200
+      })
+      successResponse.headers.set('Content-Type', 'text/plain')
+      return successResponse
+    }
+
+    throw new Error(`Invalid path ${pathname}`)
   } catch (e) {
     console.log(e.message)
     event.waitUntil(log(e, e.request))
