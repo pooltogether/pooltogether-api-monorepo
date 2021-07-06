@@ -11,10 +11,6 @@ addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
 })
 
-addEventListener('scheduled', (event) => {
-  event.waitUntil(handleSchedule(event))
-})
-
 /**
  * Respond with requested yield source
  * @param {Event} event
@@ -51,37 +47,11 @@ async function handleRequest(event) {
   } catch (e) {
     event.waitUntil(log(e, e.request))
 
-    const errorResponse = new Response('Error', {
+    const errorResponse = new Response(`Error\n${e.message}`, {
       ...DEFAULT_HEADERS,
       status: 500
     })
     errorResponse.headers.set('Content-Type', 'text/plain')
     return errorResponse
-  }
-}
-
-/**
- * Refetch yield source data and update in KV
- * @param {Event} event
- */
-async function handleSchedule(event) {
-  try {
-    const storedData = JSON.parse(await YIELD_SOURCE.get('data'))
-
-    const data = {}
-    const aaveResponse = await getAave(event)
-    const compoundResponse = await getCompound(event)
-
-    // Update values if possible
-    data[YIELD_SOURCES.aave] = aaveResponse ? aaveResponse : storedData[YIELD_SOURCES.aave]
-    data[YIELD_SOURCES.compound] = compoundResponse
-      ? compoundResponse
-      : storedData[YIELD_SOURCES.compound]
-
-    await YIELD_SOURCE.put('data', JSON.stringify(data), {
-      metadata: { lastUpdated: getCurrentDateString() }
-    })
-  } catch (e) {
-    event.waitUntil(log(e, event.request))
   }
 }

@@ -1,4 +1,6 @@
-import { getPodsKey } from '../../utils/kvKeys'
+import { ethers } from 'ethers'
+
+import { getPodsKey, getPoolsKey } from '../../utils/kvKeys'
 
 export const getPod = async (event, request) => {
   const _url = new URL(request.url)
@@ -6,15 +8,22 @@ export const getPod = async (event, request) => {
   const chainId = parseInt(pathname.split('/')[2], 10)
   const podAddress = pathname.split('/')[3].toLowerCase()
 
-  const storedPods = JSON.parse(await PODS.get(getPodsKey(chainId)))
-  const storedPools = JSON.parse(await POOLS.get(getPodsKey(chainId)))
+  if (!ethers.utils.isAddress(podAddress)) {
+    throw new Error(`Invalid address ${podAddress}`)
+  }
 
-  const pod = storedPods.find((pod) => pod.address === podAddress)
+  const storedPods = JSON.parse(await CONTRACT_ADDRESSES.get(getPodsKey(chainId)))
+  const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
+
+  const pod = storedPods[podAddress]
   if (!pod) {
     throw new Error('Pod not found')
   }
 
-  const pool = storedPools.find((pool) => pool.prizePool.address === pod.prizePool)
+  console.log(podAddress, pod.prizePool, JSON.stringify(storedPools))
+  const pool = storedPools.find(
+    (pool) => pool.prizePool.address.toLowerCase() === pod.prizePool.toLowerCase()
+  )
   if (!pool) {
     throw new Error('Pool not found')
   }
@@ -22,7 +31,7 @@ export const getPod = async (event, request) => {
   return formatPod(podAddress, pod, pool)
 }
 
-export const formatPod = (pod, pool) => {
+export const formatPod = (podAddress, pod, pool) => {
   return {
     metadata: {
       owner: pod.owner

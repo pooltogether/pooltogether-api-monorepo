@@ -11,9 +11,11 @@ import { getPodsKey } from '../../utils/kvKeys'
  * @returns
  */
 export const updatePods = async (event, chainId, podAddresses) => {
+  const formattedAddresses = podAddresses.map((address) => address.toLowerCase())
+
   // Fetch all pods
   const responses = await Promise.allSettled(
-    podAddresses.map((podAddress) => getPodContractAddresses(Number(CHAIN_ID), podAddress))
+    formattedAddresses.map((podAddress) => getPodContractAddresses(Number(CHAIN_ID), podAddress))
   )
 
   const pods = []

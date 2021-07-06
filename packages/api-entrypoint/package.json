@@ -20,6 +20,7 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/current-pool-data": "^3.4.25"
+    "@pooltogether/current-pool-data": "^3.4.25",
+    "ethers": "^5.4.1"
   }
 }
