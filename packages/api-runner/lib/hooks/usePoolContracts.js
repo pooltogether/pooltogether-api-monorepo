@@ -1,13 +1,7 @@
 import { prizePoolContracts } from '@pooltogether/current-pool-data'
 
 export function usePoolContracts(chainId) {
-  return [
-    ...prizePoolContracts[chainId].governance,
-    ...prizePoolContracts[chainId].community.map((contract) => ({
-      ...contract,
-      isCommunityPool: true
-    }))
-  ]
+  return [...prizePoolContracts[chainId].governance]
 }
 
 export function usePoolContract(chainId, poolAddress) {

@@ -10,9 +10,6 @@ import { formatUnits, parseUnits } from '@ethersproject/units'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { ethers } from 'ethers'
 import { PRIZE_POOL_TYPES, SECONDS_PER_YEAR } from '@pooltogether/current-pool-data'
-import { contract } from '@pooltogether/etherplex'
-import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
-import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 
 /**
  * Calculates the total yield values, $0 if no yield or no token prices
@@ -51,69 +48,57 @@ const calculateCompoundYieldTotalValues = async (_pool, fetch) => {
   const underlyingToken = pool.tokens.underlyingToken
   let compApy = '0'
   let yieldAmountUnformatted = pool.prize.amountUnformatted
+
+  const cTokenData = await fetch('https://yield.pooltogether-api.com/compound')
+  const response = await cTokenData.json()
+
   if (cToken) {
-    try {
-      // Calculate value of COMP
-      // console.log('getting comp')
-      const cTokenData = await fetch('https://api.compound.finance/api/v2/ctoken', {
-        method: 'POST',
-        body: JSON.stringify({
-          addresses: [cToken.address]
-        })
-      })
-      const response = await cTokenData.json()
-      // console.log('comp response', JSON.stringify(response))
+    const cTokenResponse = response.cToken.find(
+      (token) => token.token_address.toLowerCase() === cToken.address.toLowerCase()
+    )
 
-      compApy = response.cToken[0]?.comp_supply_apy.value || '0'
-      let totalValueUsdScaled = calculatedEstimatedAccruedCompTotalValueUsdScaled(
-        compApy,
-        pool.tokens.ticket.totalValueUsdScaled.add(pool.tokens.sponsorship.totalValueUsdScaled),
-        pool.prize.prizePeriodRemainingSeconds
+    compApy = cTokenResponse?.comp_supply_apy.value || '0'
+    let totalValueUsdScaled = calculatedEstimatedAccruedCompTotalValueUsdScaled(
+      compApy,
+      pool.tokens.ticket.totalValueUsdScaled.add(pool.tokens.sponsorship.totalValueUsdScaled),
+      pool.prize.prizePeriodRemainingSeconds
+    )
+
+    // Add in the value of any unclaimed COMP
+    if (pool.prize?.yield?.[YIELD_SOURCES.comp]?.unclaimedAmountUnformatted && pool.tokens.comp) {
+      const unclaimedUsdAndAmountValues = calculateUsdValues(
+        pool.prize.yield[YIELD_SOURCES.comp].unclaimedAmountUnformatted,
+        pool.tokens.comp
       )
-
-      // Add in the value of any unclaimed COMP
-      if (pool.prize?.yield?.[YIELD_SOURCES.comp]?.unclaimedAmountUnformatted && pool.tokens.comp) {
-        const unclaimedUsdAndAmountValues = calculateUsdValues(
-          pool.prize.yield[YIELD_SOURCES.comp].unclaimedAmountUnformatted,
-          pool.tokens.comp
-        )
-        totalValueUsdScaled = totalValueUsdScaled.add(
-          unclaimedUsdAndAmountValues.totalValueUsdScaled
-        )
-      }
-
-      const totalValueUsd = toNonScaledUsdString(totalValueUsdScaled)
-
-      if (!pool.prize.yield) {
-        pool.prize.yield = {
-          [YIELD_SOURCES.comp]: {}
-        }
-      }
-
-      pool.prize.yield = {
-        ...pool.prize.yield,
-        [YIELD_SOURCES.comp]: {
-          ...pool.prize.yield[YIELD_SOURCES.comp],
-          totalValueUsd,
-          totalValueUsdScaled
-        }
-      }
-
-      // Calculate yield
-      yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
-        pool.prize.amountUnformatted,
-        pool.tokens.ticket.totalSupplyUnformatted.add(
-          pool.tokens.sponsorship.totalSupplyUnformatted
-        ),
-        cToken.supplyRatePerBlock,
-        pool.tokens.ticket.decimals,
-        pool.prize.estimatedRemainingBlocksToPrize,
-        pool.reserve?.rate
-      )
-    } catch (e) {
-      console.warn(e.message)
-      return pool
+      totalValueUsdScaled = totalValueUsdScaled.add(unclaimedUsdAndAmountValues.totalValueUsdScaled)
     }
+
+    const totalValueUsd = toNonScaledUsdString(totalValueUsdScaled)
+
+    if (!pool.prize.yield) {
+      pool.prize.yield = {
+        [YIELD_SOURCES.comp]: {}
+      }
+    }
+
+    pool.prize.yield = {
+      ...pool.prize.yield,
+      [YIELD_SOURCES.comp]: {
+        ...pool.prize.yield[YIELD_SOURCES.comp],
+        totalValueUsd,
+        totalValueUsdScaled
+      }
+    }
+
+    // Calculate yield
+    yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
+      pool.prize.amountUnformatted,
+      pool.tokens.ticket.totalSupplyUnformatted.add(pool.tokens.sponsorship.totalSupplyUnformatted),
+      cToken.supplyRatePerBlock,
+      pool.tokens.ticket.decimals,
+      pool.prize.estimatedRemainingBlocksToPrize,
+      pool.reserve?.rate
+    )
   }
 
   const usdAndAmountValues = calculateUsdValues(yieldAmountUnformatted, underlyingToken)

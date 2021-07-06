@@ -1,0 +1,22 @@
+{
+  "name": "@pooltogether/api-pool-updater",
+  "version": "1.0.0",
+  "description": "A worker to keep the KV fresh for pools",
+  "main": "index.js",
+  "scripts": {
+    "build": "wrangler build",
+    "dev": "wrangler dev --env",
+    "start": "wrangler dev --env",
+    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "Dylan DesRosier <dylan@pooltogether.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "@pooltogether/api-runner": "1.6.1"
+  }
+}

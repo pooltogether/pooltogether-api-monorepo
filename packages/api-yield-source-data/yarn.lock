@@ -2,11 +2,6 @@
 # yarn lockfile v1
 
 
-"@pooltogether/current-pool-data@^3.4.25":
-  version "3.4.25"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.25.tgz#dbd5562a7804c499c15c6dd3251526f45a309631"
-  integrity sha512-My/9zujn9+9N1qJ7VowSdFyvIDMkxHNk+DM/5c1eOMT50yp/0W8HiteNuKCmqpSip1aN/xJHvS7zakBnl1vcdA==
-
 prettier@^1.18.2:
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"

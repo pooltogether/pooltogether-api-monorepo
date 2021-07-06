@@ -59,11 +59,6 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
     }
   }
 
-  // Only supported on mainnet
-  if (chainId !== 1) {
-    return {}
-  }
-
   const knownStablecoinAddresses = KNOWN_STABLECOIN_ADDRESSES?.[chainId] || []
 
   const blockFilter = _getBlockFilter(blockNumber)
