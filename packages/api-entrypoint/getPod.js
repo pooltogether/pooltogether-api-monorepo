@@ -20,7 +20,6 @@ export const getPod = async (event, request) => {
     throw new Error('Pod not found')
   }
 
-  console.log(podAddress, pod.prizePool, JSON.stringify(storedPools))
   const pool = storedPools.find(
     (pool) => pool.prizePool.address.toLowerCase() === pod.prizePool.toLowerCase()
   )
