@@ -58,7 +58,7 @@ export const getPools = async (chainId, poolContracts, fetch) => {
   pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools, fetch))
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateWeeklyPrizes(pools)
-  pools = calculateTokenFaucetApr(pools)
+  pools = calculateTokenFaucetAprs(pools)
   pools = addPoolMetadata(pools, poolContracts)
 
   return pools
@@ -149,7 +149,16 @@ const getAllErc20Addresses = (pools) => {
     // Get lootbox erc20s
     pool.prize.lootBox?.erc20Tokens?.forEach((erc20) => addresses.add(erc20.address))
     // Get known tokens
-    Object.values(pool.tokens).forEach((erc20) => addresses.add(erc20.address))
+    const tokenValues = Object.values(pool.tokens)
+    tokenValues.forEach((tokenValue) => {
+      if (tokenValue?.length > 0) {
+        tokenValue.forEach((value) => {
+          addresses.add(value.tokenFaucetDripAssetAddress)
+        })
+      } else {
+        addresses.add(tokenValue.address)
+      }
+    })
   })
   return [...addresses]
 }
@@ -164,9 +173,15 @@ const combineTokenPricesData = (_pools, tokenPriceData, defaultTokenPriceUsd) =>
 
   pools.forEach((pool) => {
     // Add to all known tokens
-    Object.values(pool.tokens).forEach((token) =>
-      addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
-    )
+    Object.values(pool.tokens).forEach((token) => {
+      if (token?.length > 0) {
+        token.forEach((t) => {
+          addTokenTotalUsdValue(t, tokenPriceData, defaultTokenPriceUsd)
+        })
+      } else {
+        addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
+      }
+    })
     // Add to all external erc20 tokens
     Object.values(pool.prize.externalErc20Awards).forEach((token) =>
       addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
@@ -530,7 +545,7 @@ const calculateTotalValueLockedPerPool = (pools) =>
  * @param {*} pools
  * @returns
  */
-const calculateTokenFaucetApr = (pools) =>
+const calculateTokenFaucetAprs = (pools) =>
   pools.map((_pool) => {
     const pool = cloneDeep(_pool)
     if (pool.tokens.tokenFaucetDripToken?.usd) {

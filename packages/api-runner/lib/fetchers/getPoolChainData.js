@@ -32,6 +32,8 @@ import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 const getCompoundComptrollerName = (prizePoolAddress) => `compound-comptroller-${prizePoolAddress}`
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
+const getTokenFaucetDripTokenName = (prizePoolAddress, tokenFaucetAddress, tokenAddress) =>
+  `tokenFaucetDripToken-${prizePoolAddress}-${tokenFaucetAddress}-${tokenAddress}`
 const getSablierErc20BatchName = (prizePoolAddress, streamId) =>
   `sablier-${prizePoolAddress}-${streamId}`
 const getErc721BatchName = (prizeAddress, tokenId) => `erc721Award-${prizeAddress}-${tokenId}`
@@ -90,20 +92,14 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     )
 
     // Token Listener
-    // NOTE: If it's not a token faucet, this will break everything
-    if (pool.tokenListener.address) {
+    pool.tokenListeners.forEach((tokenListenerAddress) => {
       const tokenFaucetContract = contract(
-        pool.tokenListener.address,
+        tokenListenerAddress,
         TokenFaucetABI,
-        pool.tokenListener.address
+        tokenListenerAddress
       )
-      batchCalls.push(
-        tokenFaucetContract
-          .dripRatePerSecond()
-          .asset()
-          .measure()
-      )
-    }
+      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+    })
 
     // External ERC20 awards
     if (pool.prize.externalErc20Awards.length > 0) {
@@ -127,11 +123,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract
-              .balanceOf(pool.prizePool.address)
-              .name()
-              .symbol()
-              .ownerOf(tokenId)
+            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -218,21 +210,23 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    const tokenFaucetDripAssetAddress = firstBatchValues[pool?.tokenListener?.address]?.asset[0]
-    if (tokenFaucetDripAssetAddress) {
-      const dripErc20Contract = contract(
-        getExternalErc20AwardBatchName(pool.prizePool.address, tokenFaucetDripAssetAddress),
-        ERC20Abi,
-        tokenFaucetDripAssetAddress
-      )
-      batchCalls.push(
-        dripErc20Contract
-          .balanceOf(pool.tokenListener.address)
-          .decimals()
-          .symbol()
-          .name()
-      )
-    }
+    pool.tokenListeners.forEach((tokenListenerAddress) => {
+      const tokenFaucetDripAssetAddress = firstBatchValues[tokenListenerAddress]?.asset[0]
+      if (tokenFaucetDripAssetAddress) {
+        const dripErc20Contract = contract(
+          getTokenFaucetDripTokenName(
+            pool.prizePool.address,
+            tokenListenerAddress,
+            tokenFaucetDripAssetAddress
+          ),
+          ERC20Abi,
+          tokenFaucetDripAssetAddress
+        )
+        batchCalls.push(
+          dripErc20Contract.balanceOf(tokenListenerAddress).decimals().symbol().name()
+        )
+      }
+    })
 
     // Sablier
     const sablierErc20StreamTokenAddress =
@@ -244,12 +238,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(
-        sablierErc20Stream
-          .decimals()
-          .name()
-          .symbol()
-      )
+      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
     }
 
     // Reserve
@@ -409,12 +398,17 @@ const formatPoolChainData = (
     }
 
     // Token listener
-    if (pool.tokenListener.address) {
-      const tokenListenerData = firstBatchValues[pool.tokenListener.address]
+    let tokenFaucetDripTokens = []
+    pool.tokenListeners.forEach((tokenListenerAddress) => {
+      const tokenListenerData = firstBatchValues[tokenListenerAddress]
       const tokenFaucetDripAssetAddress = tokenListenerData.asset[0]
       const tokenListenerData2 =
         secondBatchValues[
-          getExternalErc20AwardBatchName(pool.prizePool.address, tokenFaucetDripAssetAddress)
+          getTokenFaucetDripTokenName(
+            pool.prizePool.address,
+            tokenListenerAddress,
+            tokenFaucetDripAssetAddress
+          )
         ]
       const tokenFaucetDripToken = {
         address: tokenFaucetDripAssetAddress.toLowerCase(),
@@ -433,19 +427,20 @@ const formatPoolChainData = (
         formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted,
         tokenFaucetDripToken.decimals
       )
-      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted = formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(
-        SECONDS_PER_DAY
-      )
+      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted =
+        formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
       formattedPoolChainData.tokenListener.dripRatePerDay = formatUnits(
         formattedPoolChainData.tokenListener.dripRatePerDayUnformatted,
         tokenFaucetDripToken.decimals
       )
 
+      tokenFaucetDripTokens.push(tokenFaucetDripToken)
+
       formattedPoolChainData.tokens = {
         ...formattedPoolChainData.tokens,
-        tokenFaucetDripToken
+        tokenFaucetDripTokens
       }
-    }
+    })
 
     // External ERC20 awards
     // NOTE: editing pool graph data here to merge the token amounts in

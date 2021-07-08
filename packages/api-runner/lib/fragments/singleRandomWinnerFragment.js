@@ -9,7 +9,6 @@ export const singleRandomWinnerFragment = gql`
     id
 
     prizePeriodSeconds
-    tokenListener
 
     ticket {
       ...controlledTokenFragment
