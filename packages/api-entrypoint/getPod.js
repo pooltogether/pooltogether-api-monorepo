@@ -27,13 +27,14 @@ export const getPod = async (event, request) => {
     throw new Error('Pool not found')
   }
 
-  return formatPod(podAddress, pod, pool)
+  return formatPod(chainId, podAddress, pod, pool)
 }
 
-export const formatPod = (podAddress, pod, pool) => {
+export const formatPod = (chainId, podAddress, pod, pool) => {
   return {
     metadata: {
-      owner: pod.owner
+      owner: pod.owner,
+      chainId
     },
     pod: {
       address: podAddress
@@ -43,16 +44,18 @@ export const formatPod = (podAddress, pod, pool) => {
     },
     prize: pool.prize,
     tokens: {
-      underlyingToken: pool.tokens.underlyingToken,
       podShare: {
         address: pod.ticket,
         name: pod.name,
         symbol: pod.symbol,
         decimals: pod.decimals
       },
-      tokenFaucetDripToken: pool.tokens.tokenFaucetDripToken
+      sponsorship: pool.tokens.sponsorship,
+      ticket: pool.tokens.ticket,
+      tokenFaucetDripToken: pool.tokens.tokenFaucetDripToken,
+      underlyingToken: pool.tokens.underlyingToken
     },
-    tokenFaucet: pool.tokenListener,
+    tokenListener: pool.tokenListener,
     prizePool: pool
   }
 }

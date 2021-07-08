@@ -34,7 +34,7 @@ export const getPods = async (event, request) => {
       throw new Error('Pool not found')
     }
 
-    return formatPod(podAddress, pod, pool)
+    return formatPod(chainId, podAddress, pod, pool)
   })
 
   return pods

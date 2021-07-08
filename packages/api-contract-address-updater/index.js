@@ -4,6 +4,7 @@ import { ethers } from 'ethers'
 
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
+import { validateAddresses } from '../../utils/validateAddresses'
 import { updatePods } from './updatePods'
 
 addEventListener('fetch', (event) => {
@@ -91,13 +92,7 @@ async function podsHandler(event) {
         throw new Error('Invalid addresses query parameter')
       }
       // Check for valid addresses
-      podAddresses = podAddresses.map((podAddress) => {
-        const address = podAddress.toLowerCase()
-        if (!ethers.utils.isAddress(address)) {
-          throw new Error(`${address} is not a valid address`)
-        }
-        return address
-      })
+      podAddresses = validateAddresses(podAddresses)
       await updatePods(event, Number(CHAIN_ID), podAddresses)
       const successResponse = new Response(`Successfully updated pods on chain ${CHAIN_ID}`, {
         ...DEFAULT_HEADERS,

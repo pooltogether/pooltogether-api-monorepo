@@ -45,6 +45,7 @@ export const updatePods = async (event, chainId, podAddresses) => {
   const updatedPods = {
     ...storedPods
   }
+
   pods.map((pod) => (updatedPods[pod.address] = pod))
 
   event.waitUntil(
