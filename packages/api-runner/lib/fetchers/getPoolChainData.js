@@ -92,7 +92,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     )
 
     // Token Faucets
-    pool.tokenFaucets.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
       batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
     })
@@ -206,7 +206,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    pool.tokenFaucets.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetDripAssetAddress = firstBatchValues[tokenFaucetAddress]?.asset[0]
       if (tokenFaucetDripAssetAddress) {
         const dripErc20Contract = contract(
@@ -393,7 +393,7 @@ const formatPoolChainData = (
 
     // Token listener
     let tokenFaucetDripTokens = []
-    pool.tokenFaucets.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
       const dripTokenAddress = tokenFaucetData.asset[0]
       const tokenFaucetData2 =
@@ -402,6 +402,7 @@ const formatPoolChainData = (
         ]
 
       const dripToken = {
+        tokenFaucetAddress,
         address: dripTokenAddress.toLowerCase(),
         amount: formatUnits(tokenFaucetData2.balanceOf[0], tokenFaucetData2.decimals[0]),
         amountUnformatted: tokenFaucetData2.balanceOf[0],

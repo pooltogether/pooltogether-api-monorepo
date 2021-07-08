@@ -155,7 +155,7 @@ const getAllErc20Addresses = (pools) => {
     Object.values(pool.tokens).forEach((erc20) => addresses.add(erc20.address))
 
     // Token faucet drip tokens
-    pool.tokenFaucets.forEach((tokenFaucet) => addresses.add(tokenFaucet.asset))
+    pool.tokenFaucets?.forEach((tokenFaucet) => addresses.add(tokenFaucet.asset))
   })
 
   return [...addresses]
@@ -171,14 +171,16 @@ const combineTokenPricesData = (_pools, tokenPriceData, defaultTokenPriceUsd) =>
 
   pools.forEach((pool) => {
     // Add for token faucet drip tokens
-    Object.values(pool.tokenFaucets).forEach((tokenFaucet) => {
-      addTokenTotalUsdValue(tokenFaucet.dripToken, tokenPriceData, defaultTokenPriceUsd)
-    })
+    if (Array.isArray(pool.tokenFaucets)) {
+      Object.values(pool.tokenFaucets).forEach((tokenFaucet) => {
+        addTokenTotalUsdValue(tokenFaucet.dripToken, tokenPriceData, defaultTokenPriceUsd)
+      })
+    }
 
     // Add to all known tokens
     Object.values(pool.tokens).forEach((token) => {
       // This takes care of tokenFaucetDripTokens:
-      if (token?.length > 0) {
+      if (Array.isArray(token)) {
         token.forEach((t) => {
           addTokenTotalUsdValue(t, tokenPriceData, defaultTokenPriceUsd)
         })
@@ -561,7 +563,7 @@ const calculateTokenFaucetAprs = (pools) =>
   pools.map((_pool) => {
     const pool = cloneDeep(_pool)
 
-    pool.tokenFaucets.forEach((tokenFaucet) => {
+    pool.tokenFaucets?.forEach((tokenFaucet) => {
       const { amountUnformatted, usd } = tokenFaucet.dripToken
       if (usd && amountUnformatted !== ethers.constants.Zero) {
         const { dripRatePerSecond } = tokenFaucet
