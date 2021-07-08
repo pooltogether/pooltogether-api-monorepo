@@ -419,20 +419,28 @@ const formatPoolChainData = (
         symbol: tokenListenerData2.symbol[0]
       }
 
-      formattedPoolChainData.tokenListener = {
+      const tokenListener = {
+        address: tokenListenerAddress.toLowerCase(),
         dripRatePerSecondUnformatted: tokenListenerData.dripRatePerSecond[0],
-        measure: tokenListenerData.measure[0]
+        measure: tokenListenerData.measure[0],
+        asset: tokenFaucetDripAssetAddress.toLowerCase()
       }
-      formattedPoolChainData.tokenListener.dripRatePerSecond = formatUnits(
-        formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted,
+      tokenListener.dripRatePerSecond = formatUnits(
+        tokenListener.dripRatePerSecondUnformatted,
         tokenFaucetDripToken.decimals
       )
-      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted =
-        formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
-      formattedPoolChainData.tokenListener.dripRatePerDay = formatUnits(
-        formattedPoolChainData.tokenListener.dripRatePerDayUnformatted,
+      tokenListener.dripRatePerDayUnformatted =
+        tokenListener.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
+      tokenListener.dripRatePerDay = formatUnits(
+        tokenListener.dripRatePerDayUnformatted,
         tokenFaucetDripToken.decimals
       )
+
+      if (!formattedPoolChainData.tokenListeners) {
+        formattedPoolChainData.tokenListeners = []
+      }
+
+      formattedPoolChainData.tokenListeners.push(tokenListener)
 
       tokenFaucetDripTokens.push(tokenFaucetDripToken)
 

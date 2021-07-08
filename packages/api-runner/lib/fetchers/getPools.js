@@ -548,16 +548,24 @@ const calculateTotalValueLockedPerPool = (pools) =>
 const calculateTokenFaucetAprs = (pools) =>
   pools.map((_pool) => {
     const pool = cloneDeep(_pool)
-    if (pool.tokens.tokenFaucetDripToken?.usd) {
-      const { amountUnformatted, usd } = pool.tokens.tokenFaucetDripToken
-      if (amountUnformatted !== ethers.constants.Zero) {
-        const { dripRatePerSecond } = pool.tokenListener
+
+    pool.tokenListeners.forEach((tokenListener) => {
+      const tokenFaucetDripToken = pool.tokens.tokenFaucetDripTokens.find(
+        (dripToken) => dripToken.address === tokenListener.asset
+      )
+
+      const { amountUnformatted, usd } = tokenFaucetDripToken
+      if (usd && amountUnformatted !== ethers.constants.Zero) {
+        const { dripRatePerSecond } = tokenListener
+
         const totalDripPerDay = Number(dripRatePerSecond) * SECONDS_PER_DAY
         const totalDripDailyValue = totalDripPerDay * usd
         const totalTicketValueUsd = Number(pool.prizePool.totalTicketValueLockedUsd)
-        pool.tokenListener.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
+
+        tokenListener.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
       }
-    }
+    })
+
     return pool
   })
 
