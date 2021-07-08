@@ -80,7 +80,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
       address: prizePool.id
     },
     prizeStrategy: {
-      address: prizePool.prizeStrategy.id
+      address: prizePool.prizeStrategy.id,
+      tokenListener: prizeStrategy.tokenListener
     },
     tokens: {
       ticket: {
@@ -127,7 +128,7 @@ const formatPoolGraphData = (prizePool, chainId) => {
             : prizePool.reserveRegistry
       }
     },
-    tokenListeners: collectTokenListeners(chainId, prizePool.id)
+    tokenFaucets: collectTokenFaucets(chainId, prizePool.id)
   }
 
   if (prizePool.compoundPrizePool) {
@@ -141,10 +142,10 @@ const formatPoolGraphData = (prizePool, chainId) => {
   return formattedData
 }
 
-const collectTokenListeners = (chainId, poolAddress) => {
+const collectTokenFaucets = (chainId, poolAddress) => {
   const poolContract = usePoolContract(chainId, poolAddress)
 
-  return poolContract.tokenListeners
+  return poolContract.tokenFaucets
 }
 
 const formatCompoundPrizePoolData = (prizePool, formattedData) => {

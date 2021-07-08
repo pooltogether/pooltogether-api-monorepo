@@ -143,23 +143,21 @@ export const formatLootBox = (chainId, lootBoxData) => ({
  */
 const getAllErc20Addresses = (pools) => {
   const addresses = new Set()
+
   pools.forEach((pool) => {
     // Get external erc20s
     pool.prize.externalErc20Awards.forEach((erc20) => addresses.add(erc20.address))
+
     // Get lootbox erc20s
     pool.prize.lootBox?.erc20Tokens?.forEach((erc20) => addresses.add(erc20.address))
+
     // Get known tokens
-    const tokenValues = Object.values(pool.tokens)
-    tokenValues.forEach((tokenValue) => {
-      if (tokenValue?.length > 0) {
-        tokenValue.forEach((value) => {
-          addresses.add(value.tokenFaucetDripAssetAddress)
-        })
-      } else {
-        addresses.add(tokenValue.address)
-      }
-    })
+    Object.values(pool.tokens).forEach((erc20) => addresses.add(erc20.address))
+
+    // Token faucet drip tokens
+    pool.tokenFaucets.forEach((tokenFaucet) => addresses.add(tokenFaucet.asset))
   })
+
   return [...addresses]
 }
 
@@ -172,28 +170,39 @@ const combineTokenPricesData = (_pools, tokenPriceData, defaultTokenPriceUsd) =>
   const pools = cloneDeep(_pools)
 
   pools.forEach((pool) => {
+    // Add for token faucet drip tokens
+    Object.values(pool.tokenFaucets).forEach((tokenFaucet) => {
+      addTokenTotalUsdValue(tokenFaucet.dripToken, tokenPriceData, defaultTokenPriceUsd)
+    })
+
     // Add to all known tokens
     Object.values(pool.tokens).forEach((token) => {
+      // This takes care of tokenFaucetDripTokens:
       if (token?.length > 0) {
         token.forEach((t) => {
           addTokenTotalUsdValue(t, tokenPriceData, defaultTokenPriceUsd)
         })
+        // Regular ticket/sponsorship tokens case:
       } else {
         addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
       }
     })
+
     // Add to all external erc20 tokens
     Object.values(pool.prize.externalErc20Awards).forEach((token) =>
       addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
     )
+
     // Add to all lootBox tokens
     pool.prize.lootBox?.erc20Tokens?.forEach((token) =>
       addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
     )
+
     // Add total values for controlled tokens
     const underlyingToken = pool.tokens.underlyingToken
     addTotalValueForControlledTokens(pool.tokens.ticket, underlyingToken)
     addTotalValueForControlledTokens(pool.tokens.sponsorship, underlyingToken)
+
     // Add total values for reserves
     addTotalValueForReserve(pool)
   })
@@ -207,11 +216,14 @@ const combineTokenPricesData = (_pools, tokenPriceData, defaultTokenPriceUsd) =>
  */
 export const addTokenTotalUsdValue = (token, tokenPriceData, defaultTokenPriceUsd) => {
   const priceData = tokenPriceData[token.address]
+
   if (priceData) {
     token.usd = tokenPriceData[token.address].usd || defaultTokenPriceUsd
     token.derivedETH = tokenPriceData[token.address].derivedETH || defaultTokenPriceUsd.toString()
+
     if (token.amountUnformatted) {
       const usdValueUnformatted = amountMultByUsd(token.amountUnformatted, token.usd)
+
       token.totalValueUsd = formatUnits(usdValueUnformatted, token.decimals)
       token.totalValueUsdScaled = toScaledUsdBigNumber(token.totalValueUsd)
     }
@@ -549,20 +561,16 @@ const calculateTokenFaucetAprs = (pools) =>
   pools.map((_pool) => {
     const pool = cloneDeep(_pool)
 
-    pool.tokenListeners.forEach((tokenListener) => {
-      const tokenFaucetDripToken = pool.tokens.tokenFaucetDripTokens.find(
-        (dripToken) => dripToken.address === tokenListener.asset
-      )
-
-      const { amountUnformatted, usd } = tokenFaucetDripToken
+    pool.tokenFaucets.forEach((tokenFaucet) => {
+      const { amountUnformatted, usd } = tokenFaucet.dripToken
       if (usd && amountUnformatted !== ethers.constants.Zero) {
-        const { dripRatePerSecond } = tokenListener
+        const { dripRatePerSecond } = tokenFaucet
 
         const totalDripPerDay = Number(dripRatePerSecond) * SECONDS_PER_DAY
         const totalDripDailyValue = totalDripPerDay * usd
         const totalTicketValueUsd = Number(pool.prizePool.totalTicketValueLockedUsd)
 
-        tokenListener.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
+        tokenFaucet.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
       }
     })
 

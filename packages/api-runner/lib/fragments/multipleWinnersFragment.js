@@ -10,6 +10,7 @@ export const multipleWinnersFragment = gql`
 
     numberOfWinners
     prizePeriodSeconds
+    tokenListener
 
     ticket {
       ...controlledTokenFragment

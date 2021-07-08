@@ -91,13 +91,9 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         )
     )
 
-    // Token Listener
-    pool.tokenListeners.forEach((tokenListenerAddress) => {
-      const tokenFaucetContract = contract(
-        tokenListenerAddress,
-        TokenFaucetABI,
-        tokenListenerAddress
-      )
+    // Token Faucets
+    pool.tokenFaucets.forEach((tokenFaucetAddress) => {
+      const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
       batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
     })
 
@@ -210,21 +206,19 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    pool.tokenListeners.forEach((tokenListenerAddress) => {
-      const tokenFaucetDripAssetAddress = firstBatchValues[tokenListenerAddress]?.asset[0]
+    pool.tokenFaucets.forEach((tokenFaucetAddress) => {
+      const tokenFaucetDripAssetAddress = firstBatchValues[tokenFaucetAddress]?.asset[0]
       if (tokenFaucetDripAssetAddress) {
         const dripErc20Contract = contract(
           getTokenFaucetDripTokenName(
             pool.prizePool.address,
-            tokenListenerAddress,
+            tokenFaucetAddress,
             tokenFaucetDripAssetAddress
           ),
           ERC20Abi,
           tokenFaucetDripAssetAddress
         )
-        batchCalls.push(
-          dripErc20Contract.balanceOf(tokenListenerAddress).decimals().symbol().name()
-        )
+        batchCalls.push(dripErc20Contract.balanceOf(tokenFaucetAddress).decimals().symbol().name())
       }
     })
 
@@ -399,50 +393,49 @@ const formatPoolChainData = (
 
     // Token listener
     let tokenFaucetDripTokens = []
-    pool.tokenListeners.forEach((tokenListenerAddress) => {
-      const tokenListenerData = firstBatchValues[tokenListenerAddress]
-      const tokenFaucetDripAssetAddress = tokenListenerData.asset[0]
-      const tokenListenerData2 =
+    pool.tokenFaucets.forEach((tokenFaucetAddress) => {
+      const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
+      const dripTokenAddress = tokenFaucetData.asset[0]
+      const tokenFaucetData2 =
         secondBatchValues[
-          getTokenFaucetDripTokenName(
-            pool.prizePool.address,
-            tokenListenerAddress,
-            tokenFaucetDripAssetAddress
-          )
+          getTokenFaucetDripTokenName(pool.prizePool.address, tokenFaucetAddress, dripTokenAddress)
         ]
-      const tokenFaucetDripToken = {
-        address: tokenFaucetDripAssetAddress.toLowerCase(),
-        amount: formatUnits(tokenListenerData2.balanceOf[0], tokenListenerData2.decimals[0]),
-        amountUnformatted: tokenListenerData2.balanceOf[0],
-        decimals: tokenListenerData2.decimals[0],
-        name: tokenListenerData2.name[0],
-        symbol: tokenListenerData2.symbol[0]
+
+      const dripToken = {
+        address: dripTokenAddress.toLowerCase(),
+        amount: formatUnits(tokenFaucetData2.balanceOf[0], tokenFaucetData2.decimals[0]),
+        amountUnformatted: tokenFaucetData2.balanceOf[0],
+        decimals: tokenFaucetData2.decimals[0],
+        name: tokenFaucetData2.name[0],
+        symbol: tokenFaucetData2.symbol[0]
       }
 
-      const tokenListener = {
-        address: tokenListenerAddress.toLowerCase(),
-        dripRatePerSecondUnformatted: tokenListenerData.dripRatePerSecond[0],
-        measure: tokenListenerData.measure[0],
-        asset: tokenFaucetDripAssetAddress.toLowerCase()
+      const tokenFaucet = {
+        address: tokenFaucetAddress.toLowerCase(),
+        dripRatePerSecondUnformatted: tokenFaucetData.dripRatePerSecond[0],
+        measure: tokenFaucetData.measure[0],
+        asset: dripTokenAddress.toLowerCase()
       }
-      tokenListener.dripRatePerSecond = formatUnits(
-        tokenListener.dripRatePerSecondUnformatted,
-        tokenFaucetDripToken.decimals
+      tokenFaucet.dripRatePerSecond = formatUnits(
+        tokenFaucet.dripRatePerSecondUnformatted,
+        dripToken.decimals
       )
-      tokenListener.dripRatePerDayUnformatted =
-        tokenListener.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
-      tokenListener.dripRatePerDay = formatUnits(
-        tokenListener.dripRatePerDayUnformatted,
-        tokenFaucetDripToken.decimals
+      tokenFaucet.dripRatePerDayUnformatted =
+        tokenFaucet.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
+      tokenFaucet.dripRatePerDay = formatUnits(
+        tokenFaucet.dripRatePerDayUnformatted,
+        dripToken.decimals
       )
 
-      if (!formattedPoolChainData.tokenListeners) {
-        formattedPoolChainData.tokenListeners = []
+      if (!formattedPoolChainData.tokenFaucets) {
+        formattedPoolChainData.tokenFaucets = []
       }
 
-      formattedPoolChainData.tokenListeners.push(tokenListener)
+      formattedPoolChainData.tokenFaucets.push(tokenFaucet)
+      tokenFaucet.dripToken = dripToken
 
-      tokenFaucetDripTokens.push(tokenFaucetDripToken)
+      // Add to tokens list
+      tokenFaucetDripTokens.push(dripToken)
 
       formattedPoolChainData.tokens = {
         ...formattedPoolChainData.tokens,
