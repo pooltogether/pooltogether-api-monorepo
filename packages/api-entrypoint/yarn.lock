@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@pooltogether/current-pool-data@^3.4.25":
-  "integrity" "sha512-My/9zujn9+9N1qJ7VowSdFyvIDMkxHNk+DM/5c1eOMT50yp/0W8HiteNuKCmqpSip1aN/xJHvS7zakBnl1vcdA=="
-  "resolved" "https://registry.npmjs.org/@pooltogether/current-pool-data/-/current-pool-data-3.4.25.tgz"
-  "version" "3.4.25"
+"@pooltogether/current-pool-data@^3.5.3":
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.3.tgz#f10fb9d0096a707f4f6395902848cc57f8bae5a4"
+  integrity sha512-mPKsvYy1FlD/9/xa/ATIhAivT2U/up/L2/V4UFIJkvapHXItxv4ILbMZjwNn0h6iFvJPnt2lFpDi1EEXdX8N0w==
 
-"prettier@^1.18.2":
-  "integrity" "sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew=="
-  "resolved" "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz"
-  "version" "1.19.1"
+prettier@^1.18.2:
+  version "1.19.1"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz"
+  integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==

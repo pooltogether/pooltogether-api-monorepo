@@ -4,7 +4,12 @@ import { ethers } from 'ethers'
 import { formatUnits, parseUnits } from '@ethersproject/units'
 import { addBigNumbers, toScaledUsdBigNumber, toNonScaledUsdString } from '@pooltogether/utilities'
 
-import { ERC20_BLOCK_LIST, SECONDS_PER_DAY } from 'lib/constants'
+import {
+  CUSTOM_CONTRACT_ADDRESSES,
+  NETWORK,
+  ERC20_BLOCK_LIST,
+  SECONDS_PER_DAY
+} from 'lib/constants'
 import { getLootBoxGraphData } from 'lib/fetchers/getLootBoxGraphData'
 import { getLootBoxChainData } from 'lib/fetchers/getLootBoxChainData'
 import { getPoolGraphData } from 'lib/fetchers/getPoolGraphData'
@@ -564,7 +569,15 @@ const calculateTokenFaucetAprs = (pools) =>
     const pool = cloneDeep(_pool)
 
     pool.tokenFaucets?.forEach((tokenFaucet) => {
-      const { amountUnformatted, usd } = tokenFaucet.dripToken
+      const { address, amountUnformatted } = tokenFaucet.dripToken
+
+      let usd = tokenFaucet.dripToken.usd
+
+      // asset is pPOOL, use POOL price
+      if (address.toLowerCase() === CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].PPOOL) {
+        usd = pool.tokens.pool.usd
+      }
+
       if (usd && amountUnformatted !== ethers.constants.Zero) {
         const { dripRatePerSecond } = tokenFaucet
 

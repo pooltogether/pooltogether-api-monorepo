@@ -23,7 +23,8 @@ import {
   DEFAULT_TOKEN_PRECISION,
   SECONDS_PER_DAY,
   NETWORK,
-  COMP_DECIMALS
+  COMP_DECIMALS,
+  POOL_DECIMALS
 } from 'lib/constants'
 import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
 import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
@@ -543,6 +544,16 @@ const formatPoolChainData = (
           name: 'Compound',
           symbol: 'COMP'
         }
+      }
+    }
+
+    // Add POOL to ensure we return USD value for pPOOL drips
+    if (formattedPoolChainData.tokens && chainId === NETWORK.mainnet) {
+      formattedPoolChainData.tokens.pool = {
+        address: CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].POOL,
+        decimals: POOL_DECIMALS,
+        name: 'PoolTogether',
+        symbol: 'POOL'
       }
     }
 
