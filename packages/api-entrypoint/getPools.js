@@ -1,4 +1,5 @@
-import { prizePoolContracts } from '@pooltogether/current-pool-data'
+import { getDefaultPoolAddresses } from '@pooltogether/api-runner'
+
 import { getPoolsKey } from '../../utils/getPoolsKey'
 import { log } from '../../utils/sentry'
 
@@ -18,21 +19,20 @@ export const getPools = async (event, request) => {
     //   poolAddresses = getDefaultPoolAddresses(chainId)
     // }
 
-    const poolAddresses = getDefaultPoolAddresses(chainId)
     const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
     if (!storedPools) return null
-    const pools = poolAddresses
-      .map((poolAddress) => storedPools.find((pool) => pool.prizePool.address === poolAddress))
-      .filter(Boolean)
 
-    return pools
+    return filterStoredPoolsForChain(chainId, storedPools)
   } catch (e) {
     event.waitUntil(log(e, request))
     return null
   }
 }
 
-const getDefaultPoolAddresses = (chainId) =>
-  [...prizePoolContracts[chainId].governance, ...prizePoolContracts[chainId].community].map(
-    (pool) => pool.prizePool.address
-  )
+const filterStoredPoolsForChain = (chainId, storedPools) => {
+  const poolAddresses = getDefaultPoolAddresses(chainId)
+
+  return poolAddresses
+    .map((poolAddress) => storedPools.find((pool) => pool.prizePool.address === poolAddress))
+    .filter(Boolean)
+}
