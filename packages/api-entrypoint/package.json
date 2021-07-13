@@ -1,9 +1,17 @@
 {
-  "private": true,
   "name": "@pooltogether/api-entrypoint",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "author": "Dylan DesRosier <dylan@pooltogether.com>",
+  "license": "MIT",
   "description": "A cloudflare worker to read data from the KV",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pooltogether/pooltogether-api-monorepo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pooltogether/pooltogether-api-monorepo/issues"
+  },
   "scripts": {
     "start": "wrangler dev",
     "dev": "wrangler dev",
@@ -14,12 +22,11 @@
     "format": "prettier --write '**/*.{js,css,json,md}'",
     "reinstall": "rm -rf node_modules && yarn install"
   },
-  "author": "Dylan DesRosier <dylan@pooltogether.com>",
-  "license": "MIT",
   "devDependencies": {
     "prettier": "^1.18.2"
   },
   "dependencies": {
+    "@pooltogether/api-runner": "^1.8.5",
     "@pooltogether/current-pool-data": "^3.5.3"
   }
 }
