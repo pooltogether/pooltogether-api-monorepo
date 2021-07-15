@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "@pooltogether/api-runner": "^1.8.5",
-    "@pooltogether/current-pool-data": "^3.5.3"
+    "@pooltogether/current-pool-data": "^3.5.4"
   }
 }
