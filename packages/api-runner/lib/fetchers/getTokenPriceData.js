@@ -52,7 +52,7 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
         derivedETH: '0.0006555576548927038397327620248452385',
         id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
         // TODO: Best to get this using the regular MATIC token on chain 1
-        usd: 1.1 // hard-coded matic price as of July 8th, 2021
+        usd: 0.871103 // hard-coded matic price as of July 15th, 2021
       },
       'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
       '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },

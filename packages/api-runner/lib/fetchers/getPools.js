@@ -579,13 +579,23 @@ const calculateTokenFaucetAprs = (pools) =>
       }
 
       if (usd && amountUnformatted !== ethers.constants.Zero) {
-        const { dripRatePerSecond } = tokenFaucet
+        const { dripRatePerSecond, measure } = tokenFaucet
+        console.log(measure)
 
         const totalDripPerDay = Number(dripRatePerSecond) * SECONDS_PER_DAY
         const totalDripDailyValue = totalDripPerDay * usd
-        const totalTicketValueUsd = Number(pool.prizePool.totalTicketValueLockedUsd)
 
-        tokenFaucet.apr = (totalDripDailyValue / totalTicketValueUsd) * 365 * 100
+        const totalTicketValueUsd = Number(pool.prizePool.totalTicketValueLockedUsd)
+        const totalSponsorshipValueUsd = Number(pool.prizePool.totalSponsorshipValueLockedUsd)
+
+        const faucetIncentivizesSponsorship =
+          measure.toLowerCase() === pool.tokens.sponsorship.address.toLowerCase()
+
+        const totalValueUsd = faucetIncentivizesSponsorship
+          ? totalSponsorshipValueUsd
+          : totalTicketValueUsd
+
+        tokenFaucet.apr = (totalDripDailyValue / totalValueUsd) * 365 * 100
       }
     })
 
