@@ -42,17 +42,28 @@ const _calculateUsd = (token) => {
   return 1 / derivedETH
 }
 
+const ETHEREUM_MAINNET_CHAIN_ID = 1
+const ETHEREUM_MAINNET_MATIC_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'
+// MATIC price as of July 15th, 2021 as fallback:
+const HARD_CODED_MATIC_PRICE = 0.871103
 export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
-  // On polygon return mock data from last successful request
+  // On polygon return mock data from last successful request and the price of MATIC (WMATIC) on the Ethereum network
+  // (basically the same price as on Polygon or anywhere else)
   if (chainId === 137) {
+    const maticPriceOnEthereumData = await getTokenPriceData(
+      ETHEREUM_MAINNET_CHAIN_ID,
+      [ETHEREUM_MAINNET_MATIC_ADDRESS],
+      fetch
+    )
+
     return {
       '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
       '0x85e16156eb86a134ac6db5754be6c5e1c7f1aa59': undefined,
       '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
         derivedETH: '0.0006555576548927038397327620248452385',
         id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-        // TODO: Best to get this using the regular MATIC token on chain 1
-        usd: 0.871103 // hard-coded matic price as of July 15th, 2021
+        usd:
+          maticPriceOnEthereumData?.[ETHEREUM_MAINNET_MATIC_ADDRESS]?.usd || HARD_CODED_MATIC_PRICE
       },
       'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
       '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
