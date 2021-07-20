@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import { addTokenTotalUsdValue } from '@pooltogether/utilities'
 
 import { getPodsKey, getPoolsKey } from '../../utils/kvKeys'
 
@@ -31,6 +32,15 @@ export const getPod = async (event, request) => {
 }
 
 export const formatPod = (chainId, podAddress, pod, pool) => {
+  const podStablecoin = {
+    address: podAddress,
+    name: pod.name,
+    symbol: pod.symbol,
+    decimals: pod.decimals
+  }
+
+  addTokenTotalUsdValue(podStablecoin, { [podStablecoin.address]: pool.tokens.ticket })
+
   return {
     metadata: {
       owner: pod.owner,
@@ -44,12 +54,7 @@ export const formatPod = (chainId, podAddress, pod, pool) => {
     },
     prize: pool.prize,
     tokens: {
-      podShare: {
-        address: pod.ticket,
-        name: pod.name,
-        symbol: pod.symbol,
-        decimals: pod.decimals
-      },
+      podStablecoin,
       sponsorship: pool.tokens.sponsorship,
       ticket: pool.tokens.ticket,
       tokenFaucetDripToken: pool.tokens.tokenFaucetDripToken,
