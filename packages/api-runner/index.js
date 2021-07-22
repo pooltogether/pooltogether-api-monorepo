@@ -1,6 +1,7 @@
 import { usePoolContracts } from 'lib/hooks/usePoolContracts'
 import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
 import { getPodContractAddresses as _getPodContractAddresses } from 'lib/contractAddresses/getPodContractAddresses'
+import { getDefaultPoolAddresses } from 'lib/utils/getDefaultPoolAddresses'
 
 export async function getPool(chainId, poolAddress) {
   const pool = await usePoolByAddress(chainId, poolAddress)
@@ -27,3 +28,4 @@ export let fetch = nodeFetch.default
 export const setFetch = (_fetch) => {
   fetch = _fetch.bind()
 }
+export { getDefaultPoolAddresses }

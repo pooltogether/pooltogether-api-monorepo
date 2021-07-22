@@ -34,7 +34,9 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
     Stablecoin: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     Sablier: '0xA4fc358455Febe425536fd1878bE67FfDBDEC59a',
     CompoundComptroller: '0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B',
-    COMP: '0xc00e94cb662c3520282e6f5717214004a7f26888'
+    COMP: '0xc00e94cb662c3520282e6f5717214004a7f26888',
+    POOL: '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e',
+    PPOOL: '0x27d22a7648e955e510a40bdb058333e9190d12d4'
   },
   4: {
     Stablecoin: '0x3b00ef435fa4fcff5c209a37d1f3dcff37c705ad',
@@ -53,3 +55,4 @@ export const PRIZE_POOL_TYPES = {
 }
 
 export const COMP_DECIMALS = 18
+export const POOL_DECIMALS = 18

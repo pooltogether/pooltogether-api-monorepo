@@ -23,7 +23,8 @@ import {
   DEFAULT_TOKEN_PRECISION,
   SECONDS_PER_DAY,
   NETWORK,
-  COMP_DECIMALS
+  COMP_DECIMALS,
+  POOL_DECIMALS
 } from 'lib/constants'
 import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
 import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
@@ -32,6 +33,8 @@ import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 const getCompoundComptrollerName = (prizePoolAddress) => `compound-comptroller-${prizePoolAddress}`
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
+const getTokenFaucetDripTokenName = (prizePoolAddress, tokenFaucetAddress, tokenAddress) =>
+  `tokenFaucetDripToken-${prizePoolAddress}-${tokenFaucetAddress}-${tokenAddress}`
 const getSablierErc20BatchName = (prizePoolAddress, streamId) =>
   `sablier-${prizePoolAddress}-${streamId}`
 const getErc721BatchName = (prizeAddress, tokenId) => `erc721Award-${prizeAddress}-${tokenId}`
@@ -89,21 +92,11 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
         )
     )
 
-    // Token Listener
-    // NOTE: If it's not a token faucet, this will break everything
-    if (pool.tokenListener.address) {
-      const tokenFaucetContract = contract(
-        pool.tokenListener.address,
-        TokenFaucetABI,
-        pool.tokenListener.address
-      )
-      batchCalls.push(
-        tokenFaucetContract
-          .dripRatePerSecond()
-          .asset()
-          .measure()
-      )
-    }
+    // Token Faucets
+    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+      const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
+      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+    })
 
     // External ERC20 awards
     if (pool.prize.externalErc20Awards.length > 0) {
@@ -127,11 +120,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract
-              .balanceOf(pool.prizePool.address)
-              .name()
-              .symbol()
-              .ownerOf(tokenId)
+            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -218,21 +207,21 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    const tokenFaucetDripAssetAddress = firstBatchValues[pool?.tokenListener?.address]?.asset[0]
-    if (tokenFaucetDripAssetAddress) {
-      const dripErc20Contract = contract(
-        getExternalErc20AwardBatchName(pool.prizePool.address, tokenFaucetDripAssetAddress),
-        ERC20Abi,
-        tokenFaucetDripAssetAddress
-      )
-      batchCalls.push(
-        dripErc20Contract
-          .balanceOf(pool.tokenListener.address)
-          .decimals()
-          .symbol()
-          .name()
-      )
-    }
+    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+      const tokenFaucetDripAssetAddress = firstBatchValues[tokenFaucetAddress]?.asset[0]
+      if (tokenFaucetDripAssetAddress) {
+        const dripErc20Contract = contract(
+          getTokenFaucetDripTokenName(
+            pool.prizePool.address,
+            tokenFaucetAddress,
+            tokenFaucetDripAssetAddress
+          ),
+          ERC20Abi,
+          tokenFaucetDripAssetAddress
+        )
+        batchCalls.push(dripErc20Contract.balanceOf(tokenFaucetAddress).decimals().symbol().name())
+      }
+    })
 
     // Sablier
     const sablierErc20StreamTokenAddress =
@@ -244,12 +233,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(
-        sablierErc20Stream
-          .decimals()
-          .name()
-          .symbol()
-      )
+      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
     }
 
     // Reserve
@@ -406,43 +390,57 @@ const formatPoolChainData = (
     }
 
     // Token listener
-    if (pool.tokenListener.address) {
-      const tokenListenerData = firstBatchValues[pool.tokenListener.address]
-      const tokenFaucetDripAssetAddress = tokenListenerData.asset[0]
-      const tokenListenerData2 =
+    let tokenFaucetDripTokens = []
+    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+      const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
+      const dripTokenAddress = tokenFaucetData.asset[0]
+      const tokenFaucetData2 =
         secondBatchValues[
-          getExternalErc20AwardBatchName(pool.prizePool.address, tokenFaucetDripAssetAddress)
+          getTokenFaucetDripTokenName(pool.prizePool.address, tokenFaucetAddress, dripTokenAddress)
         ]
-      const tokenFaucetDripToken = {
-        address: tokenFaucetDripAssetAddress.toLowerCase(),
-        amount: formatUnits(tokenListenerData2.balanceOf[0], tokenListenerData2.decimals[0]),
-        amountUnformatted: tokenListenerData2.balanceOf[0],
-        decimals: tokenListenerData2.decimals[0],
-        name: tokenListenerData2.name[0],
-        symbol: tokenListenerData2.symbol[0]
+
+      const dripToken = {
+        tokenFaucetAddress,
+        address: dripTokenAddress.toLowerCase(),
+        amount: formatUnits(tokenFaucetData2.balanceOf[0], tokenFaucetData2.decimals[0]),
+        amountUnformatted: tokenFaucetData2.balanceOf[0],
+        decimals: tokenFaucetData2.decimals[0],
+        name: tokenFaucetData2.name[0],
+        symbol: tokenFaucetData2.symbol[0]
       }
 
-      formattedPoolChainData.tokenListener = {
-        dripRatePerSecondUnformatted: tokenListenerData.dripRatePerSecond[0],
-        measure: tokenListenerData.measure[0]
+      const tokenFaucet = {
+        address: tokenFaucetAddress.toLowerCase(),
+        dripRatePerSecondUnformatted: tokenFaucetData.dripRatePerSecond[0],
+        measure: tokenFaucetData.measure[0],
+        asset: dripTokenAddress.toLowerCase()
       }
-      formattedPoolChainData.tokenListener.dripRatePerSecond = formatUnits(
-        formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted,
-        tokenFaucetDripToken.decimals
+      tokenFaucet.dripRatePerSecond = formatUnits(
+        tokenFaucet.dripRatePerSecondUnformatted,
+        dripToken.decimals
       )
-      formattedPoolChainData.tokenListener.dripRatePerDayUnformatted = formattedPoolChainData.tokenListener.dripRatePerSecondUnformatted.mul(
-        SECONDS_PER_DAY
+      tokenFaucet.dripRatePerDayUnformatted =
+        tokenFaucet.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
+      tokenFaucet.dripRatePerDay = formatUnits(
+        tokenFaucet.dripRatePerDayUnformatted,
+        dripToken.decimals
       )
-      formattedPoolChainData.tokenListener.dripRatePerDay = formatUnits(
-        formattedPoolChainData.tokenListener.dripRatePerDayUnformatted,
-        tokenFaucetDripToken.decimals
-      )
+
+      if (!formattedPoolChainData.tokenFaucets) {
+        formattedPoolChainData.tokenFaucets = []
+      }
+
+      formattedPoolChainData.tokenFaucets.push(tokenFaucet)
+      tokenFaucet.dripToken = dripToken
+
+      // Add to tokens list
+      tokenFaucetDripTokens.push(dripToken)
 
       formattedPoolChainData.tokens = {
         ...formattedPoolChainData.tokens,
-        tokenFaucetDripToken
+        tokenFaucetDripTokens
       }
-    }
+    })
 
     // External ERC20 awards
     // NOTE: editing pool graph data here to merge the token amounts in
@@ -543,6 +541,16 @@ const formatPoolChainData = (
           name: 'Compound',
           symbol: 'COMP'
         }
+      }
+    }
+
+    // Add POOL to ensure we return USD value for pPOOL drips
+    if (formattedPoolChainData.tokens && chainId === NETWORK.mainnet) {
+      formattedPoolChainData.tokens.pool = {
+        address: CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].POOL,
+        decimals: POOL_DECIMALS,
+        name: 'PoolTogether',
+        symbol: 'POOL'
       }
     }
 

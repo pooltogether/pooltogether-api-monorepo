@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "Gain more insight when testing the API code in a regular node enviroment",
@@ -38,7 +38,7 @@
   "dependencies": {
     "@ethersproject/abi": "^5.1.1",
     "@ethersproject/units": "^5.1.0",
-    "@pooltogether/current-pool-data": "3.4.23",
+    "@pooltogether/current-pool-data": "3.5.4",
     "@pooltogether/etherplex": "1.1.1",
     "@pooltogether/evm-chains-extended": "^0.4.3",
     "@pooltogether/loot-box": "^1.1.0",
@@ -60,7 +60,7 @@
     "@babel/plugin-transform-template-literals": "^7.13.0",
     "@ethersproject/abi": "^5.1.1",
     "@ethersproject/units": "^5.1.0",
-    "@pooltogether/current-pool-data": "3.4.21",
+    "@pooltogether/current-pool-data": "3.5.0",
     "@pooltogether/etherplex": "1.1.1",
     "@pooltogether/evm-chains-extended": "^0.4.3",
     "@pooltogether/loot-box": "^1.1.0",

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { setInfuraId, setFetch } from '@pooltogether/api-runner'
+=======
+import { setInfuraId } from '@pooltogether/api-runner'
+
+>>>>>>> 435d45b651b0c1d62d7e11cccdc462bea0d0d690
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updatePools } from './updatePools'

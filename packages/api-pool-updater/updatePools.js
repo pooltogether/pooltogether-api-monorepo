@@ -1,3 +1,5 @@
+import { getDefaultPoolAddresses } from '@pooltogether/api-runner'
+
 import { log } from '../../utils/sentry'
 import { getPools } from '@pooltogether/api-runner'
 import { getPoolsKey } from '../../utils/kvKeys'
@@ -11,7 +13,7 @@ import { getPoolsKey } from '../../utils/kvKeys'
 export const updatePools = async (event, chainId) => {
   const pools = await getPools(chainId, fetch)
 
-  if (!pools || pools.length === 0) {
+  if (!pools || pools.length !== poolCountForChain(chainId)) {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))
   }
 
@@ -25,3 +27,5 @@ export const updatePools = async (event, chainId) => {
   // event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
   return true
 }
+
+const poolCountForChain = (chainId) => getDefaultPoolAddresses(chainId).length

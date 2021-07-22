@@ -1,5 +1,6 @@
 import { formatUnits } from '@ethersproject/units'
 import { contractAddresses } from '@pooltogether/current-pool-data'
+import { ethers } from 'ethers'
 
 import { PRIZE_POOL_TYPES } from 'lib/constants'
 import {
@@ -8,7 +9,7 @@ import {
   getSubgraphVersionsFromContracts
 } from 'lib/hooks/useSubgraphClients'
 import { prizePoolsQuery } from 'lib/queries/prizePoolsQuery'
-import { ethers } from 'ethers'
+import { usePoolContract } from 'lib/hooks/usePoolContracts'
 
 /**
  *
@@ -79,7 +80,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
       address: prizePool.id
     },
     prizeStrategy: {
-      address: prizePool.prizeStrategy.id
+      address: prizePool.prizeStrategy.id,
+      tokenListener: prizeStrategy.tokenListener
     },
     tokens: {
       ticket: {
@@ -126,9 +128,7 @@ const formatPoolGraphData = (prizePool, chainId) => {
             : prizePool.reserveRegistry
       }
     },
-    tokenListener: {
-      address: prizeStrategy.tokenListener
-    }
+    tokenFaucets: collectTokenFaucets(chainId, prizePool.id)
   }
 
   if (prizePool.compoundPrizePool) {
@@ -140,6 +140,12 @@ const formatPoolGraphData = (prizePool, chainId) => {
   }
 
   return formattedData
+}
+
+const collectTokenFaucets = (chainId, poolAddress) => {
+  const poolContract = usePoolContract(chainId, poolAddress)
+
+  return poolContract.tokenFaucets || []
 }
 
 const formatCompoundPrizePoolData = (prizePool, formattedData) => {
