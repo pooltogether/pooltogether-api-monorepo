@@ -4,7 +4,7 @@ workers_dev = true
 account_id = "" # Production account
 
 [triggers]
-crons = ["0/2 * * * *"]
+crons = ["0 0 * * *"]
 
 [env.mainnet]
 name = "mainnet-pool-updater"

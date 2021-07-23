@@ -824,14 +824,14 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.7.0.tgz#3dab96d87e22734d5797a035716041723c51111b"
-  integrity sha512-ScYB2DEFCoJP9lpWT/usYKT6Cx2awAjLfISDhbprf+W9HCwkqiMM29HTUyrqzPyR5SiayYGOMEf+emMWIJTS0g==
+"@pooltogether/api-runner@1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.7.2.tgz#b9ca438fa1bfc4606cf0a5123c8d4f6d688a41b2"
+  integrity sha512-9lnBCND+0s8o1TSEniIIDVwDe8Xk3s1UeTDAY8Qs7AV9oTjEaq+BMz/AAJY+jMxA61ynbqW2RgIVNGWhfL13RQ==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
-    "@pooltogether/current-pool-data" "3.4.23"
+    "@pooltogether/current-pool-data" "3.5.7"
     "@pooltogether/etherplex" "1.1.1"
     "@pooltogether/evm-chains-extended" "^0.4.3"
     "@pooltogether/loot-box" "^1.1.0"
@@ -845,12 +845,12 @@
     lodash.merge "^4.6.2"
     lodash.remove "^4.7.0"
 
-"@pooltogether/current-pool-data@3.4.23":
-  version "3.4.23"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.23.tgz#865894e3eedd04e9384cfd7a2025394b7cd45f4a"
-  integrity sha512-bJNKDri+7GXT5RcBY1HMrEoMdiuDGtSiD2yZvSgk1ta9pB4E9kUuUn+S3OAKvEdN8TqiTxaxAGltSLXxckEo0g==
+"@pooltogether/current-pool-data@3.5.7", "@pooltogether/current-pool-data@^3.5.7":
+  version "3.5.7"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.7.tgz#a65c154b8bc80ec0477b45c5c74873e957cfc731"
+  integrity sha512-/tmE7Em1m3JcRHTnHIZevxrlWzUUnlNulPlVJqRYeOhQmUFcZxL2OoGx2QvhDeaY1/6up0TKuEuosvrIybj3ig==
 
-"@pooltogether/current-pool-data@^3.4.27", "@pooltogether/current-pool-data@^3.4.3":
+"@pooltogether/current-pool-data@^3.4.3":
   version "3.4.27"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.27.tgz#765ef0a269d687a9797ea867eba53c45353ac0f6"
   integrity sha512-YOcLbfvo3YNpruRfmqFtigq0+5wZBIsoLDfy67AG5tVCr+JnTzosJfXsBViZmFW9aQ7drTY6F7h7k9aa/FutNA==
