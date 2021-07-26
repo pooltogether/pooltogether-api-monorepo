@@ -23,6 +23,8 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
   const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
+  console.log('/////////// getPoolGraphData ///////////')
+
   const query = prizePoolsQuery(blockNumber)
 
   // console.log('getting pool data from the graph')
@@ -34,7 +36,7 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
       const poolAddresses = addressesByVersion[version].map((addr) => addr.toLowerCase())
 
       return client.request(query, { poolAddresses }).catch((e) => {
-        console.log(e)
+        console.log(e.message)
         return null
       })
     })
@@ -70,8 +72,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
     config: {
       liquidityCap: prizePool.liquidityCap,
       maxExitFeeMantissa: prizePool.maxExitFeeMantissa,
-      maxTimelockDurationSeconds: prizePool.maxTimelockDuration,
-      timelockTotalSupply: prizePool.timelockTotalSupply,
+      // maxTimelockDurationSeconds: prizePool.maxTimelockDuration,
+      // timelockTotalSupply: prizePool.timelockTotalSupply,
       numberOfWinners: prizeStrategy?.numberOfWinners || '1',
       prizePeriodSeconds: prizeStrategy.prizePeriodSeconds,
       tokenCreditRates: prizePool.tokenCreditRates

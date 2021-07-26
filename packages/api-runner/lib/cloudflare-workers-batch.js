@@ -7,6 +7,8 @@ const getRpcUrl = (chainId) => {
       return `https://mainnet.infura.io/v3/${INFURA_ID}`
     case 4:
       return `https://rinkeby.infura.io/v3/${INFURA_ID}`
+    case 56:
+      return `https://red-fragrant-fire.bsc.quiknode.pro/3b2b9b51e092764624d09f2e2b02ce23ee8dd73d/`
     case 137:
       return `https://polygon-mainnet.infura.io/v3/${INFURA_ID}`
     case 80001:
@@ -33,6 +35,8 @@ export const batch = async (chainId, ...batchCalls) => {
     body: JSON.stringify(tx),
     headers: { 'Content-Type': 'application/json' }
   })
+
+  console.log('Batch response', JSON.stringify(callResponse))
 
   const body = await callResponse.json()
   const decoded = decodeData(result, calls, body.result)

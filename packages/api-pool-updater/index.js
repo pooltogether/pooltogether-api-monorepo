@@ -47,6 +47,7 @@ async function handleRequest(event) {
     // Read routes
     if (pathname.startsWith(`/update`)) {
       try {
+        console.log('Update', Number(CHAIN_ID))
         await updatePools(event, Number(CHAIN_ID))
         const successResponse = new Response(`Successfully updated ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,

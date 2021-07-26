@@ -824,14 +824,14 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.0.tgz#be10ef1482dcfde348e4673336a0b2657eddad14"
-  integrity sha512-X2o9z0kCmu/MmxpnM56vLYG5J3pFJyXyPfKku58aWxi4vdaXqayKbdbWeAydJvvWrWpJbq2GdTntogf/iIilIw==
+"@pooltogether/api-runner@1.9.5":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.5.tgz#173ff422b7a5c0e1448a3acc2479e771f9102fad"
+  integrity sha512-NA+gxX+m9GL65nL/+gGqB9aKPTR35mrvYF5xV188f5+7/2GZn+UA2T/NXeZojTG4BjWnNr5DI83ZdJM6L3XP2w==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
-    "@pooltogether/current-pool-data" "3.5.7"
+    "@pooltogether/current-pool-data" "3.5.10"
     "@pooltogether/etherplex" "1.1.1"
     "@pooltogether/evm-chains-extended" "^0.4.3"
     "@pooltogether/loot-box" "^1.1.0"
@@ -845,10 +845,10 @@
     lodash.merge "^4.6.2"
     lodash.remove "^4.7.0"
 
-"@pooltogether/current-pool-data@3.5.7":
-  version "3.5.7"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.7.tgz#a65c154b8bc80ec0477b45c5c74873e957cfc731"
-  integrity sha512-/tmE7Em1m3JcRHTnHIZevxrlWzUUnlNulPlVJqRYeOhQmUFcZxL2OoGx2QvhDeaY1/6up0TKuEuosvrIybj3ig==
+"@pooltogether/current-pool-data@3.5.10":
+  version "3.5.10"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.10.tgz#a6ae5a5ead6c704b9a87e297803ba7a6222e23f9"
+  integrity sha512-JTEHugdNJvozvarzFCVd+ODXMyzAerk9o+rja9j6Dzt8ztdlm3wfYG3XAHbSZzXFi1IQRGVEg8ckkuBAko3Pdw==
 
 "@pooltogether/current-pool-data@^3.4.3":
   version "3.4.25"

@@ -43,6 +43,9 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
     Sablier: '0xc04Ad234E01327b24a831e3718DBFcbE245904CC',
     CompoundComptroller: '0xb1983eE0064Fdb2A581966715DC9bA4D8B289A6A'
   },
+  56: {
+    Stablecoin: '0xe9e7cea3dedca5984780bafc599bd69add087d56'
+  },
   137: {
     Stablecoin: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
   }

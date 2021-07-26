@@ -95,7 +95,12 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     // Token Faucets
     pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(
+        tokenFaucetContract
+          .dripRatePerSecond()
+          .asset()
+          .measure()
+      )
     })
 
     // External ERC20 awards
@@ -120,7 +125,11 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+            erc721Contract
+              .balanceOf(pool.prizePool.address)
+              .name()
+              .symbol()
+              .ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -193,7 +202,9 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
   })
 
   // First big batch call
+  console.log('Pre first batch')
   const firstBatchValues = await batch(chainId, ...batchCalls)
+  console.log('Post first batch', firstBatchValues)
 
   batchCalls = []
 
@@ -219,7 +230,13 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
           ERC20Abi,
           tokenFaucetDripAssetAddress
         )
-        batchCalls.push(dripErc20Contract.balanceOf(tokenFaucetAddress).decimals().symbol().name())
+        batchCalls.push(
+          dripErc20Contract
+            .balanceOf(tokenFaucetAddress)
+            .decimals()
+            .symbol()
+            .name()
+        )
       }
     })
 
@@ -233,7 +250,12 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
+      batchCalls.push(
+        sablierErc20Stream
+          .decimals()
+          .name()
+          .symbol()
+      )
     }
 
     // Reserve
@@ -250,7 +272,9 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     }
   })
 
+  console.log('Pre second batch')
   const secondBatchValues = await batch(chainId, ...batchCalls)
+  console.log('post second batch', secondBatchValues)
 
   // Get External Erc721 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([
@@ -419,8 +443,9 @@ const formatPoolChainData = (
         tokenFaucet.dripRatePerSecondUnformatted,
         dripToken.decimals
       )
-      tokenFaucet.dripRatePerDayUnformatted =
-        tokenFaucet.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
+      tokenFaucet.dripRatePerDayUnformatted = tokenFaucet.dripRatePerSecondUnformatted.mul(
+        SECONDS_PER_DAY
+      )
       tokenFaucet.dripRatePerDay = formatUnits(
         tokenFaucet.dripRatePerDayUnformatted,
         dripToken.decimals
