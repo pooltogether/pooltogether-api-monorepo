@@ -11,18 +11,32 @@ import { getPoolsKey } from '../../utils/getPoolsKey'
  * @returns
  */
 export const updatePools = async (event, chainId) => {
-  const pools = await getPools(chainId, fetch)
+  const updatedPools = await getPools(chainId, fetch)
 
-  if (!pools || pools.length !== poolCountForChain(chainId)) {
+  if (!updatedPools) {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))
+    return false
   }
 
-  event.waitUntil(POOLS.put(getPoolsKey(chainId), JSON.stringify(pools)), {
+  const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
+
+  updatedPools.map((updatedPool) => {
+    const oldPoolIndex = storedPools.findIndex(
+      (storedPool) => storedPool.address === updatedPool.address
+    )
+    if (oldPoolIndex === -1) {
+      storedPools.push(updatedPool)
+    } else {
+      storedPools[oldPoolIndex] = updatedPool
+    }
+  })
+
+  event.waitUntil(POOLS.put(getPoolsKey(chainId), JSON.stringify(storedPools)), {
     metadata: {
       lastUpdated: new Date(Date.now()).toUTCString()
     }
   })
-  // event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
+  event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
   return true
 }
 
