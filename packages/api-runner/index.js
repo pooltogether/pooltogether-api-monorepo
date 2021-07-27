@@ -12,7 +12,6 @@ export async function getPool(chainId, poolAddress) {
 // Currently used to fetch and populate the KV for all of the pools
 export async function getPools(chainId) {
   const poolContracts = usePoolContracts(chainId)
-  console.log('getPools', JSON.stringify(poolContracts))
   const pools = await usePools(chainId, poolContracts)
   return pools
 }

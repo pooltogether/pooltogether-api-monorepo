@@ -202,9 +202,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
   })
 
   // First big batch call
-  console.log('Pre first batch')
   const firstBatchValues = await batch(chainId, ...batchCalls)
-  console.log('Post first batch', firstBatchValues)
 
   batchCalls = []
 
@@ -272,9 +270,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     }
   })
 
-  console.log('Pre second batch')
   const secondBatchValues = await batch(chainId, ...batchCalls)
-  console.log('post second batch', secondBatchValues)
 
   // Get External Erc721 Metadata (unfortunately many batch calls)
   const additionalBatchedCalls = await Promise.all([

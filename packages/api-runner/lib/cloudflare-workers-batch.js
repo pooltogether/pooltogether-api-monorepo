@@ -36,8 +36,6 @@ export const batch = async (chainId, ...batchCalls) => {
     headers: { 'Content-Type': 'application/json' }
   })
 
-  console.log('Batch response', JSON.stringify(callResponse))
-
   const body = await callResponse.json()
   const decoded = decodeData(result, calls, body.result)
   return decoded

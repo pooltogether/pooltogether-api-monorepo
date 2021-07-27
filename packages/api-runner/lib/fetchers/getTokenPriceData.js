@@ -1,3 +1,4 @@
+import { NETWORK } from '@pooltogether/utilities'
 import { gql } from 'graphql-request'
 
 import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
@@ -7,9 +8,25 @@ const KNOWN_STABLECOIN_ADDRESSES = {
   137: ['0xc2132d05d31c914a87c6611c10748aeb04b58e8f', '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063']
 }
 
-const QUERY_TEMPLATE = `token__num__: tokens(where: { id: "__address__" } __blockFilter__) {
+/**
+ * BSC Subgraphs use `derivedBNB` rather than `derivedETH`
+ * @param {*} chainId
+ * @returns
+ */
+const getUnderlyingKey = (chainId) => {
+  switch (chainId) {
+    case NETWORK.bsc:
+      return 'derivedBNB'
+    default:
+      return 'derivedETH'
+  }
+}
+
+const getQueryTemplate = (
+  chainId
+) => `token__num__: tokens(where: { id: "__address__" } __blockFilter__) {
   id
-  derivedETH
+  ${getUnderlyingKey(chainId)}
 }`
 
 const _addStablecoin = (addresses, stableCoinAddress) => {
@@ -93,7 +110,8 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   for (let i = 0; i < filteredAddresses.length; i++) {
     const address = filteredAddresses[i]
 
-    const selection = QUERY_TEMPLATE.replace('__num__', i)
+    const selection = getQueryTemplate(chainId)
+      .replace('__num__', i)
       .replace('__address__', address)
       .replace('__blockFilter__', blockFilter)
 
@@ -131,7 +149,8 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
     if (token) {
       data[address] = {
         ...token,
-        usd: data['ethereum'].usd * parseFloat(token.derivedETH)
+        derivedETH: token[getUnderlyingKey(chainId)],
+        usd: data['ethereum'].usd * parseFloat(token[getUnderlyingKey(chainId)])
       }
     }
   }
