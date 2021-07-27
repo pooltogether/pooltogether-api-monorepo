@@ -93,7 +93,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     )
 
     // Token Faucets
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
       batchCalls.push(
         tokenFaucetContract
@@ -168,7 +168,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     }
 
     // LootBox
-
     const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
     if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
       const lootBox = pool.prize.externalErc721Awards.find(
@@ -215,7 +214,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses?.forEach((tokenFaucetAddress) => {
       const tokenFaucetDripAssetAddress = firstBatchValues[tokenFaucetAddress]?.asset[0]
       if (tokenFaucetDripAssetAddress) {
         const dripErc20Contract = contract(
@@ -413,7 +412,7 @@ const formatPoolChainData = (
 
     // Token listener
     let tokenFaucetDripTokens = []
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses?.forEach((tokenFaucetAddress) => {
       const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
       const dripTokenAddress = tokenFaucetData.asset[0]
       const tokenFaucetData2 =
@@ -452,8 +451,8 @@ const formatPoolChainData = (
       if (!formattedPoolChainData.tokenFaucets) {
         formattedPoolChainData.tokenFaucets = []
       }
-
       formattedPoolChainData.tokenFaucets.push(tokenFaucet)
+
       tokenFaucet.dripToken = dripToken
 
       // Add to tokens list
