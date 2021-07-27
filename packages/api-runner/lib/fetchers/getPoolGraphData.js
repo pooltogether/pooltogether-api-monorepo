@@ -145,6 +145,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
 const collectTokenFaucets = (chainId, poolAddress) => {
   const poolContract = usePoolContract(chainId, poolAddress)
 
+  console.log('collectTokenFaucets', poolContract.tokenFaucets)
+
   return poolContract.tokenFaucets || []
 }
 

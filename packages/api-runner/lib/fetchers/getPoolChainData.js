@@ -95,7 +95,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     // Token Faucets
     pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(
+        tokenFaucetContract
+          .dripRatePerSecond()
+          .asset()
+          .measure()
+      )
     })
 
     // External ERC20 awards
@@ -120,7 +125,11 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+            erc721Contract
+              .balanceOf(pool.prizePool.address)
+              .name()
+              .symbol()
+              .ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -149,7 +158,6 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
 
       // Compound Comptroller
       if (chainId === NETWORK.mainnet) {
-        // console.log('Get claimable COMP for:', pool.prizePool.address)
         const comptrollerContract = contract(
           getCompoundComptrollerName(pool.prizePool.address),
           CompoundComptrollerImplementationAbi,
@@ -219,7 +227,13 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
           ERC20Abi,
           tokenFaucetDripAssetAddress
         )
-        batchCalls.push(dripErc20Contract.balanceOf(tokenFaucetAddress).decimals().symbol().name())
+        batchCalls.push(
+          dripErc20Contract
+            .balanceOf(tokenFaucetAddress)
+            .decimals()
+            .symbol()
+            .name()
+        )
       }
     })
 
@@ -233,7 +247,12 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
+      batchCalls.push(
+        sablierErc20Stream
+          .decimals()
+          .name()
+          .symbol()
+      )
     }
 
     // Reserve
@@ -422,8 +441,9 @@ const formatPoolChainData = (
         tokenFaucet.dripRatePerSecondUnformatted,
         dripToken.decimals
       )
-      tokenFaucet.dripRatePerDayUnformatted =
-        tokenFaucet.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
+      tokenFaucet.dripRatePerDayUnformatted = tokenFaucet.dripRatePerSecondUnformatted.mul(
+        SECONDS_PER_DAY
+      )
       tokenFaucet.dripRatePerDay = formatUnits(
         tokenFaucet.dripRatePerDayUnformatted,
         dripToken.decimals
