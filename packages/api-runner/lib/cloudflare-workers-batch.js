@@ -1,5 +1,5 @@
 import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherplex'
-import { fetch, INFURA_ID } from '../index'
+import { fetch, INFURA_ID, QUICKNODE_ID } from '../index'
 
 const getRpcUrl = (chainId) => {
   switch (chainId) {
@@ -8,7 +8,7 @@ const getRpcUrl = (chainId) => {
     case 4:
       return `https://rinkeby.infura.io/v3/${INFURA_ID}`
     case 56:
-      return `https://red-fragrant-fire.bsc.quiknode.pro/3b2b9b51e092764624d09f2e2b02ce23ee8dd73d/`
+      return `https://red-fragrant-fire.bsc.quiknode.pro/${QUICKNODE_ID}/`
     case 137:
       return `https://polygon-mainnet.infura.io/v3/${INFURA_ID}`
     case 80001:

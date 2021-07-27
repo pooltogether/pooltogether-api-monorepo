@@ -38,7 +38,7 @@
   "dependencies": {
     "@ethersproject/abi": "^5.1.1",
     "@ethersproject/units": "^5.1.0",
-    "@pooltogether/current-pool-data": "3.5.12",
+    "@pooltogether/current-pool-data": "3.5.13",
     "@pooltogether/etherplex": "1.1.1",
     "@pooltogether/evm-chains-extended": "^0.4.3",
     "@pooltogether/loot-box": "^1.1.0",

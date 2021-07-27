@@ -20,9 +20,7 @@ export const getPools = async (event, request) => {
     //   poolAddresses = getDefaultPoolAddresses(chainId)
     // }
 
-    console.log('Get pools', chainId)
     const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
-    console.log(storedPools)
     if (!storedPools) return null
 
     return filterStoredPoolsForChain(chainId, storedPools)

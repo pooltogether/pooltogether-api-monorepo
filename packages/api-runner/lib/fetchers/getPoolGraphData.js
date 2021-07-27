@@ -23,8 +23,6 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
   const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
-  console.log('/////////// getPoolGraphData ///////////')
-
   const query = prizePoolsQuery(blockNumber)
 
   // console.log('getting pool data from the graph')

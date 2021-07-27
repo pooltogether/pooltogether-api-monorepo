@@ -23,6 +23,9 @@ export async function getPodContractAddresses(chainId, podAddress) {
 export let INFURA_ID = null
 export const setInfuraId = (id) => (INFURA_ID = id)
 
+export let QUICKNODE_ID = null
+export const setQuicknodeId = (id) => (QUICKNODE_ID = id)
+
 const nodeFetch = require('node-fetch')
 export let fetch = nodeFetch.default
 export const setFetch = (_fetch) => {

@@ -1,4 +1,4 @@
-import { setInfuraId, setFetch } from '@pooltogether/api-runner'
+import { setInfuraId, setFetch, setQuicknodeId } from '@pooltogether/api-runner'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updatePools } from './updatePools'
@@ -22,6 +22,7 @@ addEventListener('scheduled', (event) => {
  */
 async function updatePoolsScheduledHandler(event) {
   setInfuraId(INFURA_ID)
+  setQuicknodeId(QUICKNODE_ID)
   setFetch(fetch)
   try {
     await updatePools(event, Number(CHAIN_ID))
@@ -38,6 +39,7 @@ async function updatePoolsScheduledHandler(event) {
  */
 async function handleRequest(event) {
   setInfuraId(INFURA_ID)
+  setQuicknodeId(QUICKNODE_ID)
   setFetch(fetch)
   try {
     const request = event.request
@@ -47,7 +49,6 @@ async function handleRequest(event) {
     // Read routes
     if (pathname.startsWith(`/update`)) {
       try {
-        console.log('Update', Number(CHAIN_ID))
         await updatePools(event, Number(CHAIN_ID))
         const successResponse = new Response(`Successfully updated ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,

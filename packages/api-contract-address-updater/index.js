@@ -1,4 +1,4 @@
-import { setInfuraId, setFetch } from '@pooltogether/api-runner'
+import { setInfuraId, setFetch, setQuicknodeId } from '@pooltogether/api-runner'
 import { podContractAddresses } from '@pooltogether/current-pool-data'
 import { ethers } from 'ethers'
 
@@ -26,6 +26,7 @@ addEventListener('scheduled', (event) => {
  */
 async function updateScheduledHandler(event) {
   setInfuraId(INFURA_ID)
+  setQuicknodeId(QUICKNODE_ID)
   setFetch(fetch)
 
   try {
@@ -47,6 +48,7 @@ const PODS_URL = '/pods'
  */
 async function handleRequest(event) {
   setInfuraId(INFURA_ID)
+  setQuicknodeId(QUICKNODE_ID)
   setFetch(fetch)
 
   try {

@@ -17,11 +17,6 @@ export const updatePools = async (event, chainId) => {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))
   }
 
-  console.log(
-    'Updating Pools',
-    pools.map((pool) => pool.prizePool.address)
-  )
-
   event.waitUntil(
     POOLS.put(getPoolsKey(chainId), JSON.stringify(pools), {
       metadata: {
