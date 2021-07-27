@@ -1,5 +1,5 @@
 import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherplex'
-import { INFURA_ID } from '../index'
+import { INFURA_ID } from 'lib/utils/infura'
 
 const getRpcUrl = (chainId) => {
   switch (chainId) {
