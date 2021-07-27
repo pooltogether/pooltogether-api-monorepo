@@ -1,6 +1,7 @@
 import { usePoolContracts } from 'lib/hooks/usePoolContracts'
 import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
 import { getDefaultPoolAddresses } from 'lib/utils/getDefaultPoolAddresses'
+import { INFURA_ID, setInfuraId } from 'lib/utils/infura'
 
 const nodeFetch = require('node-fetch')
 
@@ -17,7 +18,4 @@ export async function getPools(chainId, fetch = nodeFetch) {
   return pools
 }
 
-export let INFURA_ID = null
-export const setInfuraId = (id) => (INFURA_ID = id)
-
-export { getDefaultPoolAddresses }
+export { getDefaultPoolAddresses, INFURA_ID, setInfuraId }
