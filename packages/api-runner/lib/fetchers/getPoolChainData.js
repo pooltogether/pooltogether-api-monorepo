@@ -95,7 +95,7 @@ export const getPoolChainData = async (chainId, poolGraphData, fetch) => {
     // Token Faucets
     pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure().totalUnclaimed())
     })
 
     // External ERC20 awards
@@ -397,7 +397,7 @@ const formatPoolChainData = (
     pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
       const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
       const dripTokenAddress = tokenFaucetData.asset[0]
-      const tokenFaucetData2 =
+      const dripTokenResponse =
         secondBatchValues[
           getTokenFaucetDripTokenName(pool.prizePool.address, tokenFaucetAddress, dripTokenAddress)
         ]
@@ -405,29 +405,57 @@ const formatPoolChainData = (
       const dripToken = {
         tokenFaucetAddress,
         address: dripTokenAddress.toLowerCase(),
-        amount: formatUnits(tokenFaucetData2.balanceOf[0], tokenFaucetData2.decimals[0]),
-        amountUnformatted: tokenFaucetData2.balanceOf[0],
-        decimals: tokenFaucetData2.decimals[0],
-        name: tokenFaucetData2.name[0],
-        symbol: tokenFaucetData2.symbol[0]
+        amount: formatUnits(dripTokenResponse.balanceOf[0], dripTokenResponse.decimals[0]),
+        amountUnformatted: dripTokenResponse.balanceOf[0],
+        decimals: dripTokenResponse.decimals[0],
+        name: dripTokenResponse.name[0],
+        symbol: dripTokenResponse.symbol[0]
       }
+
+      
+      const dripRatePerSecondUnformatted = tokenFaucetData.dripRatePerSecond[0]
+      const dripRatePerDayUnformatted = tokenFaucetData.dripRatePerSecond[0].mul(SECONDS_PER_DAY)
+
+      const totalUnclaimedUnformatted = tokenFaucetData.totalUnclaimed[0]
+      const totalUnclaimed = formatUnits(totalUnclaimedUnformatted, dripToken.decimals)
+
+      const faucetsDripTokenBalanceUnformatted = dripTokenResponse.balanceOf[0]
+      const faucetsDripTokenBalance = formatUnits(
+        faucetsDripTokenBalanceUnformatted,
+        dripToken.decimals
+      )
+
+      const remainingDripTokenBalanceUnformatted =
+        faucetsDripTokenBalanceUnformatted.sub(totalUnclaimedUnformatted)
+      const remainingDripTokenBalance = formatUnits(
+        remainingDripTokenBalanceUnformatted,
+        dripToken.decimals
+      )
+
+      let remainingDaysUnformatted = remainingDripTokenBalanceUnformatted
+        .mul(100)
+        .div(dripRatePerDayUnformatted)
+      const remainingDays = Number(remainingDaysUnformatted.toString()) / 100
+      remainingDaysUnformatted = remainingDaysUnformatted.div(100)
 
       const tokenFaucet = {
         address: tokenFaucetAddress.toLowerCase(),
-        dripRatePerSecondUnformatted: tokenFaucetData.dripRatePerSecond[0],
+        dripRatePerSecond: formatUnits(dripRatePerSecondUnformatted, dripToken.decimals),
+        dripRatePerSecondUnformatted,
+        dripRatePerDay: formatUnits(dripRatePerDayUnformatted, dripToken.decimals),
+        dripRatePerDayUnformatted,
+        faucetsDripTokenBalance,
+        faucetsDripTokenBalanceUnformatted,
+        totalUnclaimed,
+        totalUnclaimedUnformatted,
+        remainingDays,
+        remainingDaysUnformatted,
+        remainingDripTokenBalance,
+        remainingDripTokenBalanceUnformatted,
         measure: tokenFaucetData.measure[0],
         asset: dripTokenAddress.toLowerCase()
       }
-      tokenFaucet.dripRatePerSecond = formatUnits(
-        tokenFaucet.dripRatePerSecondUnformatted,
-        dripToken.decimals
-      )
-      tokenFaucet.dripRatePerDayUnformatted =
-        tokenFaucet.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
-      tokenFaucet.dripRatePerDay = formatUnits(
-        tokenFaucet.dripRatePerDayUnformatted,
-        dripToken.decimals
-      )
+
 
       if (!formattedPoolChainData.tokenFaucets) {
         formattedPoolChainData.tokenFaucets = []
@@ -599,4 +627,8 @@ const formatPoolChainData = (
   })
 
   return formattedPools
+}
+
+const dripTokenKey = (tokenFaucetAddress, dripTokenAddress) => {
+  return `${tokenFaucetAddress}-${dripTokenAddress}`
 }
