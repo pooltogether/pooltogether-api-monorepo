@@ -10,7 +10,8 @@ const AAVE_POOL_ADDRESSES = {
 export const YIELD_SOURCES = Object.freeze({
   aave: 'aave',
   comp: 'comp',
-  sushi: 'sushi'
+  sushi: 'sushi',
+  cream: 'cream'
 })
 
 export const KNOWN_YIELD_SOURCE_ADDRESSES = Object.freeze({

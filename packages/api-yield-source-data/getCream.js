@@ -3,7 +3,7 @@ import { calculateCreamBorrowApy, calculateCreamSupplyApy } from '@pooltogether/
 
 import { CREAM_CR_TOKEN_ADDRESSES } from '../../utils/constants'
 import { batch } from './cloudflare-workers-batch'
-import { CrTokenAbi } from './abis/CrTokenAbi'
+import { CrTokenAbi } from '../../abis/CrTokenAbi'
 import { CrInterestRateModalAbi } from './abis/CrInterestRateModel'
 
 // Add to this list to begin capturing apy data for cream markets

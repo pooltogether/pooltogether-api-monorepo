@@ -34,9 +34,11 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
     Stablecoin: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     Sablier: '0xA4fc358455Febe425536fd1878bE67FfDBDEC59a',
     CompoundComptroller: '0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B',
+    CreamComptroller: '0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258',
     COMP: '0xc00e94cb662c3520282e6f5717214004a7f26888',
     POOL: '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e',
-    PPOOL: '0x27d22a7648e955e510a40bdb058333e9190d12d4'
+    PPOOL: '0x27d22a7648e955e510a40bdb058333e9190d12d4',
+    CREAM: '0x2ba592f78db6436527729929aaf6c908497cb200'
   },
   4: {
     Stablecoin: '0x3b00ef435fa4fcff5c209a37d1f3dcff37c705ad',
@@ -44,7 +46,9 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
     CompoundComptroller: '0xb1983eE0064Fdb2A581966715DC9bA4D8B289A6A'
   },
   56: {
-    Stablecoin: '0xe9e7cea3dedca5984780bafc599bd69add087d56'
+    Stablecoin: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    CreamComptroller: '0x589de0f0ccf905477646599bb3e5c622c84cc0ba',
+    CREAM: '0xd4CB328A82bDf5f03eB737f37Fa6B370aef3e888'
   },
   137: {
     Stablecoin: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
@@ -52,4 +56,5 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
 }
 
 export const COMP_DECIMALS = 18
+export const CREAM_DECIMALS = 18
 export const POOL_DECIMALS = 18

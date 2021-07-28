@@ -24,7 +24,7 @@ export const updatePools = async (event, chainId) => {
       }
     })
   )
-  // event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
+  event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
   return true
 }
 

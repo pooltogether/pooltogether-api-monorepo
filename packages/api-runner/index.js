@@ -1,4 +1,4 @@
-import { usePoolContracts } from 'lib/hooks/usePoolContracts'
+import { usePoolContracts } from './lib/hooks/usePoolContracts'
 import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
 import { getPodContractAddresses as _getPodContractAddresses } from 'lib/contractAddresses/getPodContractAddresses'
 import { getDefaultPoolAddresses } from 'lib/utils/getDefaultPoolAddresses'

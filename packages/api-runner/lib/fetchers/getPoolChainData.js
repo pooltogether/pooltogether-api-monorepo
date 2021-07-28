@@ -12,6 +12,7 @@ import RegistryAbi from '@pooltogether/pooltogether-contracts/abis/Registry'
 import ReserveAbi from '@pooltogether/pooltogether-contracts/abis/Reserve'
 import CTokenAbi from '@pooltogether/pooltogether-contracts/abis/CTokenInterface'
 import LootBoxControllerAbi from '@pooltogether/loot-box/abis/LootBoxController'
+import { CrTokenAbi } from '../../../../abis/CrTokenAbi'
 
 import { SablierAbi } from 'abis/SablierAbi'
 import { ERC20Abi } from 'abis/ERC20Abi'
@@ -24,13 +25,15 @@ import {
   SECONDS_PER_DAY,
   NETWORK,
   COMP_DECIMALS,
-  POOL_DECIMALS
+  POOL_DECIMALS,
+  CREAM_DECIMALS
 } from 'lib/constants'
 import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
 import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 
 const getCompoundComptrollerName = (prizePoolAddress) => `compound-comptroller-${prizePoolAddress}`
+const getCreamComptrollerName = (prizePoolAddress) => `cream-comptroller-${prizePoolAddress}`
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
 const getTokenFaucetDripTokenName = (prizePoolAddress, tokenFaucetAddress, tokenAddress) =>
@@ -39,6 +42,8 @@ const getSablierErc20BatchName = (prizePoolAddress, streamId) =>
   `sablier-${prizePoolAddress}-${streamId}`
 const getErc721BatchName = (prizeAddress, tokenId) => `erc721Award-${prizeAddress}-${tokenId}`
 const getCTokenBatchName = (prizeAddress, tokenAddress) => `cToken-${prizeAddress}-${tokenAddress}`
+const getCrTokenBatchName = (prizeAddress, tokenAddress) =>
+  `crToken-${prizeAddress}-${tokenAddress}`
 const getLootBoxBatchName = (lootBoxAddress, lootBoxId) => `lootBox-${lootBoxAddress}-${lootBoxId}`
 const getRegistryBatchName = (registryAddress, prizePoolAddress) =>
   `registry-${registryAddress}-${prizePoolAddress}`
@@ -147,7 +152,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
       batchCalls.push(sablierContract.getStream(ethers.BigNumber.from(pool.prize.sablierStream.id)))
     }
 
-    // cToken
+    // cToken - Compound
     if (pool.tokens.cToken) {
       const cTokenContract = contract(
         getCTokenBatchName(pool.prizePool.address, pool.tokens.cToken.address),
@@ -166,6 +171,25 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
         )
         batchCalls.push(comptrollerContract.compAccrued(pool.prizePool.address))
       }
+    }
+
+    // crToken - Cream
+    if (pool.tokens.crToken) {
+      const crTokenContract = contract(
+        getCrTokenBatchName(pool.prizePool.address, pool.tokens.crToken.address),
+        CrTokenAbi,
+        pool.tokens.cToken.address
+      )
+      batchCalls.push(crTokenContract.supplyRatePerBlock())
+
+      // Cream Comptroller
+      console.log('Get claimable CREAM for:', pool.prizePool.address)
+      const comptrollerContract = contract(
+        getCreamComptrollerName(pool.prizePool.address),
+        CompoundComptrollerImplementationAbi,
+        CUSTOM_CONTRACT_ADDRESSES[chainId].CreamComptroller
+      )
+      batchCalls.push(comptrollerContract.compAccrued(pool.prizePool.address))
     }
 
     // LootBox
@@ -375,6 +399,7 @@ const formatPoolChainData = (
 
     const formattedPoolChainData = {
       config: {
+        chainId,
         splitExternalErc20Awards: additionalBatchCalls.find(
           (response) => response.id === prizeStrategyAddress
         )?.data?.[prizeStrategyAddress].splitExternalErc20Awards[0]
@@ -562,6 +587,37 @@ const formatPoolChainData = (
           name: 'Compound',
           symbol: 'COMP'
         }
+      }
+    }
+
+    // crToken
+    if (pool.tokens.crToken) {
+      const crTokenData =
+        firstBatchValues[getCrTokenBatchName(pool.prizePool.address, pool.tokens.crToken.address)]
+      formattedPoolChainData.tokens = {
+        ...formattedPoolChainData.tokens,
+        crToken: {
+          ...formattedPoolChainData?.tokens?.crToken,
+          supplyRatePerBlock: crTokenData.supplyRatePerBlock[0]
+        }
+      }
+
+      const creamComptrollerKey = getCreamComptrollerName(pool.prizePool.address)
+      formattedPoolChainData.prize.yield = {
+        [YIELD_SOURCES.cream]: {
+          unclaimedAmountUnformatted: firstBatchValues[creamComptrollerKey].compAccrued[0],
+          unclaimedAmount: formatUnits(
+            firstBatchValues[creamComptrollerKey].compAccrued[0],
+            CREAM_DECIMALS
+          )
+        }
+      }
+
+      formattedPoolChainData.tokens.cream = {
+        address: CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].CREAM,
+        decimals: CREAM_DECIMALS,
+        name: 'Cream',
+        symbol: 'CREAM'
       }
     }
 

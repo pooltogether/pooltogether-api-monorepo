@@ -19,6 +19,7 @@ import { usePoolContract } from 'lib/hooks/usePoolContracts'
  * @returns
  */
 export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1) => {
+  console.log('getPoolGraphData')
   const subgraphVersions = getSubgraphVersionsFromContracts(poolContracts)
   const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
@@ -136,7 +137,11 @@ const formatPoolGraphData = (prizePool, chainId) => {
   )
   const isCreamPool =
     Boolean(prizePool.compoundPrizePool) &&
-    creamAddresses.includes(prizePool.compoundPrizePool.cToken.toLowerCase())
+    creamAddresses.findIndex(
+      (address) => address.toLowerCase() === prizePool.compoundPrizePool.cToken.toLowerCase()
+    ) !== -1
+
+  console.log('isCreamPool', isCreamPool)
 
   if (prizePool.compoundPrizePool && !isCreamPool) {
     formatCompoundPrizePoolData(prizePool, formattedData)
