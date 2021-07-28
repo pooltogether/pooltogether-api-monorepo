@@ -11,9 +11,7 @@ import { getPoolsKey } from '../../utils/getPoolsKey'
  * @returns
  */
 export const updatePools = async (event, chainId, forceUpdate = false) => {
-  console.log('forceUpdate', forceUpdate)
   const poolsToUpdate = await getPools(chainId, fetch)
-  console.log('poolsToUpdate', poolsToUpdate.length)
 
   if (!poolsToUpdate) {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))
