@@ -5,6 +5,7 @@ import { getCachedResponse } from '../../utils/getCachedResponse'
 import { getAave } from './getAave'
 import { getCompound } from './getCompound'
 import { YIELD_SOURCES } from '../../utils/constants'
+import { getCream } from './getCream'
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
@@ -29,6 +30,8 @@ async function handleRequest(event) {
       return getCachedResponse(event, getYieldSourceData(YIELD_SOURCES.aave))
     } else if (pathname.startsWith(`/${YIELD_SOURCES.compound}`)) {
       return getCachedResponse(event, getYieldSourceData(YIELD_SOURCES.compound))
+    } else if (pathname.startsWith(`/${YIELD_SOURCES.cream}`)) {
+      return getCachedResponse(event, getYieldSourceData(YIELD_SOURCES.cream))
       // Manual update
     } else if (pathname.startsWith(`/update`)) {
       try {
@@ -84,8 +87,12 @@ async function handleSchedule(event) {
     const data = {}
     const aaveResponse = await getAave(event)
     const compoundResponse = await getCompound(event)
+    // const aaveResponse = null
+    // const compoundResponse = null
+    const creamResponse = await getCream(event)
 
     // Update values if possible
+    data[YIELD_SOURCES.cream] = creamResponse ? creamResponse : storedData[YIELD_SOURCES.cream]
     data[YIELD_SOURCES.aave] = aaveResponse ? aaveResponse : storedData[YIELD_SOURCES.aave]
     data[YIELD_SOURCES.compound] = compoundResponse
       ? compoundResponse

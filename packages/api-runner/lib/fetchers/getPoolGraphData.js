@@ -1,8 +1,8 @@
 import { formatUnits } from '@ethersproject/units'
-import { contractAddresses } from '@pooltogether/current-pool-data'
+import { contractAddresses, PRIZE_POOL_TYPES } from '@pooltogether/current-pool-data'
 import { ethers } from 'ethers'
 
-import { PRIZE_POOL_TYPES } from 'lib/constants'
+import { CREAM_CR_TOKEN_ADDRESSES } from '../../../../utils/constants'
 import {
   getPoolAddressesBySubgraphVersionFromContracts,
   getSubgraphClientsByVersionFromContracts,
@@ -131,8 +131,17 @@ const formatPoolGraphData = (prizePool, chainId) => {
     tokenFaucets: collectTokenFaucets(chainId, prizePool.id)
   }
 
-  if (prizePool.compoundPrizePool) {
+  const creamAddresses = Object.values(CREAM_CR_TOKEN_ADDRESSES[chainId]).map((address) =>
+    address.toLowerCase()
+  )
+  const isCreamPool =
+    Boolean(prizePool.compoundPrizePool) &&
+    creamAddresses.includes(prizePool.compoundPrizePool.cToken.toLowerCase())
+
+  if (prizePool.compoundPrizePool && !isCreamPool) {
     formatCompoundPrizePoolData(prizePool, formattedData)
+  } else if (isCreamPool) {
+    formatCreamPrizePoolData(prizePool, formattedData)
   } else if (prizePool.yieldSourcePrizePool) {
     formatGenericYieldPrizePoolData(prizePool, formattedData)
   } else {
@@ -151,6 +160,13 @@ const collectTokenFaucets = (chainId, poolAddress) => {
 const formatCompoundPrizePoolData = (prizePool, formattedData) => {
   formattedData.prizePool.type = PRIZE_POOL_TYPES.compound
   formattedData.tokens.cToken = {
+    address: prizePool.compoundPrizePool.cToken
+  }
+}
+
+const formatCreamPrizePoolData = (prizePool, formattedData) => {
+  formattedData.prizePool.type = PRIZE_POOL_TYPES.cream
+  formattedData.tokens.crToken = {
     address: prizePool.compoundPrizePool.cToken
   }
 }

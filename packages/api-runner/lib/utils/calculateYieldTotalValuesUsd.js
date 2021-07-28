@@ -22,6 +22,9 @@ export const calculateYieldTotalValuesUsd = async (_pool) => {
     case PRIZE_POOL_TYPES.compound: {
       return await calculateCompoundYieldTotalValues(_pool)
     }
+    case PRIZE_POOL_TYPES.cream: {
+      return await calculateCreamYieldTotalValues(_pool)
+    }
     case PRIZE_POOL_TYPES.genericYield: {
       switch (_pool.prizePool.yieldSource?.type) {
         case YIELD_SOURCES.aave: {
@@ -109,6 +112,11 @@ const calculateCompoundYieldTotalValues = async (_pool) => {
     ...usdAndAmountValues
   }
 
+  return pool
+}
+
+const calculateCreamYieldTotalValues = (_pool) => {
+  const pool = cloneDeep(_pool)
   return pool
 }
 

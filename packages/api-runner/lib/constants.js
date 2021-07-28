@@ -51,11 +51,5 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
   }
 }
 
-export const PRIZE_POOL_TYPES = {
-  compound: 'compound',
-  genericYield: 'genericYield',
-  stake: 'stake'
-}
-
 export const COMP_DECIMALS = 18
 export const POOL_DECIMALS = 18
