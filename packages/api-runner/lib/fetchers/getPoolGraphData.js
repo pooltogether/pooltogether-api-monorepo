@@ -2,7 +2,6 @@ import { formatUnits } from '@ethersproject/units'
 import { contractAddresses, PRIZE_POOL_TYPES } from '@pooltogether/current-pool-data'
 import { ethers } from 'ethers'
 
-import { CREAM_CR_TOKEN_ADDRESSES } from '../../../../utils/constants'
 import {
   getPoolAddressesBySubgraphVersionFromContracts,
   getSubgraphClientsByVersionFromContracts,
@@ -10,6 +9,7 @@ import {
 } from 'lib/hooks/useSubgraphClients'
 import { prizePoolsQuery } from 'lib/queries/prizePoolsQuery'
 import { usePoolContract } from 'lib/hooks/usePoolContracts'
+import { CREAM_CR_TOKEN_ADDRESSES } from 'lib/constants'
 
 /**
  *
@@ -152,6 +152,9 @@ const formatPoolGraphData = (prizePool, chainId) => {
   } else {
     formatStakePrizePoolData(prizePool, formattedData)
   }
+
+  console.log('formattedData')
+  console.log(JSON.stringify(formattedData))
 
   return formattedData
 }

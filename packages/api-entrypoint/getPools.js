@@ -33,7 +33,17 @@ export const getPools = async (event, request) => {
 const filterStoredPoolsForChain = (chainId, storedPools) => {
   const poolAddresses = getDefaultPoolAddresses(chainId)
 
+  console.log('chainId', chainId)
+  console.log('filterStoredPoolsForChain', poolAddresses)
+  console.log(
+    'storedPools',
+    storedPools.length,
+    storedPools.map((pool) => pool.prizePool.address)
+  )
+
   return poolAddresses
-    .map((poolAddress) => storedPools.find((pool) => pool.prizePool.address === poolAddress))
+    .map((poolAddress) =>
+      storedPools.find((pool) => pool.prizePool.address.toLowerCase() === poolAddress.toLowerCase())
+    )
     .filter(Boolean)
 }

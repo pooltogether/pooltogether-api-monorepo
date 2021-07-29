@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@pooltogether/api-runner": "1.7.3",
-    "@pooltogether/current-pool-data": "3.5.7",
+    "@pooltogether/current-pool-data": "3.5.14",
     "@pooltogether/utilities": "^0.0.26",
     "ethers": "^5.4.1"
   }

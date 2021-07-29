@@ -12,7 +12,6 @@ import RegistryAbi from '@pooltogether/pooltogether-contracts/abis/Registry'
 import ReserveAbi from '@pooltogether/pooltogether-contracts/abis/Reserve'
 import CTokenAbi from '@pooltogether/pooltogether-contracts/abis/CTokenInterface'
 import LootBoxControllerAbi from '@pooltogether/loot-box/abis/LootBoxController'
-import { CrTokenAbi } from '../../../../abis/CrTokenAbi'
 
 import { SablierAbi } from 'abis/SablierAbi'
 import { ERC20Abi } from 'abis/ERC20Abi'
@@ -31,6 +30,7 @@ import {
 import { CompoundComptrollerAbi } from 'abis/CompoundComptroller'
 import { CompoundComptrollerImplementationAbi } from 'abis/CompoundComptrollerImplementation'
 import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
+import { CrTokenAbi } from 'abis/CrTokenAbi'
 
 const getCompoundComptrollerName = (prizePoolAddress) => `compound-comptroller-${prizePoolAddress}`
 const getCreamComptrollerName = (prizePoolAddress) => `cream-comptroller-${prizePoolAddress}`
@@ -178,7 +178,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
       const crTokenContract = contract(
         getCrTokenBatchName(pool.prizePool.address, pool.tokens.crToken.address),
         CrTokenAbi,
-        pool.tokens.cToken.address
+        pool.tokens.crToken.address
       )
       batchCalls.push(crTokenContract.supplyRatePerBlock())
 
@@ -226,7 +226,12 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
   })
 
   // First big batch call
-  const firstBatchValues = await batch(chainId, ...batchCalls)
+  let firstBatchValues
+  try {
+    firstBatchValues = await batch(chainId, ...batchCalls)
+  } catch (e) {
+    console.log(e.message)
+  }
 
   batchCalls = []
 
@@ -668,6 +673,8 @@ const formatPoolChainData = (
             .reserveRateMantissa[0]
       }
     }
+
+    console.log('Final', JSON.stringify(formattedPoolChainData))
 
     formattedPools[prizePoolAddress] = formattedPoolChainData
   })

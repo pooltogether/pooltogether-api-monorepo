@@ -618,7 +618,9 @@ const calculateTokenFaucetAprs = (pools) =>
 const addPoolMetadata = (_pools, poolContracts) => {
   const pools = cloneDeep(_pools)
   poolContracts.forEach((contract) => {
-    const pool = pools.find((pool) => pool.prizePool.address === contract.prizePool.address)
+    const pool = pools.find(
+      (pool) => pool.prizePool.address.toLowerCase() === contract.prizePool.address.toLowerCase()
+    )
     if (!pool) return
     pool.name = `${pool.tokens.underlyingToken.symbol} Pool`
     pool.contract = contract
