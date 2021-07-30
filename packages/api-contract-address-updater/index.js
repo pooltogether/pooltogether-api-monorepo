@@ -85,14 +85,18 @@ async function podsHandler(event) {
     const pathname = url.pathname
     // Read routes
     if (pathname.startsWith(`${PODS_URL}/update`)) {
-      let podAddresses = []
-      try {
-        podAddresses = url.searchParams.get('addresses').split(',')
-      } catch (e) {
-        throw new Error('Invalid addresses query parameter')
-      }
-      // Check for valid addresses
-      podAddresses = validateAddresses(podAddresses)
+      // TODO: Accept addresses from query params
+      // let podAddresses = []
+      // try {
+      //   podAddresses = url.searchParams.get('addresses').split(',')
+      // } catch (e) {
+      //   throw new Error('Invalid addresses query parameter')
+      // }
+      // // Check for valid addresses
+      // podAddresses = validateAddresses(podAddresses)
+
+      const podAddresses = podContractAddresses[Number(CHAIN_ID)]
+
       await updatePods(event, Number(CHAIN_ID), podAddresses)
       const successResponse = new Response(`Successfully updated pods on chain ${CHAIN_ID}`, {
         ...DEFAULT_HEADERS,
