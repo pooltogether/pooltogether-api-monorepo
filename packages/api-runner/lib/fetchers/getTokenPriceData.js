@@ -6,7 +6,7 @@ import { getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
 
 const KNOWN_STABLECOIN_ADDRESSES = {
   137: ['0xc2132d05d31c914a87c6611c10748aeb04b58e8f', '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'],
-  56: ['0xe494f1f8663c914e3938933d9c62b6ced61fe9c2']
+  56: ['0xe494f1f8663c914e3938933d9c62b6ced61fe9c2', '0xe9e7cea3dedca5984780bafc599bd69add087d56']
 }
 
 /**
