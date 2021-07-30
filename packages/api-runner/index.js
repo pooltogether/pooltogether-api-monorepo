@@ -1,21 +1,25 @@
 import { usePoolContracts } from 'lib/hooks/usePoolContracts'
 import { usePools, usePoolByAddress } from 'lib/hooks/usePool'
+import { getPodContractAddresses as _getPodContractAddresses } from 'lib/contractAddresses/getPodContractAddresses'
 import { getDefaultPoolAddresses } from 'lib/utils/getDefaultPoolAddresses'
 import { INFURA_ID, setInfuraId } from 'lib/utils/infura'
+import { fetch, setFetch } from 'lib/utils/fetch'
 
-const nodeFetch = require('node-fetch')
-
-export async function getPool(chainId, poolAddress, fetch = nodeFetch) {
-  const pool = await usePoolByAddress(chainId, poolAddress, fetch)
+export async function getPool(chainId, poolAddress) {
+  const pool = await usePoolByAddress(chainId, poolAddress)
   return pool
 }
 
 // TODO: Accept a list of addresses
 // Currently used to fetch and populate the KV for all of the pools
-export async function getPools(chainId, fetch = nodeFetch) {
+export async function getPools(chainId) {
   const poolContracts = usePoolContracts(chainId)
-  const pools = await usePools(chainId, poolContracts, fetch)
+  const pools = await usePools(chainId, poolContracts)
   return pools
 }
 
-export { getDefaultPoolAddresses, INFURA_ID, setInfuraId }
+export async function getPodContractAddresses(chainId, podAddress) {
+  return await _getPodContractAddresses(chainId, podAddress)
+}
+
+export { getDefaultPoolAddresses, INFURA_ID, setInfuraId, fetch, setFetch }

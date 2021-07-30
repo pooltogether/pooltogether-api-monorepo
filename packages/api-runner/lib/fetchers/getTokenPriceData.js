@@ -46,15 +46,13 @@ const ETHEREUM_MAINNET_CHAIN_ID = 1
 const ETHEREUM_MAINNET_MATIC_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'
 // MATIC price as of July 15th, 2021 as fallback:
 const HARD_CODED_MATIC_PRICE = 0.871103
-export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber = -1) => {
+export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
   // On polygon return mock data from last successful request and the price of MATIC (WMATIC) on the Ethereum network
   // (basically the same price as on Polygon or anywhere else)
   if (chainId === 137) {
-    const maticPriceOnEthereumData = await getTokenPriceData(
-      ETHEREUM_MAINNET_CHAIN_ID,
-      [ETHEREUM_MAINNET_MATIC_ADDRESS],
-      fetch
-    )
+    const maticPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
+      ETHEREUM_MAINNET_MATIC_ADDRESS
+    ])
 
     return {
       '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
@@ -74,7 +72,7 @@ export const getTokenPriceData = async (chainId, addresses, fetch, blockNumber =
   const knownStablecoinAddresses = KNOWN_STABLECOIN_ADDRESSES?.[chainId] || []
 
   const blockFilter = _getBlockFilter(blockNumber)
-  const graphQLClient = getUniswapSubgraphClient(chainId, fetch)
+  const graphQLClient = getUniswapSubgraphClient(chainId)
 
   if (!graphQLClient) return null
 

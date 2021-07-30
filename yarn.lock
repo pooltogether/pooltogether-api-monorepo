@@ -879,6 +879,11 @@
   dependencies:
     "@octokit/openapi-types" "^6.2.0"
 
+"@pooltogether/current-pool-data@^3.5.7":
+  version "3.5.7"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.7.tgz#a65c154b8bc80ec0477b45c5c74873e957cfc731"
+  integrity sha512-/tmE7Em1m3JcRHTnHIZevxrlWzUUnlNulPlVJqRYeOhQmUFcZxL2OoGx2QvhDeaY1/6up0TKuEuosvrIybj3ig==
+
 "@pooltogether/evm-chains-extended@^0.4.3":
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/@pooltogether/evm-chains-extended/-/evm-chains-extended-0.4.3.tgz#01bf32b6a5fc93437b7e02f9380c53e976e7a2c1"

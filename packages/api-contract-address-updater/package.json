@@ -1,13 +1,13 @@
 {
   "name": "@pooltogether/api-pool-updater",
   "version": "1.0.0",
-  "description": "A worker to keep the KV fresh for pools",
+  "description": "A worker to fetch on chain data that is more static, ex. contract addresses for prize pools & pods.",
   "main": "index.js",
   "scripts": {
     "build": "wrangler build",
     "dev": "wrangler dev --env",
     "start": "wrangler dev --env",
-    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon",
+    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
   },
@@ -17,6 +17,8 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.8.13"
+    "@pooltogether/api-runner": "1.9.0",
+    "@pooltogether/current-pool-data": "^3.5.7",
+    "ethers": "^5.4.1"
   }
 }

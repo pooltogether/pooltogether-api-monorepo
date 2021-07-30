@@ -35,32 +35,31 @@ const getPool = (graphPool) => {
 /**
  *
  * @param {*} chainId
- * @param {*} readProvider
  * @param {*} poolContracts
  * @returns
  */
-export const getPools = async (chainId, poolContracts, fetch) => {
-  const poolGraphData = await getPoolGraphData(chainId, poolContracts, fetch)
+export const getPools = async (chainId, poolContracts) => {
+  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
   // console.log('poolGraphData', JSON.stringify(poolGraphData))
-  const poolChainData = await getPoolChainData(chainId, poolGraphData, fetch)
+  const poolChainData = await getPoolChainData(chainId, poolGraphData)
   // console.log('poolChainData', JSON.stringify(poolChainData))
   let pools = combinePoolData(poolGraphData, poolChainData)
-  pools = await getCustomYieldSourceData(chainId, pools, fetch)
+  pools = await getCustomYieldSourceData(chainId, pools)
   // console.log('getCustomYieldSourceData', JSON.stringify(pools))
   const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
-  const lootBoxGraphData = await getLootBoxGraphData(chainId, lootBoxTokenIds, fetch)
+  const lootBoxGraphData = await getLootBoxGraphData(chainId, lootBoxTokenIds)
   pools = combineLootBoxData(chainId, pools, lootBoxGraphData)
-  pools = await getLootBoxChainData(pools, chainId, fetch)
+  pools = await getLootBoxChainData(pools, chainId)
 
   const erc20Addresses = getAllErc20Addresses(pools)
-  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses, fetch)
+  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
   // console.log('tokenPriceGraphData', chainId, erc20Addresses, JSON.stringify(tokenPriceGraphData))
 
   const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
     ? TESTNET_USD_AMOUNT
     : MAINNET_USD_AMOUNT
   pools = combineTokenPricesData(pools, tokenPriceGraphData, defaultTokenPriceUsd)
-  pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools, fetch))
+  pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools))
   pools = calculateTotalValueLockedPerPool(pools)
   pools = calculateWeeklyPrizes(pools)
   pools = calculateTokenFaucetAprs(pools)
@@ -274,7 +273,7 @@ const amountMultByUsd = (amount, usd) => amount.mul(Math.round(usd * 100)).div(1
  * TODO: Assumes sablier stream is the same as the "yield" token for calculations
  * @param {*} pools
  */
-const calculateTotalPrizeValuePerPool = async (pools, fetch) => {
+const calculateTotalPrizeValuePerPool = async (pools) => {
   return pools.map(async (_pool) => {
     let pool = cloneDeep(_pool)
     // Calculate erc20 values
@@ -284,7 +283,7 @@ const calculateTotalPrizeValuePerPool = async (pools, fetch) => {
     pool = calculateLootBoxTotalValuesUsd(pool)
 
     // Calculate yield prize
-    pool = await calculateYieldTotalValuesUsd(pool, fetch)
+    pool = await calculateYieldTotalValuesUsd(pool)
 
     // Calculate sablier prize
     pool = calculateSablierTotalValueUsd(pool)

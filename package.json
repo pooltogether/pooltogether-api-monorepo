@@ -8,6 +8,7 @@
     "lerna": "^4.0.0"
   },
   "dependencies": {
+    "@pooltogether/current-pool-data": "^3.5.7",
     "@pooltogether/evm-chains-extended": "^0.4.3"
   }
 }

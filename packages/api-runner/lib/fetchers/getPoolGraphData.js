@@ -18,9 +18,9 @@ import { usePoolContract } from 'lib/hooks/usePoolContracts'
  * @param {*} blockNumber
  * @returns
  */
-export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumber = -1) => {
+export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1) => {
   const subgraphVersions = getSubgraphVersionsFromContracts(poolContracts)
-  const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId, fetch)
+  const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
   const query = prizePoolsQuery(blockNumber)
@@ -34,7 +34,7 @@ export const getPoolGraphData = async (chainId, poolContracts, fetch, blockNumbe
       const poolAddresses = addressesByVersion[version].map((addr) => addr.toLowerCase())
 
       return client.request(query, { poolAddresses }).catch((e) => {
-        console.error(e)
+        console.log(e)
         return null
       })
     })

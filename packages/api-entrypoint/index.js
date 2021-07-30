@@ -4,13 +4,11 @@ import { DEFAULT_HEADERS } from '../../utils/constants'
 import { getCurrentDateString } from '../../utils/getCurrentDateString'
 import { getPool } from './getPool'
 import { getPools } from './getPools'
+import { getPod } from './getPod'
+import { getPods } from './getPods'
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
-})
-
-addEventListener('scheduled', (event) => {
-  event.waitUntil(handleSchedule(event))
 })
 
 /**
@@ -25,12 +23,18 @@ async function handleRequest(event) {
 
     const singlePoolRegex = /\/pools\/[\d]*\/[A-Za-z0-9]*/
     const multiPoolRegex = /\/pools\/[\d]*/
+    const singlePodRegex = /\/pods\/[\d]*\/[A-Za-z0-9]*/
+    const multiPodRegex = /\/pods\/[\d]*/
 
     // Read routes
     if (singlePoolRegex.test(pathname)) {
       return getCachedResponse(event, getPool(event, request), 5)
     } else if (multiPoolRegex.test(pathname)) {
       return getCachedResponse(event, getPools(event, request), 5)
+    } else if (singlePodRegex.test(pathname)) {
+      return getCachedResponse(event, getPod(event, request), 5)
+    } else if (multiPodRegex.test(pathname)) {
+      return getCachedResponse(event, getPods(event, request), 5)
     }
 
     const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a`
@@ -43,37 +47,11 @@ async function handleRequest(event) {
   } catch (e) {
     event.waitUntil(log(e, e.request))
 
-    const errorResponse = new Response('Error', {
+    const errorResponse = new Response(`Error\n${e.message}`, {
       ...DEFAULT_HEADERS,
       status: 500
     })
     errorResponse.headers.set('Content-Type', 'text/plain')
     return errorResponse
-  }
-}
-
-/**
- * Refetch yield source data and update in KV
- * @param {Event} event
- */
-async function handleSchedule(event) {
-  try {
-    const storedData = JSON.parse(await YIELD_SOURCE.get('data'))
-
-    const data = {}
-    const aaveResponse = await getAave(event)
-    const compoundResponse = await getCompound(event)
-
-    // Update values if possible
-    data[YIELD_SOURCES.aave] = aaveResponse ? aaveResponse : storedData[YIELD_SOURCES.aave]
-    data[YIELD_SOURCES.compound] = compoundResponse
-      ? compoundResponse
-      : storedData[YIELD_SOURCES.compound]
-
-    await YIELD_SOURCE.put('data', JSON.stringify(data), {
-      metadata: { lastUpdated: getCurrentDateString() }
-    })
-  } catch (e) {
-    event.waitUntil(log(e, event.request))
   }
 }

@@ -1,5 +1,4 @@
-import { setInfuraId } from '@pooltogether/api-runner'
-
+import { setInfuraId, setFetch } from '@pooltogether/api-runner'
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updatePools } from './updatePools'
@@ -23,6 +22,7 @@ addEventListener('scheduled', (event) => {
  */
 async function updatePoolsScheduledHandler(event) {
   setInfuraId(INFURA_ID)
+  setFetch(fetch)
   try {
     await updatePools(event, Number(CHAIN_ID))
     return true
@@ -38,6 +38,7 @@ async function updatePoolsScheduledHandler(event) {
  */
 async function handleRequest(event) {
   setInfuraId(INFURA_ID)
+  setFetch(fetch)
   try {
     const request = event.request
     const _url = new URL(request.url)

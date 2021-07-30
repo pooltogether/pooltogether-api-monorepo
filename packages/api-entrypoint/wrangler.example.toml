@@ -5,7 +5,7 @@ workers_dev = true
 account_id = "" # Production account
 # account_id = "" # Personal Account
 
-kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
+kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }, { binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" }]
 
 [vars]
 APP_NAME = 'pooltogether-api'
@@ -16,10 +16,11 @@ SENTRY_PROJECT_NAME = 'api-entrypoint'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
 
 [env.production]
 name = "pooltogether-api"
-kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "e01e5ae04e134d779382f36ca2ff6cda" }]
+kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "e01e5ae04e134d779382f36ca2ff6cda" }, { binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" }]
 workers_dev = true
 zone_id = ""
 route = "pooltogether-api.com/*"
@@ -33,3 +34,4 @@ SENTRY_PROJECT_NAME = 'api-entrypoint'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''

@@ -18,6 +18,7 @@ SENTRY_PROJECT_NAME = 'yield-source-data'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
 
 [env.production]
 name = "yield-source-data"
@@ -35,3 +36,4 @@ SENTRY_PROJECT_NAME = 'yield-source-data'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
