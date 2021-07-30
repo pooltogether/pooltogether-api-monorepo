@@ -10,22 +10,46 @@ import { getPoolsKey } from '../../utils/kvKeys'
  * @param {*} chainId The chain id to refresh pools for
  * @returns
  */
-export const updatePools = async (event, chainId) => {
-  const pools = await getPools(chainId, fetch)
+export const updatePools = async (event, chainId, forceUpdate = false) => {
+  const poolsToUpdate = await getPools(chainId, fetch)
 
-  if (!pools || pools.length !== poolCountForChain(chainId)) {
+  if (!poolsToUpdate) {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))
-  }
+    return false
+  } else if (forceUpdate) {
+    if (poolsToUpdate.length === poolCountForChain(chainId)) {
+      event.waitUntil(POOLS.put(getPoolsKey(chainId), JSON.stringify(poolsToUpdate)), {
+        metadata: {
+          lastUpdated: new Date(Date.now()).toUTCString()
+        }
+      })
+      event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
+    } else {
+      event.waitUntil(log(new Error('No pools updated during forced update'), event.request))
+      return false
+    }
+  } else {
+    // Only update the pools in the KV with new data
+    const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId))) || []
+    poolsToUpdate.map((poolToUpdate) => {
+      const oldPoolIndex = storedPools.findIndex(
+        (storedPool) => storedPool.prizePool.address === poolToUpdate.prizePool.address
+      )
+      if (oldPoolIndex === -1) {
+        storedPools.push(poolToUpdate)
+      } else {
+        storedPools[oldPoolIndex] = poolToUpdate
+      }
+    })
 
-  event.waitUntil(
-    POOLS.put(getPoolsKey(chainId), JSON.stringify(pools), {
+    event.waitUntil(POOLS.put(getPoolsKey(chainId), JSON.stringify(storedPools)), {
       metadata: {
         lastUpdated: new Date(Date.now()).toUTCString()
       }
     })
-  )
-  // event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
-  return true
+    event.waitUntil(POOLS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
+    return true
+  }
 }
 
 const poolCountForChain = (chainId) => getDefaultPoolAddresses(chainId).length

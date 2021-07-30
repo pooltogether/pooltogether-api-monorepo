@@ -93,9 +93,15 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     )
 
     // Token Faucets
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
-      batchCalls.push(tokenFaucetContract.dripRatePerSecond().asset().measure())
+      batchCalls.push(
+        tokenFaucetContract
+          .dripRatePerSecond()
+          .asset()
+          .measure()
+          .totalUnclaimed()
+      )
     })
 
     // External ERC20 awards
@@ -120,7 +126,11 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
             erc721.address
           )
           batchCalls.push(
-            erc721Contract.balanceOf(pool.prizePool.address).name().symbol().ownerOf(tokenId)
+            erc721Contract
+              .balanceOf(pool.prizePool.address)
+              .name()
+              .symbol()
+              .ownerOf(tokenId)
           )
           erc721AwardsToFetchMetadataFor.push({ address: erc721.address, tokenId })
         })
@@ -149,7 +159,6 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
 
       // Compound Comptroller
       if (chainId === NETWORK.mainnet) {
-        // console.log('Get claimable COMP for:', pool.prizePool.address)
         const comptrollerContract = contract(
           getCompoundComptrollerName(pool.prizePool.address),
           CompoundComptrollerImplementationAbi,
@@ -160,7 +169,6 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     }
 
     // LootBox
-
     const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
     if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
       const lootBox = pool.prize.externalErc721Awards.find(
@@ -207,7 +215,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses?.forEach((tokenFaucetAddress) => {
       const tokenFaucetDripAssetAddress = firstBatchValues[tokenFaucetAddress]?.asset[0]
       if (tokenFaucetDripAssetAddress) {
         const dripErc20Contract = contract(
@@ -219,7 +227,13 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
           ERC20Abi,
           tokenFaucetDripAssetAddress
         )
-        batchCalls.push(dripErc20Contract.balanceOf(tokenFaucetAddress).decimals().symbol().name())
+        batchCalls.push(
+          dripErc20Contract
+            .balanceOf(tokenFaucetAddress)
+            .decimals()
+            .symbol()
+            .name()
+        )
       }
     })
 
@@ -233,7 +247,12 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
         ERC20Abi,
         sablierErc20StreamTokenAddress
       )
-      batchCalls.push(sablierErc20Stream.decimals().name().symbol())
+      batchCalls.push(
+        sablierErc20Stream
+          .decimals()
+          .name()
+          .symbol()
+      )
     }
 
     // Reserve
@@ -391,10 +410,10 @@ const formatPoolChainData = (
 
     // Token listener
     let tokenFaucetDripTokens = []
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses?.forEach((tokenFaucetAddress) => {
       const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
       const dripTokenAddress = tokenFaucetData.asset[0]
-      const tokenFaucetData2 =
+      const dripTokenResponse =
         secondBatchValues[
           getTokenFaucetDripTokenName(pool.prizePool.address, tokenFaucetAddress, dripTokenAddress)
         ]
@@ -402,35 +421,62 @@ const formatPoolChainData = (
       const dripToken = {
         tokenFaucetAddress,
         address: dripTokenAddress.toLowerCase(),
-        amount: formatUnits(tokenFaucetData2.balanceOf[0], tokenFaucetData2.decimals[0]),
-        amountUnformatted: tokenFaucetData2.balanceOf[0],
-        decimals: tokenFaucetData2.decimals[0],
-        name: tokenFaucetData2.name[0],
-        symbol: tokenFaucetData2.symbol[0]
+        amount: formatUnits(dripTokenResponse.balanceOf[0], dripTokenResponse.decimals[0]),
+        amountUnformatted: dripTokenResponse.balanceOf[0],
+        decimals: dripTokenResponse.decimals[0],
+        name: dripTokenResponse.name[0],
+        symbol: dripTokenResponse.symbol[0]
       }
+
+      const dripRatePerSecondUnformatted = tokenFaucetData.dripRatePerSecond[0]
+      const dripRatePerDayUnformatted = tokenFaucetData.dripRatePerSecond[0].mul(SECONDS_PER_DAY)
+
+      const totalUnclaimedUnformatted = tokenFaucetData.totalUnclaimed[0]
+      const totalUnclaimed = formatUnits(totalUnclaimedUnformatted, dripToken.decimals)
+
+      const faucetsDripTokenBalanceUnformatted = dripTokenResponse.balanceOf[0]
+      const faucetsDripTokenBalance = formatUnits(
+        faucetsDripTokenBalanceUnformatted,
+        dripToken.decimals
+      )
+
+      const remainingDripTokenBalanceUnformatted = faucetsDripTokenBalanceUnformatted.sub(
+        totalUnclaimedUnformatted
+      )
+      const remainingDripTokenBalance = formatUnits(
+        remainingDripTokenBalanceUnformatted,
+        dripToken.decimals
+      )
+
+      let remainingDaysUnformatted = remainingDripTokenBalanceUnformatted
+        .mul(100)
+        .div(dripRatePerDayUnformatted)
+      const remainingDays = Number(remainingDaysUnformatted.toString()) / 100
+      remainingDaysUnformatted = remainingDaysUnformatted.div(100)
 
       const tokenFaucet = {
         address: tokenFaucetAddress.toLowerCase(),
-        dripRatePerSecondUnformatted: tokenFaucetData.dripRatePerSecond[0],
+        dripRatePerSecond: formatUnits(dripRatePerSecondUnformatted, dripToken.decimals),
+        dripRatePerSecondUnformatted,
+        dripRatePerDay: formatUnits(dripRatePerDayUnformatted, dripToken.decimals),
+        dripRatePerDayUnformatted,
+        faucetsDripTokenBalance,
+        faucetsDripTokenBalanceUnformatted,
+        totalUnclaimed,
+        totalUnclaimedUnformatted,
+        remainingDays,
+        remainingDaysUnformatted,
+        remainingDripTokenBalance,
+        remainingDripTokenBalanceUnformatted,
         measure: tokenFaucetData.measure[0],
         asset: dripTokenAddress.toLowerCase()
       }
-      tokenFaucet.dripRatePerSecond = formatUnits(
-        tokenFaucet.dripRatePerSecondUnformatted,
-        dripToken.decimals
-      )
-      tokenFaucet.dripRatePerDayUnformatted =
-        tokenFaucet.dripRatePerSecondUnformatted.mul(SECONDS_PER_DAY)
-      tokenFaucet.dripRatePerDay = formatUnits(
-        tokenFaucet.dripRatePerDayUnformatted,
-        dripToken.decimals
-      )
 
       if (!formattedPoolChainData.tokenFaucets) {
         formattedPoolChainData.tokenFaucets = []
       }
-
       formattedPoolChainData.tokenFaucets.push(tokenFaucet)
+
       tokenFaucet.dripToken = dripToken
 
       // Add to tokens list
@@ -596,4 +642,8 @@ const formatPoolChainData = (
   })
 
   return formattedPools
+}
+
+const dripTokenKey = (tokenFaucetAddress, dripTokenAddress) => {
+  return `${tokenFaucetAddress}-${dripTokenAddress}`
 }

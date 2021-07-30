@@ -128,7 +128,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
             : prizePool.reserveRegistry
       }
     },
-    tokenFaucets: collectTokenFaucets(chainId, prizePool.id)
+    tokenFaucetAddresses: collectTokenFaucetAddresses(chainId, prizePool.id),
+    tokenFaucets: []
   }
 
   if (prizePool.compoundPrizePool) {
@@ -142,9 +143,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
   return formattedData
 }
 
-const collectTokenFaucets = (chainId, poolAddress) => {
+const collectTokenFaucetAddresses = (chainId, poolAddress) => {
   const poolContract = usePoolContract(chainId, poolAddress)
-
   return poolContract.tokenFaucets || []
 }
 

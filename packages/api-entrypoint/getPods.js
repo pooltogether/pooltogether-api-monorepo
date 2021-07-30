@@ -12,11 +12,11 @@ export const getPods = async (event, request) => {
   let podAddresses = addressesQueryParam ? addressesQueryParam.split(',') : []
   podAddresses = podAddresses.map((address) => address.toLowerCase())
 
-  podAddresses.map((podAddress) => {
+  for (const podAddress in podAddresses) {
     if (!ethers.utils.isAddress(podAddress)) {
       throw new Error(`Invalid address ${podAddress}`)
     }
-  })
+  }
 
   const storedPods = JSON.parse(await CONTRACT_ADDRESSES.get(getPodsKey(chainId)))
   const storedPools = JSON.parse(await POOLS.get(getPoolsKey(chainId)))
