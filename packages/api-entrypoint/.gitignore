@@ -6,3 +6,4 @@ worker/
 node_modules/
 wrangler.toml
 yarn-error.log
+.yalc/

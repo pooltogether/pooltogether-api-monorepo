@@ -138,9 +138,9 @@ const formatPoolGraphData = (prizePool, chainId, prizePoolContract) => {
     contract: prizePoolContract
   }
 
-  const creamAddresses = Object.values(CREAM_CR_TOKEN_ADDRESSES[chainId]).map((address) =>
-    address.toLowerCase()
-  )
+  const creamAddresses = CREAM_CR_TOKEN_ADDRESSES[chainId]
+    ? Object.values(CREAM_CR_TOKEN_ADDRESSES[chainId]).map((address) => address.toLowerCase())
+    : []
   const isCreamPool =
     Boolean(prizePool.compoundPrizePool) &&
     creamAddresses.findIndex(
@@ -156,9 +156,6 @@ const formatPoolGraphData = (prizePool, chainId, prizePoolContract) => {
   } else {
     formatStakePrizePoolData(prizePool, formattedData)
   }
-
-  console.log('formattedData')
-  console.log(JSON.stringify(formattedData))
 
   return formattedData
 }
