@@ -7,9 +7,10 @@ import {
   toNonScaledUsdString
 } from '@pooltogether/utilities'
 import { formatUnits, parseUnits } from '@ethersproject/units'
-import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { ethers } from 'ethers'
 import { PRIZE_POOL_TYPES, SECONDS_PER_YEAR } from '@pooltogether/current-pool-data'
+
+import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { fetch } from '../../index'
 
 /**
@@ -21,6 +22,9 @@ export const calculateYieldTotalValuesUsd = async (_pool) => {
   switch (_pool.prizePool.type) {
     case PRIZE_POOL_TYPES.compound: {
       return await calculateCompoundYieldTotalValues(_pool)
+    }
+    case PRIZE_POOL_TYPES.cream: {
+      return await calculateCreamYieldTotalValues(_pool)
     }
     case PRIZE_POOL_TYPES.genericYield: {
       switch (_pool.prizePool.yieldSource?.type) {
@@ -107,6 +111,50 @@ const calculateCompoundYieldTotalValues = async (_pool) => {
   pool.prize.yield = {
     ...pool.prize.yield,
     ...usdAndAmountValues
+  }
+
+  return pool
+}
+
+const calculateCreamYieldTotalValues = async (_pool) => {
+  const pool = cloneDeep(_pool)
+
+  const response = await fetch('https://yield.pooltogether-api.com/cream')
+  const creamMarketData = await response.json()
+
+  const underlyingToken = pool.tokens.underlyingToken
+  const chainId = pool.config.chainId
+  const crToken = pool.tokens.crToken
+  const { supplyApy: creamApy } = creamMarketData[chainId][crToken.address] || { supplyApy: 0 }
+
+  const totalValueUsdScaled = calculatedEstimatedAccruedCompTotalValueUsdScaled(
+    String(creamApy),
+    pool.tokens.ticket.totalValueUsdScaled.add(pool.tokens.sponsorship.totalValueUsdScaled),
+    pool.prize.prizePeriodRemainingSeconds
+  )
+  const totalValueUsd = toNonScaledUsdString(totalValueUsdScaled)
+
+  // Calculate yield
+  const yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
+    pool.prize.amountUnformatted,
+    pool.tokens.ticket.totalSupplyUnformatted.add(pool.tokens.sponsorship.totalSupplyUnformatted),
+    crToken.supplyRatePerBlock,
+    pool.tokens.ticket.decimals,
+    pool.prize.estimatedRemainingBlocksToPrize,
+    pool.reserve?.rate
+  )
+
+  const usdAndAmountValues = calculateUsdValues(yieldAmountUnformatted, underlyingToken)
+
+  //Set values
+  pool.prize.yield = {
+    ...pool.prize.yield,
+    ...usdAndAmountValues,
+    [YIELD_SOURCES.cream]: {
+      ...pool.prize.yield[YIELD_SOURCES.cream],
+      totalValueUsdScaled,
+      totalValueUsd
+    }
   }
 
   return pool

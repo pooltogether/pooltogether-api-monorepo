@@ -1,8 +1,7 @@
 import { formatUnits } from '@ethersproject/units'
-import { contractAddresses } from '@pooltogether/current-pool-data'
+import { contractAddresses, PRIZE_POOL_TYPES } from '@pooltogether/current-pool-data'
 import { ethers } from 'ethers'
 
-import { PRIZE_POOL_TYPES } from 'lib/constants'
 import {
   getPoolAddressesBySubgraphVersionFromContracts,
   getSubgraphClientsByVersionFromContracts,
@@ -10,6 +9,7 @@ import {
 } from 'lib/hooks/useSubgraphClients'
 import { prizePoolsQuery } from 'lib/queries/prizePoolsQuery'
 import { usePoolContract } from 'lib/hooks/usePoolContracts'
+import { CREAM_CR_TOKEN_ADDRESSES } from 'lib/constants'
 
 /**
  *
@@ -25,32 +25,39 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
 
   const query = prizePoolsQuery(blockNumber)
 
-  // console.log('getting pool data from the graph')
-  // console.log('getting pool data from the graph')
-  // console.log('getting pool data from the graph ...')
   const data = await Promise.all(
     subgraphVersions.map((version) => {
       const client = subgraphClients[version]
       const poolAddresses = addressesByVersion[version].map((addr) => addr.toLowerCase())
 
       return client.request(query, { poolAddresses }).catch((e) => {
-        console.log(e)
+        console.log(e.message)
         return null
       })
     })
   )
 
-  // console.log('got pool data from the graph')
-  // console.log('got pool data from the graph !')
+  return data.filter(Boolean).flatMap(({ prizePools }) => {
+    return prizePools.map((prizePool) => {
+      const prizePoolContract = poolContracts.find(
+        (poolContract) =>
+          poolContract.prizePool.address.toLowerCase() === prizePool.id.toLowerCase()
+      )
+      return {
+        [prizePool.id]: formatPoolGraphData(prizePool, chainId, prizePoolContract)
+      }
+    })
+  })
 
-  return data.filter(Boolean).flatMap(({ prizePools }) =>
-    prizePools.map((prizePool) => ({
-      [prizePool.id]: formatPoolGraphData(prizePool, chainId)
-    }))
-  )
+  // TODO: Remove old code
+  // return data.filter(Boolean).flatMap(({ prizePools }) =>
+  //   prizePools.map((prizePool) => ({
+  //     [prizePool.id]: formatPoolGraphData(prizePool, chainId)
+  //   }))
+  // )
 }
 
-const formatPoolGraphData = (prizePool, chainId) => {
+const formatPoolGraphData = (prizePool, chainId, prizePoolContract) => {
   const prizeStrategy = prizePool.prizeStrategy.multipleWinners
     ? prizePool.prizeStrategy.multipleWinners
     : prizePool.prizeStrategy.singleRandomWinner
@@ -70,8 +77,6 @@ const formatPoolGraphData = (prizePool, chainId) => {
     config: {
       liquidityCap: prizePool.liquidityCap,
       maxExitFeeMantissa: prizePool.maxExitFeeMantissa,
-      maxTimelockDurationSeconds: prizePool.maxTimelockDuration,
-      timelockTotalSupply: prizePool.timelockTotalSupply,
       numberOfWinners: prizeStrategy?.numberOfWinners || '1',
       prizePeriodSeconds: prizeStrategy.prizePeriodSeconds,
       tokenCreditRates: prizePool.tokenCreditRates
@@ -129,11 +134,23 @@ const formatPoolGraphData = (prizePool, chainId) => {
       }
     },
     tokenFaucetAddresses: collectTokenFaucetAddresses(chainId, prizePool.id),
-    tokenFaucets: []
+    tokenFaucets: [],
+    contract: prizePoolContract
   }
 
-  if (prizePool.compoundPrizePool) {
+  const creamAddresses = CREAM_CR_TOKEN_ADDRESSES[chainId]
+    ? Object.values(CREAM_CR_TOKEN_ADDRESSES[chainId]).map((address) => address.toLowerCase())
+    : []
+  const isCreamPool =
+    Boolean(prizePool.compoundPrizePool) &&
+    creamAddresses.findIndex(
+      (address) => address.toLowerCase() === prizePool.compoundPrizePool.cToken.toLowerCase()
+    ) !== -1
+
+  if (prizePool.compoundPrizePool && !isCreamPool) {
     formatCompoundPrizePoolData(prizePool, formattedData)
+  } else if (isCreamPool) {
+    formatCreamPrizePoolData(prizePool, formattedData)
   } else if (prizePool.yieldSourcePrizePool) {
     formatGenericYieldPrizePoolData(prizePool, formattedData)
   } else {
@@ -151,6 +168,13 @@ const collectTokenFaucetAddresses = (chainId, poolAddress) => {
 const formatCompoundPrizePoolData = (prizePool, formattedData) => {
   formattedData.prizePool.type = PRIZE_POOL_TYPES.compound
   formattedData.tokens.cToken = {
+    address: prizePool.compoundPrizePool.cToken
+  }
+}
+
+const formatCreamPrizePoolData = (prizePool, formattedData) => {
+  formattedData.prizePool.type = PRIZE_POOL_TYPES.cream
+  formattedData.tokens.crToken = {
     address: prizePool.compoundPrizePool.cToken
   }
 }

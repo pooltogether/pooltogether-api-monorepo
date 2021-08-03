@@ -11,7 +11,7 @@ import { getPoolsKey } from '../../utils/kvKeys'
  * @returns
  */
 export const updatePools = async (event, chainId, forceUpdate = false) => {
-  const poolsToUpdate = await getPools(chainId, fetch)
+  const poolsToUpdate = await getPools(chainId)
 
   if (!poolsToUpdate) {
     event.waitUntil(log(new Error('No pools fetched during update'), event.request))

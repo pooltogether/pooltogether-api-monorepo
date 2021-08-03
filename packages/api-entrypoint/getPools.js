@@ -34,6 +34,8 @@ const filterStoredPoolsForChain = (chainId, storedPools) => {
   const poolAddresses = getDefaultPoolAddresses(chainId)
 
   return poolAddresses
-    .map((poolAddress) => storedPools.find((pool) => pool.prizePool.address === poolAddress))
+    .map((poolAddress) =>
+      storedPools.find((pool) => pool.prizePool.address.toLowerCase() === poolAddress.toLowerCase())
+    )
     .filter(Boolean)
 }

@@ -39,33 +39,41 @@ const getPool = (graphPool) => {
  * @returns
  */
 export const getPools = async (chainId, poolContracts) => {
-  const poolGraphData = await getPoolGraphData(chainId, poolContracts)
-  // console.log('poolGraphData', JSON.stringify(poolGraphData))
-  const poolChainData = await getPoolChainData(chainId, poolGraphData)
-  // console.log('poolChainData', JSON.stringify(poolChainData))
-  let pools = combinePoolData(poolGraphData, poolChainData)
-  pools = await getCustomYieldSourceData(chainId, pools)
-  // console.log('getCustomYieldSourceData', JSON.stringify(pools))
-  const lootBoxTokenIds = [...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))]
-  const lootBoxGraphData = await getLootBoxGraphData(chainId, lootBoxTokenIds)
-  pools = combineLootBoxData(chainId, pools, lootBoxGraphData)
-  pools = await getLootBoxChainData(pools, chainId)
+  try {
+    // console.log('getPools', chainId, JSON.stringify(poolContracts), typeof poolContracts)
+    const poolGraphData = await getPoolGraphData(chainId, poolContracts)
+    // console.log('poolGraphData', poolGraphData ? JSON.stringify(poolGraphData) : poolGraphData)
+    const poolChainData = await getPoolChainData(chainId, poolGraphData)
+    // console.log('poolChainData', poolChainData ? JSON.stringify(poolChainData) : poolChainData)
+    let pools = combinePoolData(poolGraphData, poolChainData)
+    pools = await getCustomYieldSourceData(chainId, pools)
+    // console.log('getCustomYieldSourceData', pools ? JSON.stringify(pools) : pools)
+    const lootBoxTokenIds = [
+      ...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))
+    ]
+    const lootBoxGraphData = await getLootBoxGraphData(chainId, lootBoxTokenIds)
+    pools = combineLootBoxData(chainId, pools, lootBoxGraphData)
+    pools = await getLootBoxChainData(pools, chainId)
 
-  const erc20Addresses = getAllErc20Addresses(pools)
-  const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
-  // console.log('tokenPriceGraphData', chainId, erc20Addresses, JSON.stringify(tokenPriceGraphData))
+    const erc20Addresses = getAllErc20Addresses(pools)
+    const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
+    // console.log('tokenPriceGraphData', chainId, erc20Addresses, JSON.stringify(tokenPriceGraphData))
 
-  const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
-    ? TESTNET_USD_AMOUNT
-    : MAINNET_USD_AMOUNT
-  pools = combineTokenPricesData(pools, tokenPriceGraphData, defaultTokenPriceUsd)
-  pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools))
-  pools = calculateTotalValueLockedPerPool(pools)
-  pools = calculateWeeklyPrizes(pools)
-  pools = calculateTokenFaucetAprs(pools)
-  pools = addPoolMetadata(pools, poolContracts)
+    const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
+      ? TESTNET_USD_AMOUNT
+      : MAINNET_USD_AMOUNT
+    pools = combineTokenPricesData(pools, tokenPriceGraphData, defaultTokenPriceUsd)
+    pools = await Promise.all(await calculateTotalPrizeValuePerPool(pools))
+    pools = calculateTotalValueLockedPerPool(pools)
+    pools = calculateWeeklyPrizes(pools)
+    pools = calculateTokenFaucetAprs(pools)
+    pools = addPoolMetadata(pools, poolContracts)
 
-  return pools
+    return pools
+  } catch (e) {
+    console.log(e.message)
+    throw e
+  }
 }
 
 /**
@@ -612,7 +620,9 @@ const calculateTokenFaucetAprs = (pools) =>
 const addPoolMetadata = (_pools, poolContracts) => {
   const pools = cloneDeep(_pools)
   poolContracts.forEach((contract) => {
-    const pool = pools.find((pool) => pool.prizePool.address === contract.prizePool.address)
+    const pool = pools.find(
+      (pool) => pool.prizePool.address.toLowerCase() === contract.prizePool.address.toLowerCase()
+    )
     if (!pool) return
     pool.name = `${pool.tokens.underlyingToken.symbol} Pool`
     pool.contract = contract
