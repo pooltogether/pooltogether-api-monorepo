@@ -11,12 +11,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
   },
-  "author": "Dylan DesRosier <dylan@pooltogether.com>",
+  "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "devDependencies": {
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.7.4"
+    "@pooltogether/api-runner": "file:.yalc/@pooltogether/api-runner"
   }
 }

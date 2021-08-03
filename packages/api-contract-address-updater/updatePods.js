@@ -4,7 +4,7 @@ import { log } from '../../utils/sentry'
 import { getPodsKey } from '../../utils/kvKeys'
 
 /**
- * Call getPools and store the response in cloudflares KV
+ * Fetches relevant contract addresses for individual pods and updates the KV.
  * @param {*} event
  * @param {*} chainId The chain id to refresh pods on
  * @param {*} podAddresses The the pod addresses to update
@@ -46,7 +46,9 @@ export const updatePods = async (event, chainId, podAddresses) => {
     ...storedPods
   }
 
-  pods.map((pod) => (updatedPods[pod.address] = pod))
+  for (const pod of pods) {
+    updatedPods[pod.address] = pod
+  }
 
   event.waitUntil(
     CONTRACT_ADDRESSES.put(getPodsKey(chainId), JSON.stringify(updatedPods), {

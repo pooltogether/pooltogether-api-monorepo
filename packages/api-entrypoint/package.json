@@ -1,7 +1,7 @@
 {
   "name": "@pooltogether/api-entrypoint",
   "version": "1.0.1",
-  "author": "Dylan DesRosier <dylan@pooltogether.com>",
+  "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "A cloudflare worker to read data from the KV",
   "main": "index.js",
@@ -26,7 +26,7 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.7.3",
+    "@pooltogether/api-runner": "1.8.13",
     "@pooltogether/current-pool-data": "3.5.14",
     "@pooltogether/utilities": "^0.0.26",
     "ethers": "^5.4.1"

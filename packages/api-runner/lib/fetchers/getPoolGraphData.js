@@ -19,16 +19,12 @@ import { CREAM_CR_TOKEN_ADDRESSES } from 'lib/constants'
  * @returns
  */
 export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1) => {
-  console.log('getPoolGraphData')
   const subgraphVersions = getSubgraphVersionsFromContracts(poolContracts)
   const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
   const query = prizePoolsQuery(blockNumber)
 
-  // console.log('getting pool data from the graph')
-  // console.log('getting pool data from the graph')
-  // console.log('getting pool data from the graph ...')
   const data = await Promise.all(
     subgraphVersions.map((version) => {
       const client = subgraphClients[version]
@@ -41,17 +37,27 @@ export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1)
     })
   )
 
-  // console.log('got pool data from the graph')
-  // console.log('got pool data from the graph !')
+  return data.filter(Boolean).flatMap(({ prizePools }) => {
+    return prizePools.map((prizePool) => {
+      const prizePoolContract = poolContracts.find(
+        (poolContract) =>
+          poolContract.prizePool.address.toLowerCase() === prizePool.id.toLowerCase()
+      )
+      return {
+        [prizePool.id]: formatPoolGraphData(prizePool, chainId, prizePoolContract)
+      }
+    })
+  })
 
-  return data.filter(Boolean).flatMap(({ prizePools }) =>
-    prizePools.map((prizePool) => ({
-      [prizePool.id]: formatPoolGraphData(prizePool, chainId)
-    }))
-  )
+  // TODO: Remove old code
+  // return data.filter(Boolean).flatMap(({ prizePools }) =>
+  //   prizePools.map((prizePool) => ({
+  //     [prizePool.id]: formatPoolGraphData(prizePool, chainId)
+  //   }))
+  // )
 }
 
-const formatPoolGraphData = (prizePool, chainId) => {
+const formatPoolGraphData = (prizePool, chainId, prizePoolContract) => {
   const prizeStrategy = prizePool.prizeStrategy.multipleWinners
     ? prizePool.prizeStrategy.multipleWinners
     : prizePool.prizeStrategy.singleRandomWinner
@@ -71,8 +77,6 @@ const formatPoolGraphData = (prizePool, chainId) => {
     config: {
       liquidityCap: prizePool.liquidityCap,
       maxExitFeeMantissa: prizePool.maxExitFeeMantissa,
-      // maxTimelockDurationSeconds: prizePool.maxTimelockDuration,
-      // timelockTotalSupply: prizePool.timelockTotalSupply,
       numberOfWinners: prizeStrategy?.numberOfWinners || '1',
       prizePeriodSeconds: prizeStrategy.prizePeriodSeconds,
       tokenCreditRates: prizePool.tokenCreditRates
@@ -129,7 +133,9 @@ const formatPoolGraphData = (prizePool, chainId) => {
             : prizePool.reserveRegistry
       }
     },
-    tokenFaucets: collectTokenFaucets(chainId, prizePool.id)
+    tokenFaucetAddresses: collectTokenFaucetAddresses(chainId, prizePool.id),
+    tokenFaucets: [],
+    contract: prizePoolContract
   }
 
   const creamAddresses = Object.values(CREAM_CR_TOKEN_ADDRESSES[chainId]).map((address) =>
@@ -140,8 +146,6 @@ const formatPoolGraphData = (prizePool, chainId) => {
     creamAddresses.findIndex(
       (address) => address.toLowerCase() === prizePool.compoundPrizePool.cToken.toLowerCase()
     ) !== -1
-
-  console.log('isCreamPool', isCreamPool)
 
   if (prizePool.compoundPrizePool && !isCreamPool) {
     formatCompoundPrizePoolData(prizePool, formattedData)
@@ -159,9 +163,8 @@ const formatPoolGraphData = (prizePool, chainId) => {
   return formattedData
 }
 
-const collectTokenFaucets = (chainId, poolAddress) => {
+const collectTokenFaucetAddresses = (chainId, poolAddress) => {
   const poolContract = usePoolContract(chainId, poolAddress)
-
   return poolContract.tokenFaucets || []
 }
 

@@ -71,7 +71,6 @@ export const getPools = async (chainId, poolContracts) => {
 
     return pools
   } catch (e) {
-    console.log('ERROR')
     console.log(e.message)
     throw e
   }
@@ -588,7 +587,6 @@ const calculateTokenFaucetAprs = (pools) =>
 
       if (usd && amountUnformatted !== ethers.constants.Zero) {
         const { dripRatePerSecond, measure } = tokenFaucet
-        console.log(measure)
 
         const totalDripPerDay = Number(dripRatePerSecond) * SECONDS_PER_DAY
         const totalDripDailyValue = totalDripPerDay * usd
@@ -603,7 +601,11 @@ const calculateTokenFaucetAprs = (pools) =>
           ? totalSponsorshipValueUsd
           : totalTicketValueUsd
 
-        tokenFaucet.apr = (totalDripDailyValue / totalValueUsd) * 365 * 100
+        if (tokenFaucet.remainingDays <= 0) {
+          tokenFaucet.apr = 0
+        } else {
+          tokenFaucet.apr = (totalDripDailyValue / totalValueUsd) * 365 * 100
+        }
       }
     })
 

@@ -1,7 +1,7 @@
 {
   "name": "@pooltogether/api-pool-updater",
   "version": "1.0.0",
-  "description": "A worker to keep the KV fresh for pools",
+  "description": "A worker to fetch on chain data that is more static, ex. contract addresses for prize pools & pods.",
   "main": "index.js",
   "scripts": {
     "build": "wrangler build",
@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
   },
-  "author": "Dylan DesRosier <dylan@pooltogether.com>",
+  "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "devDependencies": {
     "prettier": "^1.18.2"

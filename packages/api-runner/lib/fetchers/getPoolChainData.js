@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { formatUnits } from '@ethersproject/units'
 import { contract } from '@pooltogether/etherplex'
 import { contractAddresses, SECONDS_PER_BLOCK } from '@pooltogether/current-pool-data'
+import compareVersions from 'compare-versions'
 
 import PrizePoolAbi from '@pooltogether/pooltogether-contracts/abis/PrizePool'
 import PrizeStrategyAbi from '@pooltogether/pooltogether-contracts/abis/PeriodicPrizeStrategy'
@@ -13,6 +14,7 @@ import ReserveAbi from '@pooltogether/pooltogether-contracts/abis/Reserve'
 import CTokenAbi from '@pooltogether/pooltogether-contracts/abis/CTokenInterface'
 import LootBoxControllerAbi from '@pooltogether/loot-box/abis/LootBoxController'
 
+import { PrizePoolAbi_3_3_11 } from 'abis/PrizePoolAbi_3_3_11'
 import { SablierAbi } from 'abis/SablierAbi'
 import { ERC20Abi } from 'abis/ERC20Abi'
 import { CustomERC721Abi as ERC721Abi } from 'abis/CustomERC721'
@@ -33,6 +35,7 @@ import { YIELD_SOURCES } from 'lib/fetchers/getCustomYieldSourceData'
 import { CrTokenAbi } from 'abis/CrTokenAbi'
 
 const getCompoundComptrollerName = (prizePoolAddress) => `compound-comptroller-${prizePoolAddress}`
+const getOldPrizePoolName = (prizePoolAddress) => `prizePool-3_3_11-${prizePoolAddress}`
 const getCreamComptrollerName = (prizePoolAddress) => `cream-comptroller-${prizePoolAddress}`
 const getExternalErc20AwardBatchName = (prizePoolAddress, tokenAddress) =>
   `erc20Award-${prizePoolAddress}-${tokenAddress}`
@@ -77,6 +80,19 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     const prizePoolContract = contract(pool.prizePool.address, PrizePoolAbi, pool.prizePool.address)
     batchCalls.push(prizePoolContract.captureAwardBalance())
 
+    // If less than 3.4.3 request the maxTimelockDuration
+    if (
+      pool.contract?.subgraphVersion &&
+      compareVersions(pool.contract.subgraphVersion, '3.4.3') < 0
+    ) {
+      const oldPrizePoolContract = contract(
+        getOldPrizePoolName(pool.prizePool.address),
+        PrizePoolAbi_3_3_11,
+        pool.prizePool.address
+      )
+      batchCalls.push(oldPrizePoolContract.maxTimelockDuration())
+    }
+
     // Prize Strategy
     const prizeStrategyContract = contract(
       pool.prizeStrategy.address,
@@ -98,13 +114,14 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     )
 
     // Token Faucets
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses.forEach((tokenFaucetAddress) => {
       const tokenFaucetContract = contract(tokenFaucetAddress, TokenFaucetABI, tokenFaucetAddress)
       batchCalls.push(
         tokenFaucetContract
           .dripRatePerSecond()
           .asset()
           .measure()
+          .totalUnclaimed()
       )
     })
 
@@ -163,7 +180,6 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
 
       // Compound Comptroller
       if (chainId === NETWORK.mainnet) {
-        // console.log('Get claimable COMP for:', pool.prizePool.address)
         const comptrollerContract = contract(
           getCompoundComptrollerName(pool.prizePool.address),
           CompoundComptrollerImplementationAbi,
@@ -183,7 +199,6 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
       batchCalls.push(crTokenContract.supplyRatePerBlock())
 
       // Cream Comptroller
-      console.log('Get claimable CREAM for:', pool.prizePool.address)
       const comptrollerContract = contract(
         getCreamComptrollerName(pool.prizePool.address),
         CompoundComptrollerImplementationAbi,
@@ -193,7 +208,6 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     }
 
     // LootBox
-
     const lootBoxAddress = contractAddresses[chainId]?.lootBox?.toLowerCase()
     if (lootBoxAddress && pool.prize.externalErc721Awards.length > 0) {
       const lootBox = pool.prize.externalErc721Awards.find(
@@ -245,7 +259,7 @@ export const getPoolChainData = async (chainId, poolGraphData) => {
     batchCalls.push(prizePoolContract.reserveTotalSupply())
 
     // Token faucet drip asset
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses?.forEach((tokenFaucetAddress) => {
       const tokenFaucetDripAssetAddress = firstBatchValues[tokenFaucetAddress]?.asset[0]
       if (tokenFaucetDripAssetAddress) {
         const dripErc20Contract = contract(
@@ -402,12 +416,24 @@ const formatPoolChainData = (
     const prizeStrategyAddress = pool.prizeStrategy.address
     const prizeStrategyData = firstBatchValues[prizeStrategyAddress]
 
+    // If less than 3.4.3 set the maxTimelockDuration
+    let maxTimelockDurationSeconds = null
+    if (
+      pool.contract?.subgraphVersion &&
+      compareVersions(pool.contract.subgraphVersion, '3.4.3') < 0
+    ) {
+      maxTimelockDurationSeconds = firstBatchValues[
+        getOldPrizePoolName(pool.prizePool.address)
+      ].maxTimelockDuration[0].toString()
+    }
+
     const formattedPoolChainData = {
       config: {
         chainId,
         splitExternalErc20Awards: additionalBatchCalls.find(
           (response) => response.id === prizeStrategyAddress
-        )?.data?.[prizeStrategyAddress].splitExternalErc20Awards[0]
+        )?.data?.[prizeStrategyAddress].splitExternalErc20Awards[0],
+        maxTimelockDurationSeconds
       },
       prizePool: {},
       prize: {
@@ -436,15 +462,16 @@ const formatPoolChainData = (
           secondBatchValues[prizePoolAddress].reserveTotalSupply[0],
           pool.tokens.underlyingToken.decimals
         )
-      }
+      },
+      contract: pool.contract
     }
 
     // Token listener
     let tokenFaucetDripTokens = []
-    pool.tokenFaucets?.forEach((tokenFaucetAddress) => {
+    pool.tokenFaucetAddresses?.forEach((tokenFaucetAddress) => {
       const tokenFaucetData = firstBatchValues[tokenFaucetAddress]
       const dripTokenAddress = tokenFaucetData.asset[0]
-      const tokenFaucetData2 =
+      const dripTokenResponse =
         secondBatchValues[
           getTokenFaucetDripTokenName(pool.prizePool.address, tokenFaucetAddress, dripTokenAddress)
         ]
@@ -452,36 +479,62 @@ const formatPoolChainData = (
       const dripToken = {
         tokenFaucetAddress,
         address: dripTokenAddress.toLowerCase(),
-        amount: formatUnits(tokenFaucetData2.balanceOf[0], tokenFaucetData2.decimals[0]),
-        amountUnformatted: tokenFaucetData2.balanceOf[0],
-        decimals: tokenFaucetData2.decimals[0],
-        name: tokenFaucetData2.name[0],
-        symbol: tokenFaucetData2.symbol[0]
+        amount: formatUnits(dripTokenResponse.balanceOf[0], dripTokenResponse.decimals[0]),
+        amountUnformatted: dripTokenResponse.balanceOf[0],
+        decimals: dripTokenResponse.decimals[0],
+        name: dripTokenResponse.name[0],
+        symbol: dripTokenResponse.symbol[0]
       }
+
+      const dripRatePerSecondUnformatted = tokenFaucetData.dripRatePerSecond[0]
+      const dripRatePerDayUnformatted = tokenFaucetData.dripRatePerSecond[0].mul(SECONDS_PER_DAY)
+
+      const totalUnclaimedUnformatted = tokenFaucetData.totalUnclaimed[0]
+      const totalUnclaimed = formatUnits(totalUnclaimedUnformatted, dripToken.decimals)
+
+      const faucetsDripTokenBalanceUnformatted = dripTokenResponse.balanceOf[0]
+      const faucetsDripTokenBalance = formatUnits(
+        faucetsDripTokenBalanceUnformatted,
+        dripToken.decimals
+      )
+
+      const remainingDripTokenBalanceUnformatted = faucetsDripTokenBalanceUnformatted.sub(
+        totalUnclaimedUnformatted
+      )
+      const remainingDripTokenBalance = formatUnits(
+        remainingDripTokenBalanceUnformatted,
+        dripToken.decimals
+      )
+
+      let remainingDaysUnformatted = remainingDripTokenBalanceUnformatted
+        .mul(100)
+        .div(dripRatePerDayUnformatted)
+      const remainingDays = Number(remainingDaysUnformatted.toString()) / 100
+      remainingDaysUnformatted = remainingDaysUnformatted.div(100)
 
       const tokenFaucet = {
         address: tokenFaucetAddress.toLowerCase(),
-        dripRatePerSecondUnformatted: tokenFaucetData.dripRatePerSecond[0],
+        dripRatePerSecond: formatUnits(dripRatePerSecondUnformatted, dripToken.decimals),
+        dripRatePerSecondUnformatted,
+        dripRatePerDay: formatUnits(dripRatePerDayUnformatted, dripToken.decimals),
+        dripRatePerDayUnformatted,
+        faucetsDripTokenBalance,
+        faucetsDripTokenBalanceUnformatted,
+        totalUnclaimed,
+        totalUnclaimedUnformatted,
+        remainingDays,
+        remainingDaysUnformatted,
+        remainingDripTokenBalance,
+        remainingDripTokenBalanceUnformatted,
         measure: tokenFaucetData.measure[0],
         asset: dripTokenAddress.toLowerCase()
       }
-      tokenFaucet.dripRatePerSecond = formatUnits(
-        tokenFaucet.dripRatePerSecondUnformatted,
-        dripToken.decimals
-      )
-      tokenFaucet.dripRatePerDayUnformatted = tokenFaucet.dripRatePerSecondUnformatted.mul(
-        SECONDS_PER_DAY
-      )
-      tokenFaucet.dripRatePerDay = formatUnits(
-        tokenFaucet.dripRatePerDayUnformatted,
-        dripToken.decimals
-      )
 
       if (!formattedPoolChainData.tokenFaucets) {
         formattedPoolChainData.tokenFaucets = []
       }
-
       formattedPoolChainData.tokenFaucets.push(tokenFaucet)
+
       tokenFaucet.dripToken = dripToken
 
       // Add to tokens list
@@ -674,10 +727,12 @@ const formatPoolChainData = (
       }
     }
 
-    console.log('Final', JSON.stringify(formattedPoolChainData))
-
     formattedPools[prizePoolAddress] = formattedPoolChainData
   })
 
   return formattedPools
+}
+
+const dripTokenKey = (tokenFaucetAddress, dripTokenAddress) => {
+  return `${tokenFaucetAddress}-${dripTokenAddress}`
 }

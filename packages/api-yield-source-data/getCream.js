@@ -28,9 +28,6 @@ export const getCream = async (event) => {
     const promises = chainIds.map(getCreamInterestRate)
     const results = await Promise.all(promises)
 
-    console.log('results')
-    console.log(JSON.stringify(results))
-
     const interestRatesByChainId = {}
     results.map((result) => {
       const { chainId, interestRates } = result
