@@ -7,7 +7,7 @@
     "build": "wrangler build",
     "dev": "wrangler dev --env",
     "start": "wrangler dev --env",
-    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon",
+    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon && wrangler publish --env binance",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
   },

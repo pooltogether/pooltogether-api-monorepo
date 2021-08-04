@@ -28,7 +28,7 @@ INFURA_ID = ''
 
 [env.rinkeby.vars]
 CHAIN_ID = '4'
-APP_NAME = 'rinkeby-contract-address-updater'
+APP_NAME = 'rinkeby-contract-addresses-updater'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
 SENTRY_PROJECT_ID = '5832514'
