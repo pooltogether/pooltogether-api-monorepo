@@ -25,6 +25,7 @@ SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
 INFURA_ID = ''
+QUICKNODE_ID = ''
 
 [env.rinkeby.vars]
 CHAIN_ID = '4'
@@ -37,3 +38,4 @@ SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
 INFURA_ID = ''
+QUICKNODE_ID = ''

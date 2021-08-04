@@ -2,6 +2,7 @@ import { contract } from '@pooltogether/etherplex'
 
 import { batch } from 'lib/cloudflare-workers-batch'
 import { PodAbi } from '../../abis/Pod'
+import { TokenDropAbi } from '../../abis/TokenDropAbi'
 
 export const getPodContractAddresses = async (chainId, podAddress) => {
   const podContract = contract(podAddress, PodAbi, podAddress)
@@ -21,9 +22,9 @@ export const getPodContractAddresses = async (chainId, podAddress) => {
       .tokenDrop()
   )
 
-  const response = await batch(chainId, ...batchCalls)
+  let response = await batch(chainId, ...batchCalls)
 
-  return {
+  const podAddresses = {
     address: podAddress,
     owner: response[podAddress].owner[0],
     name: response[podAddress].name[0],
@@ -36,4 +37,15 @@ export const getPodContractAddresses = async (chainId, podAddress) => {
     token: response[podAddress].token[0],
     tokenDrop: response[podAddress].tokenDrop[0]
   }
+
+  const tokenDropAbiContract = contract(
+    podAddresses.tokenDrop,
+    TokenDropAbi,
+    podAddresses.tokenDrop
+  )
+  response = await batch(chainId, tokenDropAbiContract.asset())
+
+  podAddresses.tokenDropDripToken = response[podAddresses.tokenDrop].asset[0]
+
+  return podAddresses
 }

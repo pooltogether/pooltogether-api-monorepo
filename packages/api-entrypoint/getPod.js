@@ -50,7 +50,10 @@ export const formatPod = (chainId, podAddress, pod, pool) => {
       address: pod.faucet
     },
     tokenDrop: {
-      address: pod.tokenDrop
+      address: pod.tokenDrop,
+      dripToken: {
+        address: pod.tokenDropDripToken
+      }
     },
     pod: {
       address: podAddress
