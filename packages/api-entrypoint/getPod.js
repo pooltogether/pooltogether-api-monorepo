@@ -46,6 +46,12 @@ export const formatPod = (chainId, podAddress, pod, pool) => {
       owner: pod.owner,
       chainId
     },
+    faucet: {
+      address: pod.faucet
+    },
+    tokenDrop: {
+      address: pod.tokenDrop
+    },
     pod: {
       address: podAddress
     },
