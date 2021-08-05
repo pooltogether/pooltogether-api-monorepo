@@ -26,9 +26,9 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.9.9",
-    "@pooltogether/current-pool-data": "3.5.15",
-    "@pooltogether/utilities": "^0.0.26",
+    "@pooltogether/api-runner": "1.9.11",
+    "@pooltogether/current-pool-data": "3.5.16",
+    "@pooltogether/utilities": "^0.0.30",
     "ethers": "^5.4.1"
   }
 }
