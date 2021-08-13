@@ -125,49 +125,10 @@ const calculateCreamYieldTotalValues = async (_pool) => {
   const underlyingToken = pool.tokens.underlyingToken
   const chainId = pool.config.chainId
   const crToken = pool.tokens.crToken
-  const { supplyApy: creamApy } = creamMarketData[chainId][crToken.address] || { supplyApy: 0 }
+  const { supplyApy: apr } = creamMarketData[chainId][crToken.address] || { supplyApy: 0 }
 
-  const totalValueUsdScaled = calculatedEstimatedAccruedCompTotalValueUsdScaled(
-    String(creamApy),
-    pool.tokens.ticket.totalValueUsdScaled.add(pool.tokens.sponsorship.totalValueUsdScaled),
-    pool.prize.prizePeriodRemainingSeconds
-  )
-  const totalValueUsd = toNonScaledUsdString(totalValueUsdScaled)
-
-  // Calculate yield
-  const yieldAmountUnformatted = calculateEstimatedCompoundPrizeWithYieldUnformatted(
-    pool.prize.amountUnformatted,
-    pool.tokens.ticket.totalSupplyUnformatted.add(pool.tokens.sponsorship.totalSupplyUnformatted),
-    crToken.supplyRatePerBlock,
-    pool.tokens.ticket.decimals,
-    pool.prize.estimatedRemainingBlocksToPrize,
-    pool.reserve?.rate
-  )
-
-  const usdAndAmountValues = calculateUsdValues(yieldAmountUnformatted, underlyingToken)
-
-  //Set values
-  pool.prize.yield = {
-    ...pool.prize.yield,
-    ...usdAndAmountValues,
-    [YIELD_SOURCES.cream]: {
-      ...pool.prize.yield[YIELD_SOURCES.cream],
-      totalValueUsdScaled,
-      totalValueUsd
-    }
-  }
-
-  return pool
-}
-
-const calculateGenericYieldTotalValues = (_pool) => {
-  const pool = cloneDeep(_pool)
-
-  const underlyingToken = _pool.tokens.underlyingToken
-  const apy = _pool.prizePool?.yieldSource?.apy
-
-  // If there was an error fetching the apy
-  if (!apy) {
+  // If there was an error fetching the apr
+  if (!apr) {
     return pool
   }
 
@@ -175,21 +136,90 @@ const calculateGenericYieldTotalValues = (_pool) => {
     pool.tokens.sponsorship.totalSupplyUnformatted
   )
 
+  const reserveRate = _pool.reserve?.rate
+  const remainingSeconds = _pool.prize.prizePeriodRemainingSeconds
+  const estimatedUsdAndAmountValues = calculateEstimatedYieldUsdAndAmount(
+    underlyingToken,
+    apr,
+    poolDepositsTotalSupplyUnformatted,
+    reserveRate,
+    remainingSeconds
+  )
+
+  const usdAndAmountValues = calculateUsdValues(
+    estimatedUsdAndAmountValues.amountUnformatted.add(_pool.prize.amountUnformatted),
+    underlyingToken
+  )
+
+  pool.prize.yield = {
+    ...pool.prize.yield,
+    ...usdAndAmountValues,
+    estimatedPrize: {
+      ...estimatedUsdAndAmountValues
+    }
+  }
+  return pool
+}
+
+const calculateGenericYieldTotalValues = (_pool) => {
+  const pool = cloneDeep(_pool)
+
+  const underlyingToken = _pool.tokens.underlyingToken
+  const apr = _pool.prizePool?.yieldSource?.apy
+
+  // If there was an error fetching the apy
+  if (!apr) {
+    return pool
+  }
+
+  const poolDepositsTotalSupplyUnformatted = pool.tokens.ticket.totalSupplyUnformatted.add(
+    pool.tokens.sponsorship.totalSupplyUnformatted
+  )
+
+  const reserveRate = _pool.reserve?.rate
+  const remainingSeconds = _pool.prize.prizePeriodRemainingSeconds
+  const estimatedUsdAndAmountValues = calculateEstimatedYieldUsdAndAmount(
+    underlyingToken,
+    apr,
+    poolDepositsTotalSupplyUnformatted,
+    reserveRate,
+    remainingSeconds
+  )
+
+  const usdAndAmountValues = calculateUsdValues(
+    estimatedUsdAndAmountValues.amountUnformatted.add(_pool.prize.amountUnformatted),
+    underlyingToken
+  )
+
+  pool.prize.yield = {
+    ...pool.prize.yield,
+    ...usdAndAmountValues,
+    estimatedPrize: {
+      ...estimatedUsdAndAmountValues
+    }
+  }
+  return pool
+}
+
+const calculateEstimatedYieldUsdAndAmount = (
+  underlyingToken,
+  apr,
+  poolDepositsTotalSupplyUnformatted,
+  reserveRate,
+  remainingSeconds
+) => {
   // Format to same decimal places, so we keep accuracy for floats
-  const poolReserveRate = _pool.reserve?.rate
   const poolReserveRateUnformatted = ethers.utils.parseUnits(
-    parseFloat(poolReserveRate).toFixed(Number(underlyingToken.decimals)),
+    parseFloat(reserveRate).toFixed(Number(underlyingToken.decimals)),
     underlyingToken.decimals
   )
   const oneMinusPoolReserveRateUnformatted = ethers.utils
     .parseUnits('1', underlyingToken.decimals)
     .sub(poolReserveRateUnformatted)
 
-  const remainingSeconds = _pool.prize.prizePeriodRemainingSeconds
-
   const decimalsUnformatted = ethers.utils.parseUnits('1', underlyingToken.decimals)
   const apyUnformatted = ethers.utils.parseUnits(
-    parseFloat(apy).toFixed(Number(underlyingToken.decimals)),
+    parseFloat(apr).toFixed(Number(underlyingToken.decimals)),
     underlyingToken.decimals
   )
   const underlyingTokensPerYearUnformatted = poolDepositsTotalSupplyUnformatted
@@ -214,21 +244,7 @@ const calculateGenericYieldTotalValues = (_pool) => {
       .div(parseUnits('1', 18)) // Denormalize
   }
 
-  const estimatedUsdAndAmountValues = calculateUsdValues(amountUnformatted, underlyingToken)
-
-  const usdAndAmountValues = calculateUsdValues(
-    amountUnformatted.add(_pool.prize.amountUnformatted),
-    underlyingToken
-  )
-
-  pool.prize.yield = {
-    ...pool.prize.yield,
-    ...usdAndAmountValues,
-    estimatedPrize: {
-      ...estimatedUsdAndAmountValues
-    }
-  }
-  return pool
+  return calculateUsdValues(amountUnformatted, underlyingToken)
 }
 
 // const calculateAaveYieldExtendedValues = (_pool, fetch) => {
