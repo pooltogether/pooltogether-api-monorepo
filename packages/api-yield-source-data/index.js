@@ -87,16 +87,12 @@ async function handleSchedule(event) {
     const data = {}
     const aaveResponse = await getAave(event)
     const compoundResponse = await getCompound(event)
-    // const aaveResponse = null
-    // const compoundResponse = null
     const creamResponse = await getCream(event)
 
     // Update values if possible
-    data[YIELD_SOURCES.cream] = creamResponse ? creamResponse : storedData[YIELD_SOURCES.cream]
-    data[YIELD_SOURCES.aave] = aaveResponse ? aaveResponse : storedData[YIELD_SOURCES.aave]
-    data[YIELD_SOURCES.compound] = compoundResponse
-      ? compoundResponse
-      : storedData[YIELD_SOURCES.compound]
+    data[YIELD_SOURCES.cream] = getNewValue(creamResponse, storedData, YIELD_SOURCES.cream)
+    data[YIELD_SOURCES.aave] = getNewValue(aaveResponse, storedData, YIELD_SOURCES.aave)
+    data[YIELD_SOURCES.compound] = getNewValue(compoundResponse, storedData, YIELD_SOURCES.compound)
 
     await YIELD_SOURCE.put('data', JSON.stringify(data), {
       metadata: { lastUpdated: getCurrentDateString() }
@@ -105,3 +101,5 @@ async function handleSchedule(event) {
     event.waitUntil(log(e, event.request))
   }
 }
+
+const getNewValue = (response, storedData, key) => (response ? response : storedData[key])
