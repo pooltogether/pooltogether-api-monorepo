@@ -824,14 +824,14 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.9.14":
-  version "1.9.14"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.14.tgz#9a3a8d3d11fb9e56fee974f9e4c6480cef0982d1"
-  integrity sha512-ok2u53m/hEikk8qYTHeUqASMH+ylgnlNqpGLTpMZ4lrFQtDod/EO9w1JJ993OReRgd3JppG3D/VOWFyGWijBZA==
+"@pooltogether/api-runner@1.9.16":
+  version "1.9.16"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.16.tgz#aa133d3767320e691fbdada49bdc1474e4ef4986"
+  integrity sha512-Z4KKZI9sMQ95gc1G2C4ygUYtfTZxAmdw2Jw1zNAZoIT0/hhex/UJO/hFBepbA0O5WaYNiotE4gR92+8PHV1MFQ==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
-    "@pooltogether/current-pool-data" "3.5.18"
+    "@pooltogether/current-pool-data" "3.5.19"
     "@pooltogether/etherplex" "1.1.1"
     "@pooltogether/evm-chains-extended" "^0.4.3"
     "@pooltogether/loot-box" "^1.1.0"
@@ -846,10 +846,10 @@
     lodash.merge "^4.6.2"
     lodash.remove "^4.7.0"
 
-"@pooltogether/current-pool-data@3.5.18", "@pooltogether/current-pool-data@^3.5.18":
-  version "3.5.18"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.18.tgz#60bcf85da83894278ce46ea0cee424ef06e1edce"
-  integrity sha512-IXWguQBwtuSkbwOp6DDpgiF4NI9/dVPWXON3S0v/6At6uGEtzaHHiv+wj4+RPJttWOQi5qU/kcwQu3FK7ChHgw==
+"@pooltogether/current-pool-data@3.5.19", "@pooltogether/current-pool-data@^3.5.19":
+  version "3.5.19"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.19.tgz#1c66585d455c1cfc97c3d86faee01749b0cb02dd"
+  integrity sha512-K+OFDFP2LPtDTi6dJboVxP/J2zovslufvi8SQwUjnJLmI/GAJjt2o+xOBjul09loDEnbCh9T2eotravsb2r5CQ==
 
 "@pooltogether/current-pool-data@^3.4.3":
   version "3.4.27"

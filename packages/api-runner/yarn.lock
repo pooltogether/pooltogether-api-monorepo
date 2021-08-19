@@ -1097,15 +1097,15 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/current-pool-data@3.5.18":
-  version "3.5.18"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.18.tgz#60bcf85da83894278ce46ea0cee424ef06e1edce"
-  integrity sha512-IXWguQBwtuSkbwOp6DDpgiF4NI9/dVPWXON3S0v/6At6uGEtzaHHiv+wj4+RPJttWOQi5qU/kcwQu3FK7ChHgw==
-
 "@pooltogether/current-pool-data@^3.4.3":
   version "3.4.4"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.4.4.tgz#72425a1b54da9b2e94dba50bb2cb6d44deb8a112"
   integrity sha512-lY8RT0g1k22WTS5ydCLoMuEgOX26o3itb/f8hWSJkYfC3TsFz2OCL7PkwiU5/VxcbXws6e3180u/U+t/w+0WkA==
+
+"@pooltogether/current-pool-data@^3.5.19":
+  version "3.5.19"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.19.tgz#1c66585d455c1cfc97c3d86faee01749b0cb02dd"
+  integrity sha512-K+OFDFP2LPtDTi6dJboVxP/J2zovslufvi8SQwUjnJLmI/GAJjt2o+xOBjul09loDEnbCh9T2eotravsb2r5CQ==
 
 "@pooltogether/etherplex@1.1.1":
   version "1.1.1"
