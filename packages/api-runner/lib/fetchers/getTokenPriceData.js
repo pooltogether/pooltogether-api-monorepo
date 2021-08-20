@@ -70,7 +70,6 @@ const HARD_CODED_MATIC_PRICE = 0.871103
 export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
   // On polygon return mock data from last successful request and the price of MATIC (WMATIC) on the Ethereum network
   // (basically the same price as on Polygon or anywhere else)
-  console.log('HERE')
   if (chainId === 137) {
     const maticPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
       ETHEREUM_MAINNET_MATIC_ADDRESS
