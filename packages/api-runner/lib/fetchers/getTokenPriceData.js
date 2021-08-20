@@ -5,7 +5,11 @@ import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
 import { getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
 
 const KNOWN_STABLECOIN_ADDRESSES = {
-  137: ['0xc2132d05d31c914a87c6611c10748aeb04b58e8f', '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063']
+  137: [
+    '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+    '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+    '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+  ]
 }
 
 /**
@@ -66,6 +70,7 @@ const HARD_CODED_MATIC_PRICE = 0.871103
 export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
   // On polygon return mock data from last successful request and the price of MATIC (WMATIC) on the Ethereum network
   // (basically the same price as on Polygon or anywhere else)
+  console.log('HERE')
   if (chainId === 137) {
     const maticPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
       ETHEREUM_MAINNET_MATIC_ADDRESS
@@ -82,7 +87,8 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
       },
       'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
       '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
-      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { usd: 1 }
+      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f': { usd: 1 },
+      '0x2791bca1f2de4661ed88a30c99a7a9449aa84174': { usd: 1 }
     }
   }
 
