@@ -851,6 +851,11 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.19.tgz#1c66585d455c1cfc97c3d86faee01749b0cb02dd"
   integrity sha512-K+OFDFP2LPtDTi6dJboVxP/J2zovslufvi8SQwUjnJLmI/GAJjt2o+xOBjul09loDEnbCh9T2eotravsb2r5CQ==
 
+"@pooltogether/current-pool-data@3.5.20":
+  version "3.5.20"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.20.tgz#1cb937ed66e1d4239a414eb1e648cd23b2a51ace"
+  integrity sha512-tRxcy/RH8Ex7gdgHU+5H7Kv8Goe15Sac6HORB/U0O6EfmSikAOsmENcqtiYLJZ85LWxpQXjh2x6SK9v7N1hg8w==
+
 "@pooltogether/current-pool-data@^3.4.3":
   version "3.5.14"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.14.tgz#1bd7f61a85b9df25cd77a53fe0f120280235d5d2"

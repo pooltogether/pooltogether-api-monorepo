@@ -40,14 +40,10 @@ const getPool = (graphPool) => {
  */
 export const getPools = async (chainId, poolContracts) => {
   try {
-    // console.log('getPools', chainId, JSON.stringify(poolContracts), typeof poolContracts)
     const poolGraphData = await getPoolGraphData(chainId, poolContracts)
-    // console.log('poolGraphData', poolGraphData ? JSON.stringify(poolGraphData) : poolGraphData)
     const poolChainData = await getPoolChainData(chainId, poolGraphData)
-    // console.log('poolChainData', poolChainData ? JSON.stringify(poolChainData) : poolChainData)
     let pools = combinePoolData(poolGraphData, poolChainData)
     pools = await getCustomYieldSourceData(chainId, pools)
-    // console.log('getCustomYieldSourceData', pools ? JSON.stringify(pools) : pools)
     const lootBoxTokenIds = [
       ...new Set(pools.map((pool) => pool.prize.lootBox?.id).filter(Boolean))
     ]
@@ -57,7 +53,6 @@ export const getPools = async (chainId, poolContracts) => {
 
     const erc20Addresses = getAllErc20Addresses(pools)
     const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
-    // console.log('tokenPriceGraphData', chainId, erc20Addresses, JSON.stringify(tokenPriceGraphData))
 
     const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
       ? TESTNET_USD_AMOUNT

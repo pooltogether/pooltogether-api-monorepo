@@ -21,6 +21,7 @@ import { CREAM_CR_TOKEN_ADDRESSES } from 'lib/constants'
 export const getPoolGraphData = async (chainId, poolContracts, blockNumber = -1) => {
   const subgraphVersions = getSubgraphVersionsFromContracts(poolContracts)
   const subgraphClients = getSubgraphClientsByVersionFromContracts(poolContracts, chainId)
+
   const addressesByVersion = getPoolAddressesBySubgraphVersionFromContracts(poolContracts)
 
   const query = prizePoolsQuery(blockNumber)

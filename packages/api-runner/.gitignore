@@ -10,3 +10,4 @@ node_modules/
 .cargo-ok
 yarn-error.log
 .yalc/
+yalc.lock

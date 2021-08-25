@@ -758,15 +758,15 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/current-pool-data@^3.5.20":
-  version "3.5.20"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.20.tgz#1cb937ed66e1d4239a414eb1e648cd23b2a51ace"
-  integrity sha512-tRxcy/RH8Ex7gdgHU+5H7Kv8Goe15Sac6HORB/U0O6EfmSikAOsmENcqtiYLJZ85LWxpQXjh2x6SK9v7N1hg8w==
+"@pooltogether/current-pool-data@^3.5.21":
+  version "3.5.21"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.21.tgz#4143adb7bcfbdc9ccf7914c177717cbb541bd57f"
+  integrity sha512-X9IHpNhMHtfGhnWjmh2bVlLuDrx7JiYqB+8PrKUAAD0fI54zyMIHN+R730GBIJgDpgPCf51Z0KH5gAAzHtN+UQ==
 
-"@pooltogether/etherplex@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@pooltogether/etherplex/-/etherplex-1.1.1.tgz#330f326ce8fbfd4f4aae70d5fd02d5baa3e9195e"
-  integrity sha512-fKk3/YnAhwjdA83hP7+mXIjRQm40o/+uwdbSWdz0mIgccEwQFkHKXJRGhpM25aclwa5Yiu/p6+sxTHUTpTTM9Q==
+"@pooltogether/etherplex@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@pooltogether/etherplex/-/etherplex-1.1.2.tgz#fb8144f98c3543fe231871660c6a25b3add42219"
+  integrity sha512-ZJh7iGnm3X+cnA4FIogZ6RrYfehzpNexE3gTzG2+gPKD6XE0T920MBKWeGYD2MYULMcsRLravVNWnBgJgPhcfw==
   dependencies:
     debug "^4.1.1"
     lodash "^4.17.15"
@@ -828,10 +828,10 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/uniform-random-number/-/uniform-random-number-1.0.0-beta.1.tgz#72257401fe8536e95f9f812f1d249262659084a7"
   integrity sha512-V4iqLOpNFNhnUqfKRlvqUeRwvKaODdz+qn4Qi65C3iMOnDb0J31tBvyhwKbhP4wauNuUN64WfepqkkxET9U7EQ==
 
-"@pooltogether/utilities@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.39.tgz#420bcfa7f127b2cfd50ba21ce0abca4b0c8a604b"
-  integrity sha512-Wc1yYFjTaWK8DWLcD6g4u/9bOpCpE+yYicvWqaj0+0qAg78WqUD+mlek91pH5jgJXqRglGtpJWz5Z8/J0wgmGw==
+"@pooltogether/utilities@^0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@pooltogether/utilities/-/utilities-0.0.42.tgz#243dc5abcdb5ded06b94932d92d62fe563d5c7dc"
+  integrity sha512-huxJRKcvxnK/lYzRROwjznxtLN4jWDHwp2I+iFcatKu926Inbin8hXTLSBI3PmF2jINVOrrg6Quwu70L8AutAA==
 
 "@pooltogether/yield-source-interface@^1.0.1":
   version "1.0.1"

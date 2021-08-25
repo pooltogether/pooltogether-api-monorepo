@@ -3,7 +3,9 @@ import {
   POOLTOGETHER_SUBGRAPH_URIS,
   UNISWAP_GRAPH_URIS
 } from '@pooltogether/current-pool-data'
+import { NETWORK } from '@pooltogether/utilities'
 import { GraphQLClient } from 'graphql-request'
+
 import { fetch } from '../../index'
 
 export const useSubgraphClients = (chainId, versions) => {
@@ -44,3 +46,20 @@ export const getLootBoxSubgraphClient = (chainId) =>
   new GraphQLClient(LOOTBOX_GRAPH_URIS[chainId], {
     fetch
   })
+
+
+/**
+ * BSC Subgraphs use `derivedBNB` rather than `derivedETH`
+ * @param {*} chainId
+ * @returns
+ */
+export const getNativeCurrencyKey = (chainId) => {
+  switch (chainId) {
+    case NETWORK.bsc:
+      return 'derivedBNB'
+    case NETWORK.celo:
+      return 'derivedCUSD'
+    default:
+      return 'derivedETH'
+  }
+}

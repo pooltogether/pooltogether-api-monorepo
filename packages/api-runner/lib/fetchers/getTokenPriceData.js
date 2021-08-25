@@ -1,8 +1,7 @@
-import { NETWORK } from '@pooltogether/utilities'
 import { gql } from 'graphql-request'
 
 import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
-import { getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
+import { getNativeCurrencyKey, getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
 
 const KNOWN_STABLECOIN_ADDRESSES = {
   137: [
@@ -12,25 +11,11 @@ const KNOWN_STABLECOIN_ADDRESSES = {
   ]
 }
 
-/**
- * BSC Subgraphs use `derivedBNB` rather than `derivedETH`
- * @param {*} chainId
- * @returns
- */
-const getUnderlyingKey = (chainId) => {
-  switch (chainId) {
-    case NETWORK.bsc:
-      return 'derivedBNB'
-    default:
-      return 'derivedETH'
-  }
-}
-
 const getQueryTemplate = (
   chainId
 ) => `token__num__: tokens(where: { id: "__address__" } __blockFilter__) {
   id
-  ${getUnderlyingKey(chainId)}
+  ${getNativeCurrencyKey(chainId)}
 }`
 
 const _addStablecoin = (addresses, stableCoinAddress) => {
@@ -54,7 +39,7 @@ const _getBlockFilter = (blockNumber) => {
 }
 
 const _calculateUsd = (token, chainId) => {
-  let derivedETH = token?.[getUnderlyingKey(chainId)]
+  let derivedETH = token?.[getNativeCurrencyKey(chainId)]
 
   if (!derivedETH || derivedETH === '0') {
     derivedETH = 0.2 // 1 ETH is $5 USD, used for Rinkeby, etc
@@ -108,7 +93,6 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   }
 
   // console.log('getting token prices from the graph ...')
-  // console.log('getting token prices from the graph ...')
   const response = query
     ? await graphQLClient.request(gql`query uniswapTokensQuery { ${query} }`)
     : {}
@@ -138,8 +122,8 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
     if (token) {
       data[address] = {
         ...token,
-        derivedETH: token[getUnderlyingKey(chainId)],
-        usd: data['ethereum'].usd * parseFloat(token[getUnderlyingKey(chainId)])
+        derivedETH: token[getNativeCurrencyKey(chainId)],
+        usd: data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
       }
     }
   }
