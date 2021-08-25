@@ -7,7 +7,7 @@
     "build": "wrangler build",
     "dev": "wrangler dev --env",
     "start": "wrangler dev --env",
-    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon && wrangler publish --env binance",
+    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon && wrangler publish --env binance && wrangler publish --env celo",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
   },
@@ -17,7 +17,7 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.9.17",
-    "@pooltogether/current-pool-data": "3.5.19"
+    "@pooltogether/api-runner": "1.9.18",
+    "@pooltogether/current-pool-data": "3.5.21"
   }
 }

@@ -22,6 +22,10 @@ kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", p
 name = "binance-pool-updater"
 kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
 
+[env.celo]
+name = "celo-pool-updater"
+kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" }]
+
 
 [env.mainnet.vars]
 CHAIN_ID = '1'
@@ -65,6 +69,19 @@ QUICKNODE_ID = ''
 [env.binance.vars]
 CHAIN_ID = '56'
 APP_NAME = 'binance-pool-updater'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'api-staging'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
+QUICKNODE_ID = ''
+
+[env.celo.vars]
+CHAIN_ID = '42220'
+APP_NAME = 'celo-pool-updater'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
 SENTRY_PROJECT_ID = '5832514'
