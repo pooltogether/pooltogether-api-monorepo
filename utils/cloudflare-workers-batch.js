@@ -11,6 +11,8 @@ const getRpcUrl = (chainId) => {
       return `https://red-fragrant-fire.bsc.quiknode.pro/${QUICKNODE_ID}/`
     case 137:
       return `https://polygon-mainnet.infura.io/v3/${INFURA_ID}`
+    case 42220:
+      return `https://forno.celo.org`
     case 80001:
       return `https://polygon-mumbai.infura.io/v3/${INFURA_ID}`
   }

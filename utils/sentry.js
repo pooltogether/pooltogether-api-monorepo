@@ -25,9 +25,16 @@ const RETRIES = 5
 // })
 
 export async function log(err, request) {
+  console.log(err)
+  console.log(request)
   const body = JSON.stringify(toSentryEvent(err, request))
+  console.log(body)
 
   for (let i = 0; i <= RETRIES; i++) {
+  console.log(`https://sentry.io/api/${SENTRY_PROJECT_ID}/store/`)
+  console.log(`sentry_client=${CLIENT_NAME}/${CLIENT_VERSION}`,
+  `sentry_key=${SENTRY_KEY}`)
+
     const res = await fetch(`https://sentry.io/api/${SENTRY_PROJECT_ID}/store/`, {
       method: 'POST',
       headers: {

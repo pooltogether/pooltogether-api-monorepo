@@ -1,10 +1,8 @@
 import { setInfuraId, setFetch, setQuicknodeId } from '@pooltogether/api-runner'
 import { podContractAddresses } from '@pooltogether/current-pool-data'
-import { ethers } from 'ethers'
 
 import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
-import { validateAddresses } from '../../utils/validateAddresses'
 import { updatePods } from './updatePods'
 
 addEventListener('fetch', (event) => {
