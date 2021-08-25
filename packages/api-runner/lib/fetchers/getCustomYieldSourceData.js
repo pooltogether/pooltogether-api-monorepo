@@ -37,7 +37,7 @@ export const KNOWN_YIELD_SOURCE_ADDRESSES = Object.freeze({
       '0xd06814ac6cd4a5192e3767a7329a731a3d2e3f1c'
     ],
     [YIELD_SOURCES.sushi]: []
-  }
+  },
 })
 
 /**
