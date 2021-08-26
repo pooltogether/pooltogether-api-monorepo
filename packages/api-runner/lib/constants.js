@@ -55,7 +55,7 @@ export const CUSTOM_CONTRACT_ADDRESSES = {
     Stablecoin: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
   },
   42220: {
-    Stablecoin: '0xd7204e7B31845cd8f3a14AF903C0aA73F4d37B02'
+    Stablecoin: '0x765de816845861e75a25fca122bb6898b8b1282a'
   }
 }
 

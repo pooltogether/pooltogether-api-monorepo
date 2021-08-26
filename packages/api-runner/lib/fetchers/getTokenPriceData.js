@@ -3,6 +3,10 @@ import { gql } from 'graphql-request'
 import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
 import { getNativeCurrencyKey, getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
 
+import { fetch } from '../../index'
+
+const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3'
+
 const KNOWN_STABLECOIN_ADDRESSES = {
   137: [
     '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
@@ -11,45 +15,11 @@ const KNOWN_STABLECOIN_ADDRESSES = {
   ]
 }
 
-const getQueryTemplate = (
-  chainId
-) => `token__num__: tokens(where: { id: "__address__" } __blockFilter__) {
-  id
-  ${getNativeCurrencyKey(chainId)}
-}`
-
-const _addStablecoin = (addresses, stableCoinAddress) => {
-  const stableCoin = addresses.find((address) => stableCoinAddress === address)
-
-  if (!stableCoin) {
-    addresses.splice(0, 0, stableCoinAddress)
-  }
-
-  return addresses
-}
-
-const _getBlockFilter = (blockNumber) => {
-  let blockFilter = ''
-
-  if (blockNumber > 0) {
-    blockFilter = `, block: { number: ${blockNumber} }`
-  }
-
-  return blockFilter
-}
-
-const _calculateUsd = (token, chainId) => {
-  let derivedETH = token?.[getNativeCurrencyKey(chainId)]
-
-  if (!derivedETH || derivedETH === '0') {
-    derivedETH = 0.2 // 1 ETH is $5 USD, used for Rinkeby, etc
-  }
-
-  return 1 / derivedETH
-}
-
 const ETHEREUM_MAINNET_CHAIN_ID = 1
 const ETHEREUM_MAINNET_MATIC_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'
+
+const CELO_CEUR_ADDRESS = '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73'
+
 // MATIC price as of July 15th, 2021 as fallback:
 const HARD_CODED_MATIC_PRICE = 0.871103
 
@@ -117,13 +87,18 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   // calculate the price of the token in USD
   for (let i = 0; i < filteredAddresses.length; i++) {
     const address = filteredAddresses[i]
-    const token = data[address]
+    const token = data[address]  
 
     if (token) {
+      let usdFromCoingecko
+      if (address.toLowerCase() === CELO_CEUR_ADDRESS.toLowerCase()) {
+        usdFromCoingecko = await getCoingeckoTokenDataByTokenId('celo-euro')
+      }
+
       data[address] = {
         ...token,
         derivedETH: token[getNativeCurrencyKey(chainId)],
-        usd: data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
+        usd: usdFromCoingecko ? usdFromCoingecko : data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
       }
     }
   }
@@ -156,3 +131,54 @@ const maticTokenPriceData = async () => {
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174': { usd: 1 }
   }
 }
+
+const getCoingeckoTokenDataByTokenId = async (coinId) => {
+  try {
+    const response = await fetch(
+      `${COINGECKO_API_URL}/coins/${coinId}`
+    )
+    const json = await response.json()
+    return json.market_data.current_price.usd
+  } catch (e) {
+    console.warn(e.message)
+    return undefined
+  }
+}
+
+const getQueryTemplate = (
+  chainId
+) => `token__num__: tokens(where: { id: "__address__" } __blockFilter__) {
+  id
+  ${getNativeCurrencyKey(chainId)}
+}`
+
+const _addStablecoin = (addresses, stableCoinAddress) => {
+  const stableCoin = addresses.find((address) => stableCoinAddress === address)
+
+  if (!stableCoin) {
+    addresses.splice(0, 0, stableCoinAddress)
+  }
+
+  return addresses
+}
+
+const _getBlockFilter = (blockNumber) => {
+  let blockFilter = ''
+
+  if (blockNumber > 0) {
+    blockFilter = `, block: { number: ${blockNumber} }`
+  }
+
+  return blockFilter
+}
+
+const _calculateUsd = (token, chainId) => {
+  let derivedETH = token?.[getNativeCurrencyKey(chainId)]
+
+  if (!derivedETH || derivedETH === '0') {
+    derivedETH = 0.2 // 1 ETH is $5 USD, used for Rinkeby, etc
+  }
+
+  return 1 / derivedETH
+}
+
