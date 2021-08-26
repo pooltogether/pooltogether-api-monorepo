@@ -1,7 +1,6 @@
 import { log } from '../../utils/sentry'
 import { getCachedResponse } from '../../utils/getCachedResponse'
 import { DEFAULT_HEADERS } from '../../utils/constants'
-import { getCurrentDateString } from '../../utils/getCurrentDateString'
 import { getPool } from './getPool'
 import { getPools } from './getPools'
 import { getPod } from './getPod'

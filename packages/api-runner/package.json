@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.9.20",
+  "version": "1.9.21",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "Gain more insight when testing the API code in a regular node enviroment",
@@ -38,7 +38,7 @@
   "dependencies": {
     "@ethersproject/abi": "^5.1.1",
     "@ethersproject/units": "^5.1.0",
-    "@pooltogether/current-pool-data": "^3.5.21",
+    "@pooltogether/current-pool-data": "^3.6.0",
     "@pooltogether/etherplex": "1.1.2",
     "@pooltogether/evm-chains-extended": "^0.5.3",
     "@pooltogether/loot-box": "^1.1.0",

@@ -824,14 +824,14 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.9.20":
-  version "1.9.20"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.20.tgz#c2a6d61ca11a38203184099e3066b92a776e9404"
-  integrity sha512-H7jhtu8m4VzlF4PhndECou8b+Ul3whCcLM0p4Gxq1HWyq4K7OutLYLi9zI2ejOx51XUlkzTvkVPJiKFLDevdGw==
+"@pooltogether/api-runner@1.9.21":
+  version "1.9.21"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.21.tgz#986314970f4da960329d17edd90a34bf0aeab375"
+  integrity sha512-Ovp5KkjWXJGoSNN8zyeRjG6PguQzP+nt7RY3zokQSsZzwefZqJBiObBrAINt57chahizTRB6TuIDBuclsOgWsA==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
-    "@pooltogether/current-pool-data" "^3.5.21"
+    "@pooltogether/current-pool-data" "^3.6.0"
     "@pooltogether/etherplex" "1.1.2"
     "@pooltogether/evm-chains-extended" "^0.5.3"
     "@pooltogether/loot-box" "^1.1.0"
@@ -846,10 +846,10 @@
     lodash.merge "^4.6.2"
     lodash.remove "^4.7.0"
 
-"@pooltogether/current-pool-data@3.5.21", "@pooltogether/current-pool-data@^3.5.21":
-  version "3.5.21"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.21.tgz#4143adb7bcfbdc9ccf7914c177717cbb541bd57f"
-  integrity sha512-X9IHpNhMHtfGhnWjmh2bVlLuDrx7JiYqB+8PrKUAAD0fI54zyMIHN+R730GBIJgDpgPCf51Z0KH5gAAzHtN+UQ==
+"@pooltogether/current-pool-data@3.6.0", "@pooltogether/current-pool-data@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.6.0.tgz#5814f91342c81ca595e18dbed85aa4a37b7b4c76"
+  integrity sha512-soPqbmTNk3VER6fbkTupck70sDAgnQ/2ZxnAybArr4Rp9xPu0T9DdnU197yFmUqN8i1eEg1F6q9zWlXQm4T3zw==
 
 "@pooltogether/etherplex@1.1.2":
   version "1.1.2"

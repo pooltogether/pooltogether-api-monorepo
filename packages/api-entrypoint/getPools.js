@@ -1,4 +1,3 @@
-import { prizePoolContracts } from '@pooltogether/current-pool-data'
 import { getDefaultPoolAddresses } from '@pooltogether/api-runner'
 
 import { getPoolsKey } from '../../utils/kvKeys'
