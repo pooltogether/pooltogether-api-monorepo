@@ -7,7 +7,12 @@
     "build": "wrangler build",
     "dev": "wrangler dev --env",
     "start": "wrangler dev --env",
-    "publish-all": "wrangler publish --env mainnet && wrangler publish --env rinkeby && wrangler publish --env polygon && wrangler publish --env binance && wrangler publish --env celo",
+    "publish-all": "yarn publish-mainnet && yarn publish-rinkeby && yarn publish-polygon && yarn publish-binance && yarn publish-celo",
+    "publish-binance": "rm -rf dist && rm -rf worker && wrangler publish --env binance",
+    "publish-polygon": "rm -rf dist && rm -rf worker && wrangler publish --env polygon",
+    "publish-rinkeby": "rm -rf dist && rm -rf worker && wrangler publish --env rinkeby",
+    "publish-mainnet": "rm -rf dist && rm -rf worker && wrangler publish --env mainnet",
+    "publish-celo": "rm -rf dist && rm -rf worker && wrangler publish --env celo",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'"
   },
@@ -17,7 +22,7 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "@pooltogether/api-runner": "1.9.23",
-    "@pooltogether/current-pool-data": "3.6.1"
+    "@pooltogether/api-runner": "1.9.24",
+    "@pooltogether/current-pool-data": "3.6.2"
   }
 }
