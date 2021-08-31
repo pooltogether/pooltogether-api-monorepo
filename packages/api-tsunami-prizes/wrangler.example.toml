@@ -1,0 +1,41 @@
+type = "webpack"
+name = "tsunami-prizes-localhost"
+workers_dev = true
+
+account_id = "" # Production account
+
+kv_namespaces = [{ binding = "TSUNAMI_PRIZES", id = "04b6a53e8fc34bc0960c5ecb8c698208", preview_id = "04b6a53e8fc34bc0960c5ecb8c698208" }]
+
+# [triggers]
+# crons = ["0 * * * *"]
+
+[vars]
+APP_NAME = 'tsunami-prizes'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'tsunami-prizes'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
+QUICKNODE_ID = ''
+
+[env.production]
+name = "tsunami-prizes"
+kv_namespaces = [{ binding = "TSUNAMI_PRIZES", id = "04b6a53e8fc34bc0960c5ecb8c698208", preview_id = "04b6a53e8fc34bc0960c5ecb8c698208" }]
+workers_dev = false
+zone_id = ""
+route = "tsunami.pooltogether-api.com/*"
+
+[env.production.vars]
+APP_NAME = 'tsunami-prizes'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'tsunami-prizes'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
+QUICKNODE_ID = ''
