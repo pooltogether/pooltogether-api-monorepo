@@ -1,9 +1,9 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.9.24",
+  "version": "1.10.0",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
-  "description": "Gain more insight when testing the API code in a regular node enviroment",
+  "description": "Executes heavy-lifting API code in a regular node enviroment (ie. not `wrangler`) for better debugging, etc",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
@@ -16,6 +16,9 @@
     "start": "node dist/index.js",
     "reinstall": "rm -rf node_modules && yarn install",
     "build": "rollup -c rollup.config.js",
+    "prepublishOnly": "yarn build",
+    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags && yarn gitwarn",
+    "gitwarn": "echo '*******************' && echo 'Please push your changes to Git' && echo '*******************'",
     "watch": "rollup -w rollup.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'",
