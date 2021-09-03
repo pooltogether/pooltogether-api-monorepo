@@ -751,10 +751,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.9.24":
-  version "1.9.24"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.9.24.tgz#291591dadfdd3eecbf38d208b2ece47736b17d87"
-  integrity sha512-ryWk9bptds0V0eBdkRn48jQ55gwGJIof54Vp1fIfwLd9M3+4OQN8GO7U7BS1/1dP03wAKCT4KNCmFeFP6S1ENA==
+"@pooltogether/api-runner@1.10.1":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.10.1.tgz#5589e6ed46230c74453d855760f8c402c18dd510"
+  integrity sha512-fKJIF9lxEZibIxSYAuOD+tGnzhfpFoOFUvh2OPKuFs6rIAFTEclc1LpZ10fbUhblsNq7aaW+SkoXRjW7K+yCQw==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
@@ -773,7 +773,12 @@
     lodash.merge "^4.6.2"
     lodash.remove "^4.7.0"
 
-"@pooltogether/current-pool-data@3.6.2", "@pooltogether/current-pool-data@^3.6.2":
+"@pooltogether/current-pool-data@3.7.0":
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.7.0.tgz#bae218eefa9173d6fccf208f9418ebd836c7a14d"
+  integrity sha512-EGMkoeLgK6/ORjwROnExjvKiCJ0AODPODaaeqUAdtA+UIDHTI2ki8Krz4qeN39OETcn4v+Kb4UG0OxOAImZrsQ==
+
+"@pooltogether/current-pool-data@^3.6.2":
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.6.2.tgz#d80dd1903e121961f901ef048971bc253e642037"
   integrity sha512-LSfmbXt4HZHWrkyqtKMagvRMB/z8zul2ZOm2eLBCGXm9FLM6UnbKQF4yN5rAcBsCb5Wfm1tqC0FQJgehdnV5Og==
