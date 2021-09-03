@@ -17,17 +17,22 @@ const KNOWN_STABLECOIN_ADDRESSES = {
 
 const ETHEREUM_MAINNET_CHAIN_ID = 1
 const ETHEREUM_MAINNET_MATIC_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'
+const ETHEREUM_MAINNET_POOL_ADDRESS = '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e'
+
+const POLYGON_WMATIC_TOKEN_ADDRESS = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
+const POLYGON_POOL_TOKEN_ADDRESS = '0x25788a1a171ec66da6502f9975a15b609ff54cf6'
 
 const CELO_CEUR_ADDRESS = '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73'
 
-// MATIC price as of July 15th, 2021 as fallback:
-const HARD_CODED_MATIC_PRICE = 0.871103
+// prices as of Sept 3rd, 2021 as fallback:
+const HARD_CODED_MATIC_PRICE = 1.471103
+const HARD_CODED_POOL_PRICE = 12.24
 
 export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
   // On polygon return mock data from last successful request and the price of MATIC (WMATIC) on the Ethereum network
   // (basically the same price as on Polygon or anywhere else)
   if (chainId === 137) {
-    return await maticTokenPriceData()
+    return await ethereumMainnetTokenPriceData()
   }
 
   const knownStablecoinAddresses = KNOWN_STABLECOIN_ADDRESSES?.[chainId] || []
@@ -111,19 +116,28 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   return data
 }
 
-const maticTokenPriceData = async () => {
+const ethereumMainnetTokenPriceData = async () => {
   const maticPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
     ETHEREUM_MAINNET_MATIC_ADDRESS
+  ])
+  const poolPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
+    ETHEREUM_MAINNET_POOL_ADDRESS
   ])
 
   return {
     '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
     '0x85e16156eb86a134ac6db5754be6c5e1c7f1aa59': undefined,
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
+    [POLYGON_WMATIC_TOKEN_ADDRESS]: {
       derivedETH: '0.0006555576548927038397327620248452385',
-      id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+      id: POLYGON_WMATIC_TOKEN_ADDRESS,
       usd:
         maticPriceOnEthereumData?.[ETHEREUM_MAINNET_MATIC_ADDRESS]?.usd || HARD_CODED_MATIC_PRICE
+    },
+    [POLYGON_POOL_TOKEN_ADDRESS]: {
+      derivedETH: '0.006555576548927038397327620248452385',
+      id: POLYGON_POOL_TOKEN_ADDRESS,
+      usd:
+      poolPriceOnEthereumData?.[ETHEREUM_MAINNET_POOL_ADDRESS]?.usd || HARD_CODED_POOL_PRICE
     },
     'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
