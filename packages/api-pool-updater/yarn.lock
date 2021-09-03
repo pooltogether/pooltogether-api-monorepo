@@ -778,7 +778,7 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.6.2.tgz#d80dd1903e121961f901ef048971bc253e642037"
   integrity sha512-LSfmbXt4HZHWrkyqtKMagvRMB/z8zul2ZOm2eLBCGXm9FLM6UnbKQF4yN5rAcBsCb5Wfm1tqC0FQJgehdnV5Og==
 
-"@pooltogether/etherplex@1.1.2":
+"@pooltogether/etherplex@1.1.2", "@pooltogether/etherplex@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@pooltogether/etherplex/-/etherplex-1.1.2.tgz#fb8144f98c3543fe231871660c6a25b3add42219"
   integrity sha512-ZJh7iGnm3X+cnA4FIogZ6RrYfehzpNexE3gTzG2+gPKD6XE0T920MBKWeGYD2MYULMcsRLravVNWnBgJgPhcfw==

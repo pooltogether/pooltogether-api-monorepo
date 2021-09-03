@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "packages": {
+    "@pooltogether/api-runner": {
+      "signature": "c62835cb2355b2af80ccc8ff0554cd6b"
+    }
+  }
+}

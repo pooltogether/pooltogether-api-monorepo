@@ -1,3 +1,4 @@
+import { NETWORK } from '@pooltogether/utilities'
 import { gql } from 'graphql-request'
 
 import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
@@ -87,7 +88,7 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   // calculate the price of the token in USD
   for (let i = 0; i < filteredAddresses.length; i++) {
     const address = filteredAddresses[i]
-    const token = data[address]  
+    const token = data[address]
 
     if (token) {
       let usdFromCoingecko
@@ -98,7 +99,9 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
       data[address] = {
         ...token,
         derivedETH: token[getNativeCurrencyKey(chainId)],
-        usd: usdFromCoingecko ? usdFromCoingecko : data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
+        usd: usdFromCoingecko
+          ? usdFromCoingecko
+          : data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
       }
     }
   }
@@ -112,9 +115,18 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
 }
 
 const maticTokenPriceData = async () => {
-  const maticPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
-    ETHEREUM_MAINNET_MATIC_ADDRESS
+  const tokenPrices = await getCoingeckoTokenPrices([
+    ETHEREUM_MAINNET_MATIC_ADDRESS,
+    CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].POOL
   ])
+
+  const maticPriceOnEthereumData = await getTokenPriceData(ETHEREUM_MAINNET_CHAIN_ID, [
+    ETHEREUM_MAINNET_MATIC_ADDRESS,
+    CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].POOL
+  ])
+
+  console.log('tokenPrices', JSON.stringify(tokenPrices))
+  console.log('maticPriceOnEthereumData', JSON.stringify(maticPriceOnEthereumData))
 
   return {
     '0x9ecb26631098973834925eb453de1908ea4bdd4e': undefined,
@@ -122,8 +134,7 @@ const maticTokenPriceData = async () => {
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': {
       derivedETH: '0.0006555576548927038397327620248452385',
       id: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      usd:
-        maticPriceOnEthereumData?.[ETHEREUM_MAINNET_MATIC_ADDRESS]?.usd || HARD_CODED_MATIC_PRICE
+      usd: maticPriceOnEthereumData?.[ETHEREUM_MAINNET_MATIC_ADDRESS]?.usd || HARD_CODED_MATIC_PRICE
     },
     'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
@@ -134,13 +145,25 @@ const maticTokenPriceData = async () => {
 
 const getCoingeckoTokenDataByTokenId = async (coinId) => {
   try {
-    const response = await fetch(
-      `${COINGECKO_API_URL}/coins/${coinId}`
-    )
+    const response = await fetch(`${COINGECKO_API_URL}/coins/${coinId}`)
     const json = await response.json()
     return json.market_data.current_price.usd
   } catch (e) {
     console.warn(e.message)
+    return undefined
+  }
+}
+
+export const getCoingeckoTokenPrices = async (contractAddresses) => {
+  try {
+    const url = new URL(`${COINGECKO_API_URL}/simple/token_price/ethereum`)
+    url.searchParams.set('contract_addresses', contractAddresses.join(','))
+    url.searchParams.set('vs_currencies', 'usd,eth')
+    const response = await fetch(url.toString())
+    const tokenPrices = await response.json()
+    return tokenPrices
+  } catch (e) {
+    console.error(e.message)
     return undefined
   }
 }
@@ -181,4 +204,3 @@ const _calculateUsd = (token, chainId) => {
 
   return 1 / derivedETH
 }
-
