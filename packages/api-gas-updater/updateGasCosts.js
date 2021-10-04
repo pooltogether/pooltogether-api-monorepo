@@ -10,16 +10,21 @@ import { getGasKey } from '../../utils/kvKeys'
  * @param {*} chainId The chain id to refresh gas costs for
  * @returns
  */
-export const updateGasCosts = async (event, chainId, forceUpdate = false) => {
-  const response = await fetch(
-    `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apiKey=${ETHERSCAN_API_KEY}`
-  )
+export const updateGasCosts = async (event, chainId) => {
+  let gasCosts
 
-  console.log(response)
-  // ETHERSCAN_API_KEY
-  //api.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=2000000000&apikey=YourApiKeyToken
-  const gasCosts = await response.json()
-  console.log(gasCosts)
+  // Uses Etherscan's API
+  if (chainId === 1) {
+    const response = await fetch(
+      `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apiKey=${ETHERSCAN_API_KEY}`
+    )
+    gasCosts = await response.json()
+  }
+
+  // Scrapes PolygonScan's gastracker html page (no API)
+  if (chainId === 56) {
+    gasCosts = await scrapePolygonScan()
+  }
 
   if (!gasCosts) {
     event.waitUntil(log(new Error('No gas costs fetched during update'), event.request))
@@ -32,4 +37,40 @@ export const updateGasCosts = async (event, chainId, forceUpdate = false) => {
     })
     event.waitUntil(GAS.put(`${chainId} - Last updated`, new Date(Date.now()).toUTCString()))
   }
+}
+
+const scrapePolygonScan = async () => {
+  const fetch = require('node-fetch')
+  const cheerio = require('cheerio')
+
+  let gasCosts
+
+  const get = async () => {
+    const response = await fetch(`https://polygonscan.com/gastracker`)
+    const body = await response.text()
+
+    const $ = cheerio.load(body)
+    const standard = $('span#standardgas')
+      .text()
+      .split(' ')[0]
+    const fast = $('span#fastgas')
+      .text()
+      .split(' ')[0]
+    const rapid = $('span#rapidgas')
+      .text()
+      .split(' ')[0]
+
+    const result = {
+      result: {
+        SafeGasPrice: standard,
+        ProposeGasPrice: fast,
+        FastGasPrice: rapid
+      }
+    }
+
+    gasCosts = JSON.stringify(result)
+    console.log(gasCosts)
+  }
+
+  get()
 }
