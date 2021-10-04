@@ -5,6 +5,7 @@ import { getPool } from './getPool'
 import { getPools } from './getPools'
 import { getPod } from './getPod'
 import { getPods } from './getPods'
+import { getGasCosts } from './getGasCosts'
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
@@ -24,6 +25,7 @@ async function handleRequest(event) {
     const multiPoolRegex = /\/pools\/[\d]*/
     const singlePodRegex = /\/pods\/[\d]*\/[A-Za-z0-9]*/
     const multiPodRegex = /\/pods\/[\d]*/
+    const gasCostsRegex = /\/gas\/[\d]*/
 
     // Read routes
     if (singlePoolRegex.test(pathname)) {
@@ -34,6 +36,8 @@ async function handleRequest(event) {
       return getCachedResponse(event, getPod(event, request), 5)
     } else if (multiPodRegex.test(pathname)) {
       return getCachedResponse(event, getPods(event, request), 5)
+    } else if (gasCostsRegex.test(pathname)) {
+      return getCachedResponse(event, getGasCosts(event, request), 5)
     }
 
     const errorMsg = `Hello :) Please use one of the following paths:\n\nAll pools:     /pools/:chainId.json\nSpecific pool: /pools/:chainId/:poolAddress\n\nExample: /pools/1/0xEBfb47A7ad0FD6e57323C8A42B2E5A6a4F68fc1a`
