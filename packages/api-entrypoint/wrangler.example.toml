@@ -24,7 +24,11 @@ INFURA_ID = ''
 
 [env.production]
 name = "pooltogether-api"
-kv_namespaces = [{ binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "e01e5ae04e134d779382f36ca2ff6cda" }, { binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" }]
+kv_namespaces = [
+    { binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "e01e5ae04e134d779382f36ca2ff6cda" },
+    { binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" },
+    { binding = "GAS", id = "9bc65bde97e94e5aa0628fd77e1a29cc", preview_id = "a8bd237afea44bafbdaf4407be5afab0" }
+]
 workers_dev = true
 zone_id = ""
 route = "pooltogether-api.com/*"
