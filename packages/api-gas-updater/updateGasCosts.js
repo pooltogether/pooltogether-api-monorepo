@@ -67,5 +67,5 @@ const scrapePolygonScan = async () => {
     }
   }
 
-  return JSON.stringify(result)
+  return result
 }
