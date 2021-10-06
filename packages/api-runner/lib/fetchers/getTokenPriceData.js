@@ -19,12 +19,16 @@ const ETHEREUM_MAINNET_CHAIN_ID = 1
 const ETHEREUM_MAINNET_MATIC_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'
 const ETHEREUM_MAINNET_POOL_ADDRESS = '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e'
 
+const ETHEREUM_MAINNET_SOHM_ADDRESS = '0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f'
+
 const POLYGON_WMATIC_TOKEN_ADDRESS = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const POLYGON_POOL_TOKEN_ADDRESS = '0x25788a1a171ec66da6502f9975a15b609ff54cf6'
 
 const CELO_CEUR_ADDRESS = '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73'
 
-// prices as of Sept 3rd, 2021 as fallback:
+// prices as fallback:
+const HARD_CODED_CELU_EUR_PRICE = 1.17
+const HARD_CODED_OHM_PRICE = 874.23
 const HARD_CODED_MATIC_PRICE = 1.471103
 const HARD_CODED_POOL_PRICE = 12.24
 
@@ -50,6 +54,7 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   const stablecoinAddresses = addresses.filter((address) =>
     knownStablecoinAddresses.includes(address)
   )
+
   const filteredAddresses = addresses.filter(
     (address) => !knownStablecoinAddresses.includes(address)
   )
@@ -71,12 +76,12 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   const response = query
     ? await graphQLClient.request(gql`query uniswapTokensQuery { ${query} }`)
     : {}
-  // console.log('got token prices from graph')
 
   // unpack the data into a useful object
   let data = {}
   for (let i = 0; i < filteredAddresses.length; i++) {
     const address = filteredAddresses[i]
+
     const token = response[`token${i}`][0]
 
     data[address] = token
@@ -91,22 +96,44 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
 
   // calculate the price of the token in USD
   for (let i = 0; i < filteredAddresses.length; i++) {
-    const address = filteredAddresses[i]
-    const token = data[address]  
+    let address = filteredAddresses[i]
+    let token = data[address]
+
+    if (!token && address?.toLowerCase() === ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase()) {
+      token = {
+        id: ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase(),
+        derivedETH: 0,
+        usd: 0
+      }
+    }
 
     if (token) {
       let usdFromCoingecko
       if (address.toLowerCase() === CELO_CEUR_ADDRESS.toLowerCase()) {
         usdFromCoingecko = await getCoingeckoTokenDataByTokenId('celo-euro')
+        if (!usdFromCoingecko) {
+          usdFromCoingecko = HARD_CODED_CELU_EUR_PRICE
+        }
+      }
+
+      if (address.toLowerCase() === ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase()) {
+        usdFromCoingecko = await getCoingeckoTokenDataByTokenId('olympus')
+        if (!usdFromCoingecko) {
+          usdFromCoingecko = HARD_CODED_OHM_PRICE
+        }
+        address = ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase()
       }
 
       data[address] = {
         ...token,
         derivedETH: token[getNativeCurrencyKey(chainId)],
-        usd: usdFromCoingecko ? usdFromCoingecko : data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
+        usd: usdFromCoingecko
+          ? usdFromCoingecko
+          : data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
       }
     }
   }
+
   stablecoinAddresses.forEach((address) => {
     data[address] = {
       usd: 1
@@ -130,14 +157,12 @@ const ethereumMainnetTokenPriceData = async () => {
     [POLYGON_WMATIC_TOKEN_ADDRESS]: {
       derivedETH: '0.0006555576548927038397327620248452385',
       id: POLYGON_WMATIC_TOKEN_ADDRESS,
-      usd:
-        maticPriceOnEthereumData?.[ETHEREUM_MAINNET_MATIC_ADDRESS]?.usd || HARD_CODED_MATIC_PRICE
+      usd: maticPriceOnEthereumData?.[ETHEREUM_MAINNET_MATIC_ADDRESS]?.usd || HARD_CODED_MATIC_PRICE
     },
     [POLYGON_POOL_TOKEN_ADDRESS]: {
       derivedETH: '0.006555576548927038397327620248452385',
       id: POLYGON_POOL_TOKEN_ADDRESS,
-      usd:
-      poolPriceOnEthereumData?.[ETHEREUM_MAINNET_POOL_ADDRESS]?.usd || HARD_CODED_POOL_PRICE
+      usd: poolPriceOnEthereumData?.[ETHEREUM_MAINNET_POOL_ADDRESS]?.usd || HARD_CODED_POOL_PRICE
     },
     'ethereum': { derivedETH: '1', id: 'eth', usd: 5 },
     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063': { usd: 1 },
@@ -148,9 +173,7 @@ const ethereumMainnetTokenPriceData = async () => {
 
 const getCoingeckoTokenDataByTokenId = async (coinId) => {
   try {
-    const response = await fetch(
-      `${COINGECKO_API_URL}/coins/${coinId}`
-    )
+    const response = await fetch(`${COINGECKO_API_URL}/coins/${coinId}`)
     const json = await response.json()
     return json.market_data.current_price.usd
   } catch (e) {
@@ -195,4 +218,3 @@ const _calculateUsd = (token, chainId) => {
 
   return 1 / derivedETH
 }
-
