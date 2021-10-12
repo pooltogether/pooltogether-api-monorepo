@@ -6,7 +6,7 @@ import { getGasKey } from '../../utils/kvKeys'
 // Confirmation time!
 // `https://api.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=2000000000&apiKey=${ETHERSCAN_API_KEY}`
 
-const MAINNET_CHAIN_ID = 137
+const MAINNET_CHAIN_ID = 1
 const POLYGON_CHAIN_ID = 137
 
 /**
@@ -33,7 +33,7 @@ export const updateGasCosts = async (event, chainId) => {
 
   if (!gasCosts) {
     event.waitUntil(log(new Error('No gas costs fetched during update'), event.request))
-    return false
+    throw new Error('gasCosts was not set')
   } else {
     event.waitUntil(GAS.put(getGasKey(chainId), JSON.stringify(gasCosts)), {
       metadata: {

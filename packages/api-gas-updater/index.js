@@ -57,6 +57,7 @@ async function handleRequest(event) {
         return successResponse
       } catch (e) {
         event.waitUntil(log(e, e.request))
+        console.log('err updatin')
         const errorResponse = new Response(`Error updating ${CHAIN_ID}`, {
           ...DEFAULT_HEADERS,
           status: 500
