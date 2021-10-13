@@ -1,10 +1,10 @@
 import { log } from '../../utils/sentry'
 import { DEFAULT_HEADERS } from '../../utils/constants'
-// import { getUsersPrizes } from './getUsersPrizes'
-import { Contract, ethers } from 'ethers'
-import { ERC20Abi } from '../../abis/ERC20Abi'
-import { contract } from '@pooltogether/etherplex'
-import { batch } from './cloudflare-workers-batch'
+import { getUsersPrizes } from './getUsersPrizes'
+import { ethers } from 'ethers'
+import _fetch from 'cross-fetch'
+
+fetch = _fetch
 
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
@@ -12,67 +12,62 @@ addEventListener('fetch', (event) => {
 
 /**
  * Fetch a users prizes for a list of draw ids.
- * /:chainId/:prizePoolAddress/prizes/:usersAddress?draws=<draw ids>
+ * /:chainId/:prizePoolAddress/prizes/:usersAddress/:drawId
  * @param {Event} event
  */
 async function handleRequest(event) {
+  try {
+    console.log('fetch')
+    console.log(fetch)
+    console.log('_fetch')
+    console.log(_fetch)
+    console.log('globalThis')
+    console.log(JSON.stringify(Object.keys(globalThis)))
+    console.log('global')
+    console.log(JSON.stringify(Object.keys(global)))
+    const provider = new ethers.providers.JsonRpcProvider(
+      `https://rinkeby.infura.io/v3/${INFURA_ID}`,
+      4
+    )
+    let b = await provider.getBalance('0x27fcf06DcFFdDB6Ec5F62D466987e863ec6aE6A0')
+    console.log('balance', 4, JSON.stringify(b))
+    return new Response()
+  } catch (e) {
+    console.log('ERROR', e.message)
+    return new Response()
+  }
+
   try {
     const request = event.request
     const _url = new URL(request.url)
     const pathname = _url.pathname
 
-    // TESTING
-    const tokenAddress = '0x26c6cc6422fefe460f48ea4971997fb97c33abac'
-    const tokenContract = contract(tokenAddress, ERC20Abi, tokenAddress)
-    let batchCalls = []
-    batchCalls.push(
-      tokenContract
-        .decimals()
-        .name()
-        .symbol()
-        .totalSupply()
-    )
-    const response = await batch(4, ...batchCalls)
-    const data = {
-      decimals: response[tokenAddress].decimals[0],
-      name: response[tokenAddress].name[0],
-      symbol: response[tokenAddress].symbol[0],
-      totalSupplyUnformatted: response[tokenAddress].totalSupply[0],
-      totalSupply: ethers.utils.formatUnits(
-        response[tokenAddress].totalSupply[0],
-        response[tokenAddress].decimals[0]
-      )
+    console.log(pathname)
+
+    // Routes
+    const prizeRouteRegex = new RegExp('/[0-9]+/0x[0-9a-fA-F]{40}/prizes/0x[0-9a-fA-F]{40}/[0-9]+')
+    if (prizeRouteRegex.test(pathname)) {
+      const splitPathname = pathname.split('/')
+      const chainId = splitPathname[0]
+      const prizePoolAddress = splitPathname[1]
+      const usersAddress = splitPathname[3]
+      const drawId = splitPathname[4]
+
+      const drawResult = await getUsersPrizes(chainId, prizePoolAddress, usersAddress, drawId)
+      const jsonBody = JSON.stringify(drawResult, null, 2)
+      const successResponse = new Response(jsonBody, {
+        ...DEFAULT_HEADERS,
+        status: 200
+      })
+      return successResponse
     }
-    const jsonBody = JSON.stringify(data, null, 2)
-    const successResponse = new Response(jsonBody, {
+
+    // Invalid path
+    const notFoundResponse = new Response('Invalid request', {
       ...DEFAULT_HEADERS,
-      status: 200
+      status: 404
     })
-    return successResponse
-
-    // const splitPathname = pathname.split('/')
-    // const chainId = splitPathname[0]
-    // const prizePoolAddress = splitPathname[1]
-    // const usersAddress = splitPathname[3]
-    // const draws = _url.searchParams.get('draws')
-
-    // // Routes
-    // if (true) {
-    //   const prizes = await getUsersPrizes(chainId, prizePoolAddress, usersAddress, draws)
-    //   const jsonBody = JSON.stringify(prizes, null, 2)
-    //   const successResponse = new Response(jsonBody, {
-    //     ...DEFAULT_HEADERS,
-    //     status: 200
-    //   })
-    //   return successResponse
-    // }
-
-    // // Invalid path
-    // const notFoundResponse = new Response('Invalid request', {
-    //   ...DEFAULT_HEADERS,
-    //   status: 404
-    // })
-    // notFoundResponse.headers.set('Content-Type', 'text/plain')
+    notFoundResponse.headers.set('Content-Type', 'text/plain')
 
     // return notFoundResponse
   } catch (e) {

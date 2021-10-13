@@ -18,6 +18,9 @@
   },
   "dependencies": {
     "@pooltogether/etherplex": "^1.1.2",
+    "@pooltogether/v4-js-client": "file:.yalc/@pooltogether/v4-js-client",
+    "@pooltogether/v4-pool-data": "file:.yalc/@pooltogether/v4-pool-data",
+    "cross-fetch": "^3.1.4",
     "ethers": "^5.4.6",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0"

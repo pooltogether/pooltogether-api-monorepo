@@ -1,11 +1,8 @@
-// import { log } from '../../utils/sentry'
-// import { contract } from '@pooltogether/etherplex'
+import { ethers } from 'ethers'
+import { initializeClaimableDraws } from '@pooltogether/v4-js-client'
+import { testnets } from '@pooltogether/v4-pool-data'
+import { getProviders } from './getProviders'
 
-// import { batch } from './cloudflare-workers-batch'
-// import { ethers } from 'ethers'
-// import { isValidAddress, NETWORK } from '@pooltogether/utilities'
-
-// const SUPPORTED_NETWORKS = [NETWORK.mainnet, NETWORK.rinkeby, NETWORK.polygon]
 // const MOCK_POOLS = Object.freeze({
 //   [NETWORK.mainnet]: {
 //     config: { chainId: NETWORK.mainnet },
@@ -79,37 +76,59 @@
 //   ]
 // }
 
-// export const getUsersPrizes = async (_chainId, prizePoolAddress, usersAddress, _draws) => {
-//   const chainId = Number(_chainId)
-//   const draws = _draws.map(Number)
+export const getUsersPrizes = async (_chainId, claimableDrawAddress, usersAddress, _drawId) => {
+  const chainId = Number(_chainId)
+  const drawId = Number(_drawId)
 
-//   if (!SUPPORTED_NETWORKS.includes(chainId)) {
-//     throw new Error('Invalid chain id')
-//   } else if (!isValidAddress(usersAddress)) {
-//     throw new Error('Invalid user address')
-//   } else if (!isValidAddress(prizePoolAddress) || !MOCK_POOLS[chainId]) {
-//     throw new Error('Invalid prize pool address')
-//   }
+  // TODO: Validate input
+  // if (!SUPPORTED_NETWORKS.includes(chainId)) {
+  //   throw new Error('Invalid chain id')
+  // } else if (!isValidAddress(usersAddress)) {
+  //   throw new Error('Invalid user address')
+  // } else if (!isValidAddress(prizePoolAddress) || !MOCK_POOLS[chainId]) {
+  //   throw new Error('Invalid prize pool address')
+  // }
+  // const isBelowCurrentDrawId = (drawId) => drawId < currentDrawId
+  // if (!draws.every(isBelowCurrentDrawId)) {
+  //   throw new Error('Invalid draw ids')
+  // }
 
-//   // TODO: Create Tsunami instance
+  // TODO: Create Tsunami instance
+  const contractList = getContractList(chainId)
+  const chainIds = Array.from(new Set(contractList.contracts.map((c) => c.chainId)))
+  console.log('chainIds', chainIds)
+  const readProviders = getProviders(chainIds)
+  console.log('readProviders', JSON.stringify(readProviders))
 
-//   // TODO: Fetch latest draw # - It'd be nice to get this into some script that listens to events and updates the KV accordingly.
-//   const currentDrawId = 4
+  let b = await readProviders[4].getBalance('0x27fcf06DcFFdDB6Ec5F62D466987e863ec6aE6A0')
+  console.log('balance', 4, JSON.stringify(b))
+  b = await readProviders[80001].getBalance('0x27fcf06DcFFdDB6Ec5F62D466987e863ec6aE6A0')
+  console.log('balance', 80001, JSON.stringify(b))
 
-//   const isBelowCurrentDrawId = (drawId) => drawId < currentDrawId
-//   if (!draws.every(isBelowCurrentDrawId)) {
-//     throw new Error('Invalid draw ids')
-//   }
+  // Init claimable draws
+  // const claimableDraws = await initializeClaimableDraws(readProviders, contractList)
+  // console.log('claimableDraws', JSON.stringify(claimableDraws))
+  // const claimableDraw = claimableDraws.find(
+  //   (cd) => cd.chainId === chainId && cd.address === claimableDrawAddress
+  // )
 
-//   // Update prizes
-//   await updatePrizes(chainId, prizePoolAddress, usersAddress, draws)
+  // if (!claimableDraw) {
+  //   console.log(chainId, claimableDrawAddress, JSON.stringify(claimableDraws))
+  //   throw new Error('No claimable draw found')
+  // }
 
-//   // Get requested prizes
-//   const allPrizes = getUsersPrizesFromKV(chainId, prizePoolAddress, usersAddress)
-//   const prizes = {}
-//   draws.forEach((draw) => (prizes[draw] = allPrizes[draw]))
-//   return prizes
-// }
+  // const drawResults = await claimableDraw.getUsersPrizesByDrawId(usersAddress, drawId)
+  return null
+
+  // TODO: Update prizes
+  // await updatePrizes(chainId, prizePoolAddress, usersAddress, draws)
+
+  // // Get requested prizes
+  // const allPrizes = getUsersPrizesFromKV(chainId, prizePoolAddress, usersAddress)
+  // const prizes = {}
+  // draws.forEach((draw) => (prizes[draw] = allPrizes[draw]))
+  // return prizes
+}
 
 // const getUsersPrizesFromKV = (chainId, prizePoolAddress, usersAddress) => {
 //   let allPrizes = TSUNAMI_PRIZES.get(getUsersPrizesKey(chainId, prizePoolAddress, usersAddress))
@@ -154,3 +173,8 @@
 //     TSUNAMI_PRIZES.set(getUsersPrizesKey(chainId, prizePoolAddress, usersAddress), allPrizes)
 //   }
 // }
+
+// TODO: Check chain id and return testnets or prod
+const getContractList = (chainId) => {
+  return testnets
+}
