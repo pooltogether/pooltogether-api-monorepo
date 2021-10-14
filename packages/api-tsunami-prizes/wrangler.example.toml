@@ -1,19 +1,22 @@
 type = "webpack"
-name = "tsunami-prizes-localhost"
+name = "tsunami-prizes"
 workers_dev = true
+compatibility_date = "2021-09-27"
+webpack_config = "webpack.config.js"
+account_id = ""
+kv_namespaces = [{ binding = "TSUNAMI_PRIZES", id = "", preview_id = "" }]
 
-account_id = "" # Production account
+[build]
+command = "yarn install && yarn build"
 
-kv_namespaces = [{ binding = "TSUNAMI_PRIZES", id = "04b6a53e8fc34bc0960c5ecb8c698208", preview_id = "04b6a53e8fc34bc0960c5ecb8c698208" }]
-
-# [triggers]
-# crons = ["0 * * * *"]
+[build.upload]
+format = "service-worker"
 
 [vars]
 APP_NAME = 'tsunami-prizes'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
-SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_ID = ''
 SENTRY_PROJECT_NAME = 'tsunami-prizes'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
@@ -22,17 +25,14 @@ INFURA_ID = ''
 QUICKNODE_ID = ''
 
 [env.production]
-name = "tsunami-prizes"
-kv_namespaces = [{ binding = "TSUNAMI_PRIZES", id = "04b6a53e8fc34bc0960c5ecb8c698208", preview_id = "04b6a53e8fc34bc0960c5ecb8c698208" }]
-workers_dev = false
-zone_id = ""
 route = "tsunami.pooltogether-api.com/*"
+zone_id = ""
 
 [env.production.vars]
 APP_NAME = 'tsunami-prizes'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
-SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_ID = ''
 SENTRY_PROJECT_NAME = 'tsunami-prizes'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
