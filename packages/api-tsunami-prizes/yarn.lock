@@ -374,10 +374,10 @@
     lodash.merge "^4.6.2"
     zen-observable-ts "^0.8.20"
 
-"@pooltogether/v4-pool-data@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@pooltogether/v4-pool-data/-/v4-pool-data-0.11.0.tgz#5a9a6e4cbf08413df1577419ee697e1b8cbe89bb"
-  integrity sha512-ERvhN1WI5PMxjj2QsLU5mIGeFiNRAhv2HGzO1m/GV6tc5TZYaX3AHkbUUM/zGP9nRY4ooMzzGW/d9fUjZ+F/Wg==
+"@pooltogether/v4-pool-data@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pooltogether/v4-pool-data/-/v4-pool-data-1.0.1.tgz#d87ded1bb98ada65817a0757a7c736150704d966"
+  integrity sha512-egZWWvu0PuZ5YknZHba0a9mq+ULpdDzjRpgK1SSzk/Q/L76YkM/0AcaGe/C6rl01Pz/mEfCZEwCdnHtY6Bq6IQ==
 
 "@types/eslint-scope@^3.7.0":
   version "3.7.1"

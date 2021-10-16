@@ -1,4 +1,4 @@
-import { testnet } from '@pooltogether/v4-pool-data'
+import { testnet, mainnet } from '@pooltogether/v4-pool-data'
 import { batch } from './cloudflare-workers-batch'
 import { getProviders } from './getProviders'
 import {
@@ -140,10 +140,7 @@ export const getUsersPrizes = async (
  * @returns
  */
 const getContractList = (chainId: number): ContractList => {
-  if (SUPPORTED_NETWORKS.mainnets.includes(chainId)) {
-    return testnet
-  }
-  return testnet
+  return SUPPORTED_NETWORKS.mainnets.includes(chainId) ? mainnet : testnet
 }
 
 /**
