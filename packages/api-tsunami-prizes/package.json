@@ -21,7 +21,7 @@
   "dependencies": {
     "@cloudflare/workers-types": "^2.2.2",
     "@pooltogether/contract-list-schema": "^0.1.4",
-    "@pooltogether/draw-calculator-js": "^1.0.0-beta.29",
+    "@pooltogether/draw-calculator-js": "^1.0.0-beta.30",
     "@pooltogether/etherplex": "^1.1.2",
     "@pooltogether/v4-pool-data": "^1.0.2",
     "ethers": "^5.4.7",
