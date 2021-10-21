@@ -1,6 +1,6 @@
 {
   "name": "@pooltogether/api-runner",
-  "version": "1.10.3",
+  "version": "1.10.4",
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
   "description": "Executes heavy-lifting API code in a regular node enviroment (ie. not `wrangler`) for better debugging, etc",
