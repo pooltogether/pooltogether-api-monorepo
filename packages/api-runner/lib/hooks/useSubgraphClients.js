@@ -47,7 +47,6 @@ export const getLootBoxSubgraphClient = (chainId) =>
     fetch
   })
 
-
 /**
  * BSC Subgraphs use `derivedBNB` rather than `derivedETH`
  * @param {*} chainId
@@ -57,8 +56,6 @@ export const getNativeCurrencyKey = (chainId) => {
   switch (chainId) {
     case NETWORK.bsc:
       return 'derivedBNB'
-    case NETWORK.celo:
-      return 'derivedCUSD'
     default:
       return 'derivedETH'
   }
