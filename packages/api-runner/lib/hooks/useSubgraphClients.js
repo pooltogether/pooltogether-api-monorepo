@@ -16,8 +16,23 @@ export const getSubgraphVersionsFromContracts = (poolContracts) => [
   ...new Set(poolContracts.map((pool) => pool.subgraphVersion))
 ]
 
-export const getUniswapSubgraphClient = (chainId) =>
-  new GraphQLClient(UNISWAP_GRAPH_URIS[chainId], { fetch })
+export const getUniswapSubgraphClient = (chainId) => {
+  console.log(chainId)
+  console.log(chainId)
+  console.log(chainId)
+  console.log(chainId)
+  console.log(chainId)
+  console.log(chainId)
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+  console.log(UNISWAP_GRAPH_URIS[chainId])
+
+  return new GraphQLClient(UNISWAP_GRAPH_URIS[chainId], { fetch })
+}
 
 export const getSubgraphClientsByVersionFromContracts = (poolContracts, chainId) =>
   getSubgraphVersionsFromContracts(poolContracts).reduce(

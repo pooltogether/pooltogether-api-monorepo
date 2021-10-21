@@ -751,14 +751,14 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-3.4.0.tgz#7674c73c643a509f1b90c509e3e72fe9aae02aeb"
   integrity sha512-7wBcbukDqWZt/B1zjb7zyeWq+AC7rx7nGln7/hPxHdKd8PAiiteXd51Cp2KmGP8qaY0/TXh/fQLsA082LWp8Zw==
 
-"@pooltogether/api-runner@1.10.3":
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.10.3.tgz#58b4094904072be09d106ced6bf8edda9de7a388"
-  integrity sha512-Xsc52NGDrnAwWC57RaaFf2DSr0raeayDoRW7qG9uDIQ4XsrHvkNXmcO9FqKNyeYXvKndHHf0tU16OJ+VpKw1Vw==
+"@pooltogether/api-runner@1.10.5":
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/@pooltogether/api-runner/-/api-runner-1.10.5.tgz#b9684178f6cf755305edbc515a7195bdf0d4820c"
+  integrity sha512-enDvCzkJ8XQjyNurxP1VqMs57wIwS+9UVR+0afEWJNeJ2I2VCMtivBJ2Y+oC9zg+x0xffmxUT6wtTInTo+g4uQ==
   dependencies:
     "@ethersproject/abi" "^5.1.1"
     "@ethersproject/units" "^5.1.0"
-    "@pooltogether/current-pool-data" "^3.6.3"
+    "@pooltogether/current-pool-data" "^3.7.2"
     "@pooltogether/etherplex" "1.1.2"
     "@pooltogether/evm-chains-extended" "^0.5.3"
     "@pooltogether/loot-box" "^1.1.0"
@@ -773,15 +773,10 @@
     lodash.merge "^4.6.2"
     lodash.remove "^4.7.0"
 
-"@pooltogether/current-pool-data@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.7.0.tgz#bae218eefa9173d6fccf208f9418ebd836c7a14d"
-  integrity sha512-EGMkoeLgK6/ORjwROnExjvKiCJ0AODPODaaeqUAdtA+UIDHTI2ki8Krz4qeN39OETcn4v+Kb4UG0OxOAImZrsQ==
-
-"@pooltogether/current-pool-data@^3.6.3":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.6.3.tgz#f1dc706376f9b9c3d613a203446d90a9a18cb867"
-  integrity sha512-LxkrJQzmDfkTJGvS4/6jGfRqSZEXEGoyKmKk5gZAWBiLjIs5W6ZudssXXI5CxMPkNUJ3Tez99Y/Pi2oJt/HhMQ==
+"@pooltogether/current-pool-data@3.7.2", "@pooltogether/current-pool-data@^3.7.2":
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.7.2.tgz#c3050a746c299836e8835eab0ac718c0ecc89b08"
+  integrity sha512-UB9DRhck7t47Xz3vUCy39E5EB+dm6PeOXf9UEi/aru2hfFk0RVbSOcsCaB0bJ3lM1yK4DYW2hEGFImxrjgGVIQ==
 
 "@pooltogether/etherplex@1.1.2":
   version "1.1.2"
