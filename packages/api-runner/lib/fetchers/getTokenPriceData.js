@@ -20,6 +20,7 @@ const ETHEREUM_MAINNET_MATIC_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfeb
 const ETHEREUM_MAINNET_POOL_ADDRESS = '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e'
 
 const ETHEREUM_MAINNET_SOHM_ADDRESS = '0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f'
+const ETHEREUM_MAINNET_TCAP_ADDRESS = '0x16c52ceece2ed57dad87319d91b5e3637d50afa4'
 
 const POLYGON_WMATIC_TOKEN_ADDRESS = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const POLYGON_POOL_TOKEN_ADDRESS = '0x25788a1a171ec66da6502f9975a15b609ff54cf6'
@@ -31,6 +32,7 @@ const HARD_CODED_CELU_EUR_PRICE = 1.17
 const HARD_CODED_OHM_PRICE = 874.23
 const HARD_CODED_MATIC_PRICE = 1.471103
 const HARD_CODED_POOL_PRICE = 12.24
+const HARD_CODED_TCAP_PRICE = 335.45
 
 export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) => {
   // On polygon return mock data from last successful request and the price of MATIC (WMATIC) on the Ethereum network
@@ -120,6 +122,13 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
           usdFromCoingecko = HARD_CODED_OHM_PRICE
         }
         address = ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase()
+      }
+
+      if (address.toLowerCase() === ETHEREUM_MAINNET_TCAP_ADDRESS.toLowerCase()) {
+        usdFromCoingecko = await getCoingeckoTokenDataByTokenId('tcap')
+        if (!usdFromCoingecko) {
+          usdFromCoingecko = HARD_CODED_TCAP_PRICE
+        }
       }
 
       data[address] = {
