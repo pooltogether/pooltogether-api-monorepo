@@ -1,12 +1,6 @@
-# `Pooltogether API - Gas Updater`
+# `Pooltogether API - Discord Invite Bot`
 
-This repo contains a Cloudflare Worker that is triggered by a cron job to keep the data in a Cloudflare KV store up to date. The worker also exposes `/update` which allows a manual trigger of the update.
-
-This worker aggregates data from external sources and stores them in the KV so we are not reliant on their services.
-
-## Instructions
-
-> Note: The worker is currently configured to point to a development KV when run locally. Data may be stale as there are no cron jobs keeping this up to date.
+This service hands out Discord invite keys if the requester passed a captcha check at https://pooltogether.com/discord 
 
 ###### Setup
 
@@ -19,16 +13,12 @@ This worker aggregates data from external sources and stores them in the KV so w
 
 ###### Local Development
 
-1. `wrangler dev --env <network name>` ex. `wrangler dev --env mainnet`
+1. `wrangler dev --env <network name>` ex. `wrangler dev --env main`
 
    OR
 
-1. `yarn dev <network name>` ex. `yarn dev mainnet`
+1. `yarn dev <network name>` ex. `yarn dev main`
 
 ###### Deploying a single network
 
-`wrangler publish --env <network name>` ex. `wrangler publish --env mainnet`
-
-###### Deploying workers for all networks
-
-`yarn publish-all`
+`wrangler publish --env <network name>` ex. `wrangler publish --env main`
