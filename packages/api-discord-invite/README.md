@@ -13,12 +13,8 @@ This service hands out Discord invite keys if the requester passed a captcha che
 
 ###### Local Development
 
-1. `wrangler dev --env <network name>` ex. `wrangler dev --env main`
+1. `wrangler dev`
 
-   OR
+###### Deploying
 
-1. `yarn dev <network name>` ex. `yarn dev main`
-
-###### Deploying a single network
-
-`wrangler publish --env <network name>` ex. `wrangler publish --env main`
+`wrangler publish`

@@ -5,8 +5,6 @@ compatibility_date = "2021-10-29"
 
 account_id = "" # Production account
 
-kv_namespaces = [{ binding = "KV_DISCORD_BEARER_TOKEN", id = "", preview_id = "" }]
-
 [vars]
 H_CAPTCHA_SECRET = ''
 DISCORD_BOT_TOKEN = ''
