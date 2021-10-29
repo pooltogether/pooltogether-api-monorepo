@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@glenstack/cf-workers-hcaptcha@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@glenstack/cf-workers-hcaptcha/-/cf-workers-hcaptcha-1.0.0.tgz#1ad390456e3efac1ecaad0e69a203b66f870bd13"
+  integrity sha512-ecRS8XtGplEz0Jj/o2giEL0/MnBD1NejeKW62QjhbmPnxXl0lGS5xXOQhhQN7huIt3L86hY2HQl51A/LqnLJdQ==
+
 hcaptcha@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/hcaptcha/-/hcaptcha-0.1.0.tgz#a1053a520158484ae8b7e1c022c81df00e4556ec"

@@ -17,6 +17,7 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
+    "@glenstack/cf-workers-hcaptcha": "^1.0.0",
     "hcaptcha": "^0.1.0"
   }
 }
