@@ -1,0 +1,18 @@
+type = "webpack"
+workers_dev = true
+
+account_id = "016652b84a09dea39b3a9c6437b88062" # Production account
+
+[env.main]
+name = "discord-invite"
+
+[env.main.vars]
+H_CAPTCHA_SECRET = '0xf7c4434f21A98D60DCB645ee54dd454f19d2aD60'
+APP_NAME = 'discord-invite'
+SENTRY_KEY = '4539f33a2b744bd78a36c38a9e0659f9'
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'api-staging'
+SENTRY_AUTH_TOKEN = '3975ec7fe56843d4a24eec105f45fcb7cf214a3a6f174227b864ea35f8f159cc'
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
