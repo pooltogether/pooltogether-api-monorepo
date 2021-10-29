@@ -3,17 +3,13 @@ workers_dev = true
 
 account_id = "" # Production account
 
-[env.mainnet]
+[env.main]
 name = "discord-invite"
 
-[env.mainnet.vars]
+[env.main.vars]
 H_CAPTCHA_SECRET = ''
+DISCORD_APPLICATION_ID = '761068094046732298'
+DISCORD_APPLICATION_PUBLIC_KEY = 'c79117593abba14eecf0f2c38f0cc2abf547cfe8c1f601e9bd6826d36e836b1e'
+DISCORD_APPLICATION_SECRET = ''
 APP_NAME = 'discord-invite'
-SENTRY_KEY = ''
-SENTRY_ORG = 'pooltogether'
-SENTRY_PROJECT_ID = '5832514'
-SENTRY_PROJECT_NAME = 'api-staging'
-SENTRY_AUTH_TOKEN = ''
-SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
-ETHERSCAN_API_KEY = ''

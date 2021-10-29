@@ -4,15 +4,15 @@
 
 "@glenstack/cf-workers-hcaptcha@^1.0.0":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@glenstack/cf-workers-hcaptcha/-/cf-workers-hcaptcha-1.0.0.tgz#1ad390456e3efac1ecaad0e69a203b66f870bd13"
+  resolved "https://registry.npmjs.org/@glenstack/cf-workers-hcaptcha/-/cf-workers-hcaptcha-1.0.0.tgz"
   integrity sha512-ecRS8XtGplEz0Jj/o2giEL0/MnBD1NejeKW62QjhbmPnxXl0lGS5xXOQhhQN7huIt3L86hY2HQl51A/LqnLJdQ==
 
 hcaptcha@^0.1.0:
   version "0.1.0"
-  resolved "https://registry.yarnpkg.com/hcaptcha/-/hcaptcha-0.1.0.tgz#a1053a520158484ae8b7e1c022c81df00e4556ec"
+  resolved "https://registry.npmjs.org/hcaptcha/-/hcaptcha-0.1.0.tgz"
   integrity sha512-mVRkhNcOuP7QJO50nYdu3vS+uaOg6Ku2HpMy50C2EckjB9DlnwX24iePi912IXuVIq5L8ukjISG4Ea6MimZ5+w==
 
 prettier@^1.18.2:
   version "1.19.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-1.19.1.tgz"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
