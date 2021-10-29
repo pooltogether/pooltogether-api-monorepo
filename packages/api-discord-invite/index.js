@@ -1,53 +1,27 @@
 import { createVerifier } from '@glenstack/cf-workers-hcaptcha'
-// import { Client, Intents } from 'discord.js'
 
 import { DEFAULT_HEADERS } from '../../utils/constants'
 
-// const client = new Client({ intents: [] })
-
-// client.on('ready', () => {
-//   console.log(`Ready n' Logged in as ${client.user.tag}!`)
-// })
+const CHANNEL_ID = '833035365979652137'
 
 const generateInvite = async () => {
-  console.log('in generate')
+  const url = `https://discord.com/api/v8/channels/${CHANNEL_ID}/invites`
 
-  // MANAGE_GUILD permission?
-  // channel_id 833035365979652137
-  const url = `https://discord.com/api/v8/applications/${DISCORD_APPLICATION_ID}/`
-  // const url = `https://discord.com/api/v8/applications/${DISCORD_APPLICATION_ID}/commands`
-  // const url = `https://discord.com/api/v8/applications/${CLIENT_ID}/guilds/123456789/commands`
-  console.log(url)
-
-  const test = await fetch(url, {
+  const response = await fetch(url, {
     body: JSON.stringify({
-      name: 'echo',
-      description: 'repeat after me!',
-      options: [
-        {
-          name: 'text',
-          description: 'what should I be puppeted to say?',
-          type: 3,
-          required: true
-        }
-      ]
+      max_uses: 1,
+      unique: true
     }),
     method: 'POST',
     headers: {
-      'content-type': 'application/json'
-      // 'authorization': `Bearer ${(await getClientCredentialToken())}`
+      'content-type': 'application/json',
+      'authorization': `Bot ${DISCORD_BOT_TOKEN}`
     }
   })
-  console.log('test')
-  console.log(test)
-  // return new Response('done!');
 
-  // await client.login(DISCORD_APPLICATION_SECRET)
-  // const link = client.generateInvite()
+  const responseJson = await response.json()
 
-  // console.log(`created invite ${link}`)
-
-  // return link
+  return responseJson.code
 }
 
 const handleGenerateInvite = async (request) => {
@@ -57,14 +31,7 @@ const handleGenerateInvite = async (request) => {
     const payload = await verify(request)
 
     if (payload.success) {
-      const invite = await generateInvite()
-      console.log(invite)
-      const discordInviteToken = 'kalsjd'
-
-      return new Response(discordInviteToken, {
-        ...DEFAULT_HEADERS,
-        status: 200
-      })
+      return await generateInvite()
     } else {
       throw new Error('not verified')
     }
@@ -79,15 +46,19 @@ const handleGenerateInvite = async (request) => {
 
 const handleRequest = async (event) => {
   const request = event.request
-
   const url = new URL(request.url)
+
   if (url.pathname == '/generateInvite') {
-    const invite = await generateInvite()
-    // await handleGenerateInvite(request)
+    const discordInviteToken = await handleGenerateInvite(request)
+
+    return new Response(JSON.stringify(discordInviteToken), {
+      ...DEFAULT_HEADERS,
+      status: 200
+    })
   } else if (url.pathname == '/install') {
     return new Response(null, {
       headers: {
-        location: `https://discord.com/oauth2/authorize?client_id=${DISCORD_APPLICATION_ID}&scope=guilds.join`
+        location: `https://discord.com/oauth2/authorize?client_id=${DISCORD_APPLICATION_ID}&permissions=1&scope=bot`
       },
       status: 302
     })

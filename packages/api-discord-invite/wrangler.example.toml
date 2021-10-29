@@ -1,15 +1,21 @@
+name = "discord-invite"
 type = "webpack"
 workers_dev = true
+compatibility_date = "2021-10-29"
 
 account_id = "" # Production account
 
-[env.main]
-name = "discord-invite"
+kv_namespaces = [{ binding = "KV_DISCORD_BEARER_TOKEN", id = "", preview_id = "" }]
 
-[env.main.vars]
+[vars]
 H_CAPTCHA_SECRET = ''
+DISCORD_BOT_TOKEN = ''
 DISCORD_APPLICATION_ID = '761068094046732298'
 DISCORD_APPLICATION_PUBLIC_KEY = 'c79117593abba14eecf0f2c38f0cc2abf547cfe8c1f601e9bd6826d36e836b1e'
 DISCORD_APPLICATION_SECRET = ''
-APP_NAME = 'discord-invite'
-ENVIRONMENT_NAME = 'worker'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'api-entrypoint'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
