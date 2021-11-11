@@ -74,6 +74,15 @@ const formatPoolGraphData = (prizePool, chainId, prizePoolContract) => {
     return true
   })
 
+  // Hide sponsorship for USDT Polygon pool
+  // The graph is returning a negative number for the total supply. That's wrong.
+  let sponsorshipTotalSupply = formatUnits(sponsorship.totalSupply, sponsorship.decimals)
+  let sponsorshipTotalSupplyUnformatted = ethers.BigNumber.from(sponsorship.totalSupply)
+  if (prizePool.id === '0x887e17d791dcb44bfdda3023d26f7a04ca9c7ef4') {
+    sponsorshipTotalSupply = '0'
+    sponsorshipTotalSupplyUnformatted = ethers.BigNumber.from(0)
+  }
+
   const formattedData = {
     config: {
       liquidityCap: prizePool.liquidityCap,
@@ -104,8 +113,8 @@ const formatPoolGraphData = (prizePool, chainId, prizePoolContract) => {
         decimals: sponsorship.decimals,
         name: sponsorship.name,
         symbol: sponsorship.symbol,
-        totalSupply: formatUnits(sponsorship.totalSupply, sponsorship.decimals),
-        totalSupplyUnformatted: ethers.BigNumber.from(sponsorship.totalSupply),
+        totalSupply: sponsorshipTotalSupply,
+        totalSupplyUnformatted: sponsorshipTotalSupplyUnformatted,
         numberOfHolders: sponsorship.numberOfHolders
       },
       underlyingToken: {
