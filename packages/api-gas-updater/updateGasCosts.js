@@ -2,12 +2,11 @@ import cheerio from 'cheerio'
 
 import { log } from '../../utils/sentry'
 import { getGasKey } from '../../utils/kvKeys'
+import { getGasChainIdMapping } from '../../utils/getGasChainIdMapping'
+import { AVALANCHE_CHAIN_ID, MAINNET_CHAIN_ID, POLYGON_CHAIN_ID } from './index'
 
 // Confirmation time!
 // `https://api.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=2000000000&apiKey=${ETHERSCAN_API_KEY}`
-
-const MAINNET_CHAIN_ID = 1
-const POLYGON_CHAIN_ID = 137
 
 /**
  * Get latest gas cost for chain and store the response in cloudflares KV
@@ -18,18 +17,9 @@ const POLYGON_CHAIN_ID = 137
 export const updateGasCosts = async (event, chainId) => {
   let gasCosts
 
-  // Uses Etherscan's API
-  if (chainId === MAINNET_CHAIN_ID) {
-    const response = await fetch(
-      `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apiKey=${ETHERSCAN_API_KEY}`
-    )
-    gasCosts = await response.json()
-  }
+  const mappedChainId = getGasChainIdMapping(chainId)
 
-  // Scrapes PolygonScan's gastracker html page (no API)
-  if (chainId === POLYGON_CHAIN_ID) {
-    gasCosts = await scrapePolygonScan()
-  }
+  gasCosts = await getGasCosts(mappedChainId)
 
   if (!gasCosts) {
     event.waitUntil(log(new Error('No gas costs fetched during update'), event.request))
@@ -44,8 +34,39 @@ export const updateGasCosts = async (event, chainId) => {
   }
 }
 
-const scrapePolygonScan = async () => {
-  const response = await fetch(`https://polygonscan.com/gastracker`)
+const getGasCosts = async (chainId) => {
+  if (chainId === MAINNET_CHAIN_ID) {
+    return await getEthereumGasCosts()
+  } else if (chainId === POLYGON_CHAIN_ID) {
+    return await getPolygonGasCosts()
+  } else if (chainId === AVALANCHE_CHAIN_ID) {
+    return await getAvalancheGasCosts()
+  } else {
+    return null
+  }
+}
+
+// Fetch the latest gas costs from etherscan API for mainnet ethereum
+const getEthereumGasCosts = async () => {
+  const response = await fetch(
+    `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apiKey=${ETHERSCAN_API_KEY}`
+  )
+  const data = await response.json()
+  return {
+    result: {
+      SafeGasPrice: data.result.SafeGasPrice,
+      ProposeGasPrice: data.result.ProposeGasPrice,
+      FastGasPrice: data.result.FastGasPrice
+    }
+  }
+}
+
+// For networks that don't have an API, we scrape the gas costs from their "etherscan" gastracker html page (no API)
+const getPolygonGasCosts = async () => scrapeEtherscan(`https://polygonscan.com/gastracker`)
+const getAvalancheGasCosts = async () => scrapeEtherscan(`https://snowtrace.io/gastracker`)
+
+const scrapeEtherscan = async (etherscanUrl) => {
+  const response = await fetch(etherscanUrl)
   const body = await response.text()
 
   const $ = cheerio.load(body)

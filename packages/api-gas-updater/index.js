@@ -2,6 +2,10 @@ import { DEFAULT_HEADERS } from '../../utils/constants'
 import { log } from '../../utils/sentry'
 import { updateGasCosts } from './updateGasCosts'
 
+export const MAINNET_CHAIN_ID = 1
+export const POLYGON_CHAIN_ID = 137
+export const AVALANCHE_CHAIN_ID = 43114
+
 addEventListener('fetch', (event) => {
   event.respondWith(handleRequest(event))
 })
@@ -14,6 +18,13 @@ addEventListener('scheduled', (event) => {
   }
 })
 
+const updateAllGasCosts = async (event) => {
+  const mainnetPromise = updateGasCosts(event, MAINNET_CHAIN_ID)
+  const polygonPromise = updateGasCosts(event, POLYGON_CHAIN_ID)
+  const avalanchePromise = updateGasCosts(event, AVALANCHE_CHAIN_ID)
+  return await Promise.all([mainnetPromise, polygonPromise, avalanchePromise])
+}
+
 /**
  * Handle cloudflare cron job triggers by updating gas costs
  * @param {*} event
@@ -24,7 +35,7 @@ async function updateGasScheduledHandler(event) {
   // setQuicknodeId(QUICKNODE_ID)
   // setFetch(fetch)
   try {
-    await updateGasCosts(event, Number(CHAIN_ID))
+    await updateAllGasCosts(event)
     return true
   } catch (e) {
     event.waitUntil(log(e, event.request))
@@ -48,11 +59,14 @@ async function handleRequest(event) {
     // Read routes
     if (pathname.startsWith(`/update`)) {
       try {
-        await updateGasCosts(event, Number(CHAIN_ID))
-        const successResponse = new Response(`Successfully updated gas for ${CHAIN_ID}`, {
-          ...DEFAULT_HEADERS,
-          status: 200
-        })
+        await updateAllGasCosts(event)
+        const successResponse = new Response(
+          `Successfully updated gas for ${MAINNET_CHAIN_ID}, ${POLYGON_CHAIN_ID} and ${AVALANCHE_CHAIN_ID}`,
+          {
+            ...DEFAULT_HEADERS,
+            status: 200
+          }
+        )
         successResponse.headers.set('Content-Type', 'text/plain')
         return successResponse
       } catch (e) {

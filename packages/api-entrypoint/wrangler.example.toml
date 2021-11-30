@@ -1,6 +1,7 @@
 name = "pooltogether-api-localhost"
 type = "webpack"
 workers_dev = true
+compatibility_date = "2021-11-30"
 
 account_id = "" # Production account
 # account_id = "" # Personal Account
@@ -20,7 +21,6 @@ SENTRY_PROJECT_NAME = 'api-entrypoint'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
-INFURA_ID = ''
 
 [env.production]
 name = "pooltogether-api"
@@ -42,4 +42,3 @@ SENTRY_PROJECT_NAME = 'api-entrypoint'
 SENTRY_AUTH_TOKEN = ''
 SENTRY_RELEASE = ''
 ENVIRONMENT_NAME = 'worker'
-INFURA_ID = ''
