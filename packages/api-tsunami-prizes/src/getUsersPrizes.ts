@@ -59,13 +59,11 @@ export const getUsersPrizes = async (
 
     const contractList = getContractList(chainId)
 
-    console.log('contract list', contractList)
     const prizeDistributorContractMetadatas = getPrizeDistributorContracts(
       chainId,
       prizeDistributorAddress,
       contractList.contracts
     )
-    console.log('prizeDistributorContractMetadatas', prizeDistributorContractMetadatas)
 
     // Get the users normalized balance for that draw
     const drawCalculatorContractMetadata = getContractsByType(
@@ -81,7 +79,6 @@ export const getUsersPrizes = async (
       chainId,
       drawCalculatorContract.getNormalizedBalancesForDrawIds(usersAddress, [drawId])
     )
-    console.log('response 1', response)
     const normalizedBalance: BigNumber =
       response[drawCalculatorContractMetadata.address].getNormalizedBalancesForDrawIds[0][0]
 
@@ -121,7 +118,6 @@ export const getUsersPrizes = async (
       drawBufferContract.getDraw(drawId),
       prizeDistributionBufferContract.getPrizeDistribution(drawId)
     )
-    console.log('response 2', response)
 
     const draw: Draw = response[drawBufferContractMetadata.address].getDraw[0]
     const prizeDistribution: PrizeDistribution =
@@ -130,15 +126,6 @@ export const getUsersPrizes = async (
       address: usersAddress,
       normalizedBalances: [normalizedBalance]
     }
-
-    console.log('====================================')
-    console.log(
-      'calculateDrawResults',
-      JSON.stringify(prizeDistribution),
-      JSON.stringify(draw),
-      JSON.stringify(user)
-    )
-    console.log('====================================')
 
     const drawResults = calculateDrawResults(prizeDistribution, draw, user)
 
