@@ -5,7 +5,8 @@ import {
   calculateDrawResults,
   Draw,
   PrizeDistribution,
-  User
+  User,
+  filterResultsByValue
 } from '@pooltogether/draw-calculator-js'
 import { BigNumber, ethers } from 'ethers'
 import { ContractList, ContractMetadata, PrizeDistributorData, PrizeDistributors } from './types'
@@ -141,7 +142,8 @@ export const getUsersPrizes = async (
 
     const drawResults = calculateDrawResults(prizeDistribution, draw, user)
 
-    return drawResults
+    const filteredDrawResults = filterResultsByValue(drawResults, prizeDistribution.maxPicksPerUser)
+    return filteredDrawResults
   } catch (e) {
     log(e.message)
     throw new Error('Error calculating draw results')

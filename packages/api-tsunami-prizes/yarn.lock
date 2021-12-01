@@ -356,10 +356,10 @@
   resolved "https://registry.yarnpkg.com/@pooltogether/contract-list-schema/-/contract-list-schema-0.1.4.tgz#52a4b35e1ef1b263c643e517ca1908180cf1cb6e"
   integrity sha512-oLAu9TGfU9xf1QFJJZQxUj0hsfcRao/DMCZ1hVvDkmwOnX1PUkuhuvZfvgwLFd4hJ4m2kjdCyTJ+VJ5qvgjyww==
 
-"@pooltogether/draw-calculator-js@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@pooltogether/draw-calculator-js/-/draw-calculator-js-1.0.2.tgz#9cb16681d03c2eaf2c9935d4b5e333bfc8364b55"
-  integrity sha512-4hRjPPLzRuKQ220VH1gBKSKoij3vze/tPdgrXrha2ZUUPduA5NUVKehTDxIxSgdeXmlDU55yMcKqMaGMpDVxCw==
+"@pooltogether/draw-calculator-js@^1.0.3-beta.2":
+  version "1.0.3-beta.2"
+  resolved "https://registry.yarnpkg.com/@pooltogether/draw-calculator-js/-/draw-calculator-js-1.0.3-beta.2.tgz#ddc00690404a625c74461bf1a76c01fc158d8807"
+  integrity sha512-KN4iDKU/7p7elJ1B6BuXXAwcy63TuQRWGGm8osNJSKR/ER8jObkFNqQ3foxDAf62JB8MsUqoCKOxoA6sqzNfPA==
   dependencies:
     chalk "^4.1.2"
     debug "^4.3.2"
@@ -374,10 +374,10 @@
     lodash.merge "^4.6.2"
     zen-observable-ts "^0.8.20"
 
-"@pooltogether/v4-pool-data@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@pooltogether/v4-pool-data/-/v4-pool-data-1.0.2.tgz#7b8a807cea8ddb853d5c5a3a43e3cd4801e82c40"
-  integrity sha512-nY9hq7SZf8GnRP+k0tPEgeXriyc3seujZMbjp+Sn94oYovdJ2eAJzmNo+InCZMh4BgjcmJZS0Ss3q8YGWoPjPQ==
+"@pooltogether/v4-pool-data@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@pooltogether/v4-pool-data/-/v4-pool-data-1.1.0.tgz#715ea2fee1d6779baee847a9d913a60d74400ec8"
+  integrity sha512-tCOrAgPRJ86ksZbQlNwnp63ZxaxDVfIJ6SFjWDn7kHKOgS9s9tQM8nE46GQ8uB0DNqn/8fOjN/E0SArid1NvgA==
 
 "@types/eslint-scope@^3.7.0":
   version "3.7.1"
