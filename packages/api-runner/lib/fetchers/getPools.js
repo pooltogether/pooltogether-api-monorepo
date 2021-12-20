@@ -50,7 +50,7 @@ export const getPools = async (chainId, poolContracts) => {
     pools = combineLootBoxData(chainId, pools, lootBoxGraphData)
     pools = await getLootBoxChainData(pools, chainId)
 
-    const erc20Addresses = getAllErc20Addresses(pools)
+    const erc20Addresses = getAllErc20Addresses(chainId, pools)
     const tokenPriceGraphData = await getTokenPriceData(chainId, erc20Addresses)
 
     const defaultTokenPriceUsd = TESTNET_CHAIN_IDS.includes(chainId)
@@ -147,8 +147,13 @@ export const formatLootBox = (chainId, lootBoxData) => ({
  * @param {*} pools
  * @returns Array of addresses
  */
-const getAllErc20Addresses = (pools) => {
+const getAllErc20Addresses = (chainId, pools) => {
   const addresses = new Set()
+
+  // Get value of eth from WETH erc20 to use for LP tokens:
+  if (chainId === 1) {
+    addresses.add(CUSTOM_CONTRACT_ADDRESSES[NETWORK.mainnet].WETH)
+  }
 
   pools.forEach((pool) => {
     // Get external erc20s
@@ -205,9 +210,13 @@ const combineTokenPricesData = (_pools, tokenPriceData, defaultTokenPriceUsd) =>
     pool.prize.lootBox?.erc20Tokens?.forEach((token) =>
       addTokenTotalUsdValue(token, tokenPriceData, defaultTokenPriceUsd)
     )
-
     // Add total values for controlled tokens
     const underlyingToken = pool.tokens.underlyingToken
+    if (underlyingToken.address.toLowerCase() === '0x85cb0bab616fe88a89a35080516a8928f38b518b') {
+      console.log({ tokenPriceData })
+      console.log({ tokenPriceData })
+      console.log({ tokenPriceData })
+    }
     addTotalValueForControlledTokens(pool.tokens.ticket, underlyingToken)
     addTotalValueForControlledTokens(pool.tokens.sponsorship, underlyingToken)
 
@@ -374,10 +383,38 @@ const calculateExternalErc20TotalValuesUsd = (_pool) => {
  */
 const addTotalValueForControlledTokens = (token, underlyingToken) => {
   if (token.totalSupplyUnformatted) {
+    console.log('here! calculate USD of lp ticket')
+    // Underlying is LP token
+    if (underlyingToken.address.toLowerCase() === '0x85cb0bab616fe88a89a35080516a8928f38b518b') {
+      console.log('yesh')
+      console.log({ token })
+      console.log({ token })
+      console.log({ token })
+      console.log({ underlyingToken })
+      console.log({ underlyingToken })
+
+      // const token
+
+      const lpTokenPrice = calculateLPTokenPrice(
+        formatUnits(
+          lPTokenBalances[token1.address].amountUnformatted,
+          lPTokenBalances[token1.address].decimals
+        ),
+        formatUnits(
+          lPTokenBalances[token2.address].amountUnformatted,
+          lPTokenBalances[token2.address].decimals
+        ),
+        tokenPrices[currentBlock][token1.address.toLowerCase()]?.usd || '0',
+        tokenPrices[currentBlock][token2.address.toLowerCase()]?.usd || '0',
+        underlyingTokenData.totalSupply
+      )
+      underlyingToken.usd = lpTokenPrice
+    }
     const totalValueUsdUnformatted = amountMultByUsd(
       token.totalSupplyUnformatted,
       underlyingToken.usd
     )
+
     token.usd = underlyingToken.usd
     token.derivedETH = underlyingToken.derivedETH
     token.totalValueUsd = formatUnits(totalValueUsdUnformatted, token.decimals)
@@ -539,6 +576,7 @@ const calculateTotalValueLockedPerPool = (pools) =>
       pool.prizePool.totalValueLockedUsdScaled = toScaledUsdBigNumber(
         pool.prizePool.totalValueLockedUsd
       )
+
       pool.prizePool.totalTicketValueLockedUsd = formatUnits(
         tvlTicketsUsdUnformatted,
         pool.tokens.ticket.decimals
@@ -546,6 +584,8 @@ const calculateTotalValueLockedPerPool = (pools) =>
       pool.prizePool.totalTicketValueLockedUsdScaled = toScaledUsdBigNumber(
         pool.prizePool.totalTicketValueLockedUsd
       )
+      // import { amountMultByUsd, calculateAPR, calculateLPTokenPrice } from '@pooltogether/utilities'
+
       pool.prizePool.totalSponsorshipValueLockedUsd = formatUnits(
         tvlSponsorshipUsdUnformatted,
         pool.tokens.ticket.decimals
@@ -579,6 +619,12 @@ const calculateTokenFaucetAprs = (pools) =>
         usd = pool.tokens.pool.usd
       }
 
+      if (tokenFaucet.address.toLowerCase() === '0x9a29401ef1856b669f55ae5b24505b3b6faeb370') {
+        console.log({ usd })
+        console.log(pool.tokens)
+        console.log(amountUnformatted)
+      }
+
       if (usd && amountUnformatted !== ethers.constants.Zero) {
         const { dripRatePerSecond, measure } = tokenFaucet
 
@@ -594,6 +640,18 @@ const calculateTokenFaucetAprs = (pools) =>
         const totalValueUsd = faucetIncentivizesSponsorship
           ? totalSponsorshipValueUsd
           : totalTicketValueUsd
+
+        if (tokenFaucet.address.toLowerCase() === '0x9a29401ef1856b669f55ae5b24505b3b6faeb370') {
+          console.log({ totalDripPerDay })
+          console.log({ totalDripDailyValue })
+
+          console.log(pool.prizePool.totalTicketValueLockedUsd)
+
+          console.log({ totalTicketValueUsd })
+
+          console.log({ totalValueUsd })
+          console.log({ pool })
+        }
 
         if (tokenFaucet.remainingDays <= 0) {
           tokenFaucet.apr = 0
