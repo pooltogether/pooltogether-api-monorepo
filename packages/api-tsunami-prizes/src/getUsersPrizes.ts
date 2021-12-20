@@ -16,12 +16,10 @@ import { log } from '../../../utils/sentry'
 
 // Validation
 const SUPPORTED_NETWORKS = Object.freeze({
-  mainnets: [1, 137],
-  testnets: [4, 80001]
+  mainnets: Array.from(new Set(mainnet.contracts.map((c) => c.chainId))),
+  testnets: Array.from(new Set(testnet.contracts.map((c) => c.chainId)))
 })
 const VALID_NETWORKS = [...SUPPORTED_NETWORKS['mainnets'], ...SUPPORTED_NETWORKS['testnets']]
-
-const prizeDistributors: PrizeDistributors = {}
 
 /**
  *
