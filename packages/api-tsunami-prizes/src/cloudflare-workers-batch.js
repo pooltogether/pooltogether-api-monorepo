@@ -10,6 +10,10 @@ const getRpcUrl = (chainId) => {
       return `https://red-fragrant-fire.bsc.quiknode.pro/${QUICKNODE_ID}/`
     case 137:
       return `https://polygon-mainnet.infura.io/v3/${INFURA_ID}`
+    case 43113:
+      return `https://api.avax-test.network/ext/bc/C/rpc`
+    case 43114:
+      return `https://api.avax.network/ext/bc/C/rpc`
     case 80001:
       return `https://polygon-mumbai.infura.io/v3/${INFURA_ID}`
   }
