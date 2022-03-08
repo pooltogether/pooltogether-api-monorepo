@@ -1,0 +1,20 @@
+{
+  "name": "@pooltogether/api-gas-updater",
+  "version": "1.0.0",
+  "description": "A KV store interface to store which wallets have checked for prizes in a week",
+  "main": "index.js",
+  "scripts": {
+    "build": "wrangler build",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "publish-prod": "rm -rf dist && rm -rf worker && wrangler publish",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "PoolTogether <hello@pooltogether.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {}
+}
