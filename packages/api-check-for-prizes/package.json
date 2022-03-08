@@ -1,5 +1,5 @@
 {
-  "name": "@pooltogether/api-gas-updater",
+  "name": "@pooltogether/api-check-for-prizes",
   "version": "1.0.0",
   "description": "A KV store interface to store which wallets have checked for prizes in a week",
   "main": "index.js",

@@ -2,8 +2,8 @@ type = "webpack"
 workers_dev = true
 compatibility_date = "2021-11-30"
 
-name = "gas-updater"
-kv_namespaces = [{ binding = "GAS", id = "", preview_id = "" }]
+name = "check-for-prizes"
+kv_namespaces = [{ binding = "CHECK_FOR_PRIZES", id = "", preview_id = "" }]
 
 account_id = "" # Production account
 
@@ -11,7 +11,7 @@ account_id = "" # Production account
 crons = ["0/2 * * * *"]
 
 [vars]
-APP_NAME = 'gas-updater'
+APP_NAME = 'check-for-prizes'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
 SENTRY_PROJECT_ID = '5832514'

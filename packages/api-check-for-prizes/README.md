@@ -1,8 +1,6 @@
-# `Pooltogether API - Gas Updater`
+# `Pooltogether API - Check for Prizes`
 
-This repo contains a Cloudflare Worker that is triggered by a cron job to keep the data in a Cloudflare KV store up to date. The worker also exposes `/update` which allows a manual trigger of the update.
-
-This worker aggregates data from external sources and stores them in the KV so we are not reliant on their services.
+This repo contains a Cloudflare Worker that is triggered by a GET request to store a specific week for the provided Ethereum address in a Cloudflare KV store.
 
 ## Instructions
 
