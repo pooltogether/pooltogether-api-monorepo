@@ -14,22 +14,23 @@ const getMonday = (date) => {
   return new Date(date.setDate(diff))
 }
 
+// Also store in Google sheet?
 const storeAddressInKV = async (event, dateKey, address) => {
-  let dateStrings = []
+  let addresses = []
 
-  const dateStringsJson = await CHECK_FOR_PRIZES.get(address)
-  if (dateStringsJson) {
-    dateStrings = JSON.parse(dateStringsJson)
+  const addressesJson = await CHECK_FOR_PRIZES.get(dateKey)
+  if (addressesJson) {
+    addresses = JSON.parse(addressesJson)
   }
 
-  // Bail early if we already have this date in the addresses' array
-  if (dateStrings.includes(dateKey)) {
+  // Bail early if we already have this address in the array
+  if (addresses.includes(address)) {
     return
   }
 
-  dateStrings.push(dateKey)
+  addresses.push(address)
 
-  event.waitUntil(CHECK_FOR_PRIZES.put(address, JSON.stringify(dateStrings)), {
+  event.waitUntil(CHECK_FOR_PRIZES.put(dateKey, JSON.stringify(addresses)), {
     metadata: {
       lastUpdated: new Date(Date.now()).toUTCString()
     }
