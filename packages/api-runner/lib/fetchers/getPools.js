@@ -227,7 +227,6 @@ export const addTokenTotalUsdValue = (token, tokenPriceData, defaultTokenPriceUs
 
   if (priceData) {
     token.usd = tokenPriceData[token.address].usd || defaultTokenPriceUsd
-    token.derivedETH = tokenPriceData[token.address].derivedETH || defaultTokenPriceUsd.toString()
 
     if (token.amountUnformatted) {
       const usdValueUnformatted = amountMultByUsd(token.amountUnformatted, token.usd)
@@ -237,7 +236,6 @@ export const addTokenTotalUsdValue = (token, tokenPriceData, defaultTokenPriceUs
     }
   } else {
     token.usd = defaultTokenPriceUsd
-    token.derivedETH = defaultTokenPriceUsd.toString()
   }
 }
 
@@ -379,7 +377,6 @@ const addTotalValueForControlledTokens = (token, underlyingToken) => {
       underlyingToken.usd
     )
     token.usd = underlyingToken.usd
-    token.derivedETH = underlyingToken.derivedETH
     token.totalValueUsd = formatUnits(totalValueUsdUnformatted, token.decimals)
     token.totalValueUsdScaled = toScaledUsdBigNumber(token.totalValueUsd)
   }

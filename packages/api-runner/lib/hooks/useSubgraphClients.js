@@ -52,10 +52,12 @@ export const getLootBoxSubgraphClient = (chainId) =>
  * @param {*} chainId
  * @returns
  */
-export const getNativeCurrencyKey = (chainId) => {
+export const getDexNativeCurrencyKey = (chainId) => {
   switch (chainId) {
     case NETWORK.bsc:
       return 'derivedBNB'
+    case NETWORK.celo:
+      return 'derivedCUSD'
     default:
       return 'derivedETH'
   }

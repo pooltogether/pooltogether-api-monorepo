@@ -1,7 +1,8 @@
+import { NETWORK } from '@pooltogether/utilities'
 import { gql } from 'graphql-request'
 
 import { CUSTOM_CONTRACT_ADDRESSES } from 'lib/constants'
-import { getNativeCurrencyKey, getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
+import { getDexNativeCurrencyKey, getUniswapSubgraphClient } from 'lib/hooks/useSubgraphClients'
 
 import { fetch } from '../../index'
 
@@ -48,7 +49,7 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
 
   if (!graphQLClient) return null
 
-  // We'll use this stablecoin to measure the price of ETH off of
+  // We'll use this stablecoin to measure the price of the dex native pricing currency off of it
   const stablecoinAddress = CUSTOM_CONTRACT_ADDRESSES[chainId]?.['Stablecoin']
 
   _addStablecoin(addresses, stablecoinAddress)
@@ -88,8 +89,7 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
   }
 
   // calculate and cache the price of eth in the data object
-  data['ethereum'] = {
-    derivedETH: '1',
+  const dexNativePricingToken = {
     id: 'eth',
     usd: _calculateUsd(data[stablecoinAddress], chainId)
   }
@@ -99,10 +99,10 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
     let address = filteredAddresses[i]
     let token = data[address]
 
+    // Prep SOHM token
     if (!token && address?.toLowerCase() === ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase()) {
       token = {
         id: ETHEREUM_MAINNET_SOHM_ADDRESS.toLowerCase(),
-        derivedETH: 0,
         usd: 0
       }
     }
@@ -133,10 +133,9 @@ export const getTokenPriceData = async (chainId, addresses, blockNumber = -1) =>
 
       data[address] = {
         ...token,
-        derivedETH: token[getNativeCurrencyKey(chainId)],
         usd: usdFromCoingecko
           ? usdFromCoingecko
-          : data['ethereum'].usd * parseFloat(token[getNativeCurrencyKey(chainId)])
+          : dexNativePricingToken.usd * parseFloat(token[getDexNativeCurrencyKey(chainId)])
       }
     }
   }
@@ -193,7 +192,7 @@ const getQueryTemplate = (
   chainId
 ) => `token__num__: tokens(where: { id: "__address__" } __blockFilter__) {
   id
-  ${getNativeCurrencyKey(chainId)}
+  ${getDexNativeCurrencyKey(chainId)}
 }`
 
 const _addStablecoin = (addresses, stableCoinAddress) => {
@@ -217,11 +216,10 @@ const _getBlockFilter = (blockNumber) => {
 }
 
 const _calculateUsd = (token, chainId) => {
-  let derivedETH = token?.[getNativeCurrencyKey(chainId)]
-
-  if (!derivedETH || derivedETH === '0') {
-    derivedETH = 0.2 // 1 ETH is $5 USD, used for Rinkeby, etc
+  let derivedTokenPrice = token?.[getDexNativeCurrencyKey(chainId)]
+  if (!derivedTokenPrice || derivedTokenPrice === '0') {
+    derivedTokenPrice = 0.2 // 1 ETH is $5 USD, used for Rinkeby, etc
   }
 
-  return 1 / derivedETH
+  return 1 / derivedTokenPrice
 }
