@@ -1,0 +1,11 @@
+dist
+node_modules
+transpiled
+/.idea/
+bin
+pkg
+wasm-pack.log
+worker
+wrangler.toml
+yarn-error.log
+.yalc

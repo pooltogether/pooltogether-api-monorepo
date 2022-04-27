@@ -1,6 +1,10 @@
-import { encodeData, decodeData, prepareTransaction } from '@pooltogether/etherplex'
+import {
+  encodeData,
+  decodeData,
+  prepareTransaction,
+} from '@pooltogether/etherplex'
 
-const getRpcUrl = (chainId) => {
+const getRpcUrl = (chainId: number) => {
   switch (chainId) {
     case 1:
       return `https://mainnet.infura.io/v3/${INFURA_ID}`
@@ -28,17 +32,17 @@ export const batch = async (chainId, ...batchCalls) => {
   const [result, calls, data] = encodeData(...batchCalls)
 
   const tx = {
-    params: [await prepareTransaction(chainId, data), 'latest'],
+    params: [await prepareTransaction(chainId, data as string), 'latest'],
     jsonrpc: '2.0',
     id: 1,
-    method: 'eth_call'
+    method: 'eth_call',
   }
 
   let callResponse
   callResponse = await fetch(getRpcUrl(Number(chainId)), {
     method: 'POST',
     body: JSON.stringify(tx),
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
   })
 
   const body = await callResponse.json()

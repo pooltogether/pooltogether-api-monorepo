@@ -42,7 +42,7 @@ export async function getCachedResponse(event, promise, cacheAgeSeconds = DEFAUL
   } catch (e) {
     event.waitUntil(log(e, e.request))
 
-    const errorResponse = new Response(`Error\n${e.message}`, {
+    const errorResponse = new Response(`Error | ${e.message}`, {
       ...DEFAULT_HEADERS,
       status: 500
     })
