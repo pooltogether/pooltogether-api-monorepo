@@ -155,8 +155,8 @@ const getV3PrizePoolRelatedContractAddresses = async (
     metadata: rootContractMetadata,
     prizePool: rootContractMetadata.address,
     token: response[rootContractMetadata.address].token[0],
-    ticket: response[rootContractMetadata.address].tokens[1],
-    sponsorship: response[rootContractMetadata.address].tokens[0],
+    ticket: response[rootContractMetadata.address].tokens[0][1],
+    sponsorship: response[rootContractMetadata.address].tokens[0][0],
     prizeStrategy: response[rootContractMetadata.address].prizeStrategy[0],
     tokenFaucets: rootContractMetadata.tokenFaucets.map((tokenFaucet) => ({
       tokenFaucet,
