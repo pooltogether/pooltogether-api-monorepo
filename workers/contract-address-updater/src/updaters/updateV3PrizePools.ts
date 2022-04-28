@@ -137,7 +137,7 @@ const getV3PrizePoolRelatedContractAddresses = async (
     rootContractMetadata.address,
   )
   let batchCalls = []
-  batchCalls.push(prizePoolContract.token().tokens().prizeStrategy())
+  batchCalls.push(prizePoolContract.token().prizeStrategy())
 
   rootContractMetadata.tokenFaucets.forEach((tokenFaucet) => {
     const tokenFaucetContract = contract(
@@ -155,8 +155,8 @@ const getV3PrizePoolRelatedContractAddresses = async (
     metadata: rootContractMetadata,
     prizePool: rootContractMetadata.address,
     token: response[rootContractMetadata.address].token[0],
-    ticket: response[rootContractMetadata.address].tokens[0][1],
-    sponsorship: response[rootContractMetadata.address].tokens[0][0],
+    ticket: null,
+    sponsorship: null,
     prizeStrategy: response[rootContractMetadata.address].prizeStrategy[0],
     tokenFaucets: rootContractMetadata.tokenFaucets.map((tokenFaucet) => ({
       tokenFaucet,
@@ -164,6 +164,18 @@ const getV3PrizePoolRelatedContractAddresses = async (
       asset: response[tokenFaucet].asset[0],
     })),
   }
+
+  const prizeStrategyContract = contract(
+    relatedAddresses.prizeStrategy,
+    MinimalPrizeStrategyAbi,
+    relatedAddresses.prizeStrategy,
+  )
+
+  response = await batch(chainId, prizeStrategyContract.ticket().sponsorship())
+
+  relatedAddresses.ticket = response[relatedAddresses.prizeStrategy].ticket[0]
+  relatedAddresses.sponsorship =
+    response[relatedAddresses.prizeStrategy].sponsorship[0]
 
   return relatedAddresses
 }
@@ -178,13 +190,6 @@ const MinimalPrizePoolAbi = [
   },
   {
     inputs: [],
-    name: 'tokens',
-    outputs: [{ internalType: 'address[]', name: '', type: 'address[]' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'prizeStrategy',
     outputs: [
       {
@@ -192,6 +197,27 @@ const MinimalPrizePoolAbi = [
         name: '',
         type: 'address',
       },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+]
+
+const MinimalPrizeStrategyAbi = [
+  {
+    inputs: [],
+    name: 'sponsorship',
+    outputs: [
+      { internalType: 'contract IERC20Upgradeable', name: '', type: 'address' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'ticket',
+    outputs: [
+      { internalType: 'contract TicketInterface', name: '', type: 'address' },
     ],
     stateMutability: 'view',
     type: 'function',
