@@ -24,14 +24,14 @@ async function handleRequest(event) {
     const pathname = _url.pathname
 
     // V3
-    const singlePoolRegex = /\/pools\/[\d]*\/0x[a-fA-F0-9]{40}$/
+    const singlePoolRegex = /\/pools\/[\d]*\/0x[a-fA-F0-9]{40}/
     const multiPoolRegex = /\/pools\/[\d]*/
-    const singlePodRegex = /\/pods\/[\d]*\/0x[a-fA-F0-9]{40}$/
+    const singlePodRegex = /\/pods\/[\d]*\/0x[a-fA-F0-9]{40}/
     const multiPodRegex = /\/pods\/[\d]*/
     // V4
-    const singlePrizePoolRegex = /\/v4\/addresses\/prize-pools\/[\d]*\/0x[a-fA-F0-9]{40}$/
+    const singlePrizePoolRegex = /\/v4\/addresses\/prize-pools\/[\d]*\/0x[a-fA-F0-9]{40}/
     const multiPrizePoolRegex = /\/v4\/addresses\/prize-pools\/[\d]*/
-    const singlePrizeDistributorRegex = /\/v4\/addresses\/prize-distributors\/[\d]*\/0x[a-fA-F0-9]{40}$/
+    const singlePrizeDistributorRegex = /\/v4\/addresses\/prize-distributors\/[\d]*\/0x[a-fA-F0-9]{40}/
     const multiPrizeDistributorRegex = /\/v4\/addresses\/prize-distributors\/[\d]*/
     // Meta
     const gasCostsRegex = /\/gas\/[\d]*/
