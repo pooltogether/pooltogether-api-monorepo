@@ -2,7 +2,7 @@ import { contract } from '@pooltogether/etherplex'
 import { log } from '../../../../utils/sentry'
 
 import { batch } from '../batch'
-import { getPrizePoolsKey } from '../../../../utils/kvKeys'
+import { getV4PrizePoolsKey } from '../../../../utils/kvKeys'
 import { updateHandler } from '../updateHandler'
 import { NETWORK } from '../../../../constants/chains'
 import { ContractType } from '../../../../constants/contractType'
@@ -59,7 +59,7 @@ export const updatePrizePools = async (
     event,
     chainId,
     rootContractMetadatas,
-    getPrizePoolsKey,
+    getV4PrizePoolsKey,
     getPrizePoolRelatedContractAddresses,
   )
 }

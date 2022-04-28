@@ -10,21 +10,26 @@ PoolTogether API Monorepo uses [CloudFlare workers](https://workers.cloudflare.c
 
 ### pooltogether-api.com
 
-v3
+v3 - Data
 
 - `GET /pools/:chainId/:poolAddress`
 - `GET /pools/:chainId`
 - `GET /pods/:chainId/:podAddress`
 - `GET /pods/:chainId`
 
-v4
+v3 - Contract addresses
+
+- `GET /v3/addresses/prize-pools/:chainId`
+- `GET /v3/addresses/prize-pools/:chainId/:prizePoolAddress`
+
+v4 - Contract addresses
 
 - `GET /v4/addresses/prize-pools/:chainId`
 - `GET /v4/addresses/prize-pools/:chainId/:prizePoolAddress`
 - `GET /v4/addresses/prize-distributors/:chainId`
 - `GET /v4/addresses/prize-distributors/:chainId/:prizeDistributorAddress`
 
-meta
+Meta
 
 - `GET /gas/:chainId`
 - `GET /gas/update`
@@ -47,6 +52,10 @@ v3 Prize Pools
 v3 Pod Addresses
 
 - `GET {:network}-contract-addresses-updater.pooltogether-api.workers.dev/pods/update`
+
+v3 Prize Pool Addresses
+
+- `GET {:network}-contract-addresses-updater.pooltogether-api.workers.dev/v3/prize-pools/update`
 
 v4 Prize Pool Addresses
 

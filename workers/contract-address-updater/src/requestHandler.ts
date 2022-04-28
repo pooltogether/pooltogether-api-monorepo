@@ -9,9 +9,14 @@ import {
 } from './updaters/updatePrizeDistributors'
 import { DEFAULT_HEADERS } from '../../../utils/constants'
 import { log } from '../../../utils/sentry'
+import {
+  updateV3PrizePools,
+  V3_PRIZE_POOL_SUPPORTED_CHAIN_IDS,
+} from './updaters/updateV3PrizePools'
 
 const ROUTES = Object.freeze({
   pods: '/pods',
+  v3PrizePools: '/v3/prize-pools',
   prizePools: '/v4/prize-pools',
   prizeDistributors: '/v4/prize-distributors',
 })
@@ -29,6 +34,13 @@ export async function handleRequest(event: FetchEvent): Promise<Response> {
         ROUTES.pods,
         PODS_SUPPORTED_CHAIN_IDS,
         updatePods,
+      )
+    } else if (pathname.startsWith(ROUTES.v3PrizePools)) {
+      return updateRouter(
+        event,
+        ROUTES.v3PrizePools,
+        V3_PRIZE_POOL_SUPPORTED_CHAIN_IDS,
+        updateV3PrizePools,
       )
     } else if (pathname.startsWith(ROUTES.prizePools)) {
       return updateRouter(

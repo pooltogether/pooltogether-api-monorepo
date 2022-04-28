@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "wrangler dev",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --port 8888",
     "start-prod": "wrangler dev --env production",
     "dev-prod": "wrangler dev --env production",
     "publish-prod": "wrangler publish --env production",

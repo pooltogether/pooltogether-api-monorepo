@@ -8,6 +8,10 @@ import {
   updatePrizeDistributors,
 } from './updaters/updatePrizeDistributors'
 import { log } from '../../../utils/sentry'
+import {
+  updateV3PrizePools,
+  V3_PRIZE_POOL_SUPPORTED_CHAIN_IDS,
+} from './updaters/updateV3PrizePools'
 
 export async function handleScheduled(event: ScheduledEvent): Promise<boolean> {
   try {
@@ -18,6 +22,9 @@ export async function handleScheduled(event: ScheduledEvent): Promise<boolean> {
       ),
       ...PRIZE_DISTRIBUTORS_SUPPORTED_CHAIN_IDS.map((chainId) =>
         updatePrizeDistributors(event, chainId),
+      ),
+      ...V3_PRIZE_POOL_SUPPORTED_CHAIN_IDS.map((chainId) =>
+        updateV3PrizePools(event, chainId),
       ),
     ])
     return true

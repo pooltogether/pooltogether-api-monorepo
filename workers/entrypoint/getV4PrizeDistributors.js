@@ -1,23 +1,22 @@
 import { getRootContractAddresses } from './utils/getRootContractAddresses'
 import { getRootContractAddressesByChainId } from './utils/getRootContractAddressesByChainId'
 
-import { getPrizePoolsKey } from '../../utils/kvKeys'
+import { getPrizeDistributorsKey } from '../../utils/kvKeys'
 import { log } from '../../utils/sentry'
 
 /**
- * GET /v4/addresses/prize-pools/:chainId/:prizePoolAddress
+ * GET /v4/addresses/prize-distributors/:chainId/:prizeDistributorAddress
  * @param {*} event
  * @param {*} request
  * @returns
  */
-export const getPrizePool = async (event, request) => {
+export const getV4PrizeDistributor = async (event, request) => {
   try {
     const _url = new URL(request.url)
     const pathname = _url.pathname.split('.')[0]
     const chainId = parseInt(pathname.split('/')[4], 10)
-    const prizePoolAddress = pathname.split('/')[5].toLowerCase()
-    console.log(chainId, prizePoolAddress)
-    return getRootContractAddresses(chainId, prizePoolAddress, getPrizePoolsKey)
+    const prizeDistributorAddress = pathname.split('/')[5].toLowerCase()
+    return getRootContractAddresses(chainId, prizeDistributorAddress, getPrizeDistributorsKey)
   } catch (e) {
     event.waitUntil(log(e, request))
     return null
@@ -25,18 +24,18 @@ export const getPrizePool = async (event, request) => {
 }
 
 /**
- * GET /v4/addresses/prize-pools/:chainId
+ * GET /v4/addresses/prize-distributors/:chainId
  * @param {*} event
  * @param {*} request
  * @returns
  */
-export const getPrizePoolsByChainId = async (event, request) => {
+export const getV4PrizeDistributorsByChainId = async (event, request) => {
   try {
     const _url = new URL(request.url)
     const pathname = _url.pathname.split('.')[0]
     const chainId = parseInt(pathname.split('/')[4], 10)
-    console.log(chainId, pathname)
-    return getRootContractAddressesByChainId(chainId, getPrizePoolsKey)
+
+    return getRootContractAddressesByChainId(chainId, getPrizeDistributorsKey)
   } catch (e) {
     event.waitUntil(log(e, request))
     return null
