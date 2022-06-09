@@ -3,6 +3,7 @@ import { log } from '../../utils/sentry'
 import { updateGasCosts } from './updateGasCosts'
 
 export const MAINNET_CHAIN_ID = 1
+export const OPTIMISM_CHAIN_ID = 10
 export const POLYGON_CHAIN_ID = 137
 export const AVALANCHE_CHAIN_ID = 43114
 
@@ -22,7 +23,8 @@ const updateAllGasCosts = async (event) => {
   const mainnetPromise = updateGasCosts(event, MAINNET_CHAIN_ID)
   const polygonPromise = updateGasCosts(event, POLYGON_CHAIN_ID)
   const avalanchePromise = updateGasCosts(event, AVALANCHE_CHAIN_ID)
-  return await Promise.all([mainnetPromise, polygonPromise, avalanchePromise])
+  const optimismPromise = updateGasCosts(event, OPTIMISM_CHAIN_ID)
+  return await Promise.all([mainnetPromise, polygonPromise, avalanchePromise, optimismPromise])
 }
 
 /**
@@ -61,7 +63,7 @@ async function handleRequest(event) {
       try {
         await updateAllGasCosts(event)
         const successResponse = new Response(
-          `Successfully updated gas for ${MAINNET_CHAIN_ID}, ${POLYGON_CHAIN_ID} and ${AVALANCHE_CHAIN_ID}`,
+          `Successfully updated gas for ${MAINNET_CHAIN_ID}, ${OPTIMISM_CHAIN_ID}, ${POLYGON_CHAIN_ID} and ${AVALANCHE_CHAIN_ID}`,
           {
             ...DEFAULT_HEADERS,
             status: 200
@@ -71,7 +73,7 @@ async function handleRequest(event) {
         return successResponse
       } catch (e) {
         event.waitUntil(log(e, e.request))
-        const errorResponse = new Response(`Error updating ${CHAIN_ID}`, {
+        const errorResponse = new Response(`Error updating`, {
           ...DEFAULT_HEADERS,
           status: 500
         })

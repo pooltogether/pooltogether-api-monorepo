@@ -3,7 +3,8 @@ import cheerio from 'cheerio'
 import { log } from '../../utils/sentry'
 import { getGasKey } from '../../utils/kvKeys'
 import { getGasChainIdMapping } from '../../utils/getGasChainIdMapping'
-import { AVALANCHE_CHAIN_ID, MAINNET_CHAIN_ID, POLYGON_CHAIN_ID } from './index'
+import { AVALANCHE_CHAIN_ID, MAINNET_CHAIN_ID, OPTIMISM_CHAIN_ID, POLYGON_CHAIN_ID } from './index'
+import { ethers } from 'ethers'
 
 // Confirmation time!
 // `https://api.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=2000000000&apiKey=${ETHERSCAN_API_KEY}`
@@ -41,6 +42,8 @@ const getGasCosts = async (chainId) => {
     return await getPolygonGasCosts()
   } else if (chainId === AVALANCHE_CHAIN_ID) {
     return await getAvalancheGasCosts()
+  } else if (chainId === OPTIMISM_CHAIN_ID) {
+    return await getOptimismGasCosts()
   } else {
     return null
   }
@@ -85,6 +88,33 @@ const scrapeEtherscan = async (etherscanUrl) => {
       SafeGasPrice: standard,
       ProposeGasPrice: fast,
       FastGasPrice: rapid
+    }
+  }
+
+  return result
+}
+
+/**
+ * NOTE: No difference between safe, propose and fast. optimistic etherscan doesn't have the page to scrape.
+ * @returns
+ */
+const getOptimismGasCosts = async () => {
+  const url = `https://optimism-mainnet.infura.io/v3/${INFURA_ID}`
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({ jsonrpc: '2.0', method: 'rollup_gasPrices', params: [], id: 1 })
+  })
+  const data = await response.json()
+  const decimals = '9'
+  const l1Price = ethers.utils.parseUnits(Number(data.result.l1GasPrice).toString(), decimals)
+  const l2Price = ethers.utils.parseUnits(Number(data.result.l2GasPrice).toString(), decimals)
+  const totalPrice = ethers.utils.formatUnits(l1Price.add(l2Price), decimals)
+
+  const result = {
+    result: {
+      SafeGasPrice: totalPrice,
+      ProposeGasPrice: totalPrice,
+      FastGasPrice: totalPrice
     }
   }
 
