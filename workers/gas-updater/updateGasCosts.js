@@ -105,10 +105,9 @@ const getOptimismGasCosts = async () => {
     body: JSON.stringify({ jsonrpc: '2.0', method: 'rollup_gasPrices', params: [], id: 1 })
   })
   const data = await response.json()
-  const decimals = '9'
-  const l1Price = ethers.utils.parseUnits(Number(data.result.l1GasPrice).toString(), decimals)
-  const l2Price = ethers.utils.parseUnits(Number(data.result.l2GasPrice).toString(), decimals)
-  const totalPrice = ethers.utils.formatUnits(l1Price.add(l2Price), decimals)
+  const l1Price = ethers.utils.parseUnits(Number(data.result.l1GasPrice).toString(), '9')
+  const l2Price = ethers.utils.parseUnits(Number(data.result.l2GasPrice).toString(), '9')
+  const totalPrice = ethers.utils.formatUnits(l1Price.add(l2Price), '18')
 
   const result = {
     result: {
