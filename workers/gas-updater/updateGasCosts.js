@@ -5,6 +5,7 @@ import { getGasKey } from '../../utils/kvKeys'
 import { getGasChainIdMapping } from '../../utils/getGasChainIdMapping'
 import { AVALANCHE_CHAIN_ID, MAINNET_CHAIN_ID, OPTIMISM_CHAIN_ID, POLYGON_CHAIN_ID } from './index'
 import { ethers } from 'ethers'
+import { base64 } from 'ethers/lib/utils'
 
 // Confirmation time!
 // `https://api.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=2000000000&apiKey=${ETHERSCAN_API_KEY}`
@@ -43,7 +44,7 @@ const getGasCosts = async (chainId) => {
   } else if (chainId === AVALANCHE_CHAIN_ID) {
     return await getAvalancheGasCosts()
   } else if (chainId === OPTIMISM_CHAIN_ID) {
-    return await getOptimismGasCosts()
+    return await getGasFromZapper(OPTIMISM_CHAIN_ID)
   } else {
     return null
   }
@@ -118,4 +119,60 @@ const getOptimismGasCosts = async () => {
   }
 
   return result
+}
+
+const getGasFromZapper = async (chainId) => {
+  const keys = {
+    [MAINNET_CHAIN_ID]: 'ethereum',
+    [POLYGON_CHAIN_ID]: 'polygon',
+    [AVALANCHE_CHAIN_ID]: 'avalanche',
+    [OPTIMISM_CHAIN_ID]: 'optimism'
+  }
+
+  const url = new URL('https://api.zapper.fi/v2/gas-prices')
+  url.searchParams.append('network', keys[chainId])
+  if (chainId === MAINNET_CHAIN_ID) {
+    url.searchParams.append('eip1559', 'true')
+  } else {
+    url.searchParams.append('eip1559', 'false')
+  }
+
+  const _headers = new Headers({
+    'Authorization': 'Basic ' + btoa(ZAPPER_API_KEY + ':'),
+    'Accept': '*/*',
+    'User-Agent': 'CloudFlareWorker'
+  })
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: _headers
+    })
+
+    if (response.status === 200) {
+      const data = await response.json()
+
+      if (chainId === MAINNET_CHAIN_ID) {
+        return {
+          result: {
+            SafeGasPrice: data.standard.baseFeePerGas,
+            ProposeGasPrice: data.fast.baseFeePerGas,
+            FastGasPrice: data.instant.baseFeePerGas
+          }
+        }
+      } else {
+        return {
+          result: {
+            SafeGasPrice: data.standard,
+            ProposeGasPrice: data.fast,
+            FastGasPrice: data.instant
+          }
+        }
+      }
+    }
+    return null
+  } catch (e) {
+    console.log(e.message)
+    return null
+  }
 }
