@@ -70,6 +70,10 @@ const V3_PRIZE_POOLS: { [chainId: number]: V3PrizePoolContractMetadata[] } =
         address: '0xee06abe9e2af61cabcb13170e01266af2defa946',
         tokenFaucets: ['0x6cbc003fe015d753180f072d904ba841b2415498'],
       },
+      {
+        address: '0x7fd5de637aefb0f2c70c543bbc5c62f06a9a7b24',
+        tokenFaucets: [],
+      },
     ],
     [NETWORK.celo]: [
       {

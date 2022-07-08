@@ -10,6 +10,8 @@ const getRpcUrl = (chainId: number) => {
       return `https://mainnet.infura.io/v3/${INFURA_ID}`
     case 4:
       return `https://rinkeby.infura.io/v3/${INFURA_ID}`
+    case 10:
+      return `https://optimism-mainnet.infura.io/v3/${INFURA_ID}`
     case 56:
       return 'https://bsc-dataseed.binance.org/'
     case 137:

@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@ethersproject/abi": "^5.6.1",
-    "@pooltogether/etherplex": "^1.1.4",
+    "@pooltogether/etherplex": "^1.1.5",
     "ethers": "^5.6.4"
   }
 }

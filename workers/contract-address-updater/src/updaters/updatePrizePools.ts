@@ -30,6 +30,13 @@ const PRIZE_POOLS: { [chainId: number]: ContractMetadata[] } = Object.freeze({
       version: '1.0.0',
     },
   ],
+  [NETWORK.optimism]: [
+    {
+      address: '0x79Bc8bD53244bC8a9C8c27509a2d573650A83373',
+      type: ContractType.YieldSourcePrizePool,
+      version: '1.0.0',
+    },
+  ],
 })
 
 export const PRIZE_POOL_SUPPORTED_CHAIN_IDS =

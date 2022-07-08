@@ -906,10 +906,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@pooltogether/etherplex@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@pooltogether/etherplex/-/etherplex-1.1.4.tgz#d7584d43f82bc22630a9068f6c69e9a049740621"
-  integrity sha512-SFEv9Ck8ycFkDUkdU8KzQblVyQeFRmOIbdLedNNfgQZM/dNnIX6oAiNxUQrlnicl+03sWtLrenKqu/Hnl0VBjg==
+"@pooltogether/etherplex@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@pooltogether/etherplex/-/etherplex-1.1.5.tgz#2e94a7ee6246641e056096c6cf0eef89a3b4a662"
+  integrity sha512-Gawa/hbdbRC6OoONt9G//A1JjDjU71e+AbFAXfEgIPVQuely+h7Jj22/tq5DiZYyzLf4AuArZqXIj2S+kaXyAg==
   dependencies:
     debug "^4.1.1"
     lodash "^4.17.15"
