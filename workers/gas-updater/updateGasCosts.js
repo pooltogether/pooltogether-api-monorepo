@@ -44,7 +44,7 @@ const getGasCosts = async (chainId) => {
   } else if (chainId === AVALANCHE_CHAIN_ID) {
     return await getAvalancheGasCosts()
   } else if (chainId === OPTIMISM_CHAIN_ID) {
-    return await getGasFromZapper(OPTIMISM_CHAIN_ID)
+    return await getFaketimismGasCosts(OPTIMISM_CHAIN_ID)
   } else {
     return null
   }
@@ -115,6 +115,18 @@ const getOptimismGasCosts = async () => {
       SafeGasPrice: totalPrice,
       ProposeGasPrice: totalPrice,
       FastGasPrice: totalPrice
+    }
+  }
+
+  return result
+}
+
+const getFaketimismGasCosts = async (chainId) => {
+  const result = {
+    result: {
+      SafeGasPrice: 0.2,
+      ProposeGasPrice: 0.2,
+      FastGasPrice: 0.2
     }
   }
 
