@@ -23,6 +23,11 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
+"@cloudflare/workers-types@^3.14.1":
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.14.1.tgz#8927ad8aa4e4cdd42d25793148337ed04f927021"
+  integrity sha512-B1/plF62pt+H2IJHvApK8fdOJAVsvojvacuac8x8s+JIyqbropMyqNqHTKLm3YD8ZFLGwYeFTudU+PQ7vGvBdA==
+
 "@lerna/add@4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-4.0.0.tgz#c36f57d132502a57b9e7058d1548b7a565ef183f"
@@ -879,18 +884,6 @@
   dependencies:
     "@octokit/openapi-types" "^6.2.0"
 
-"@pooltogether/current-pool-data@^3.5.14":
-  version "3.5.14"
-  resolved "https://registry.yarnpkg.com/@pooltogether/current-pool-data/-/current-pool-data-3.5.14.tgz#1bd7f61a85b9df25cd77a53fe0f120280235d5d2"
-  integrity sha512-eIBvlh7I0UjGhnPwJvAHnIZMZ5P1OOjrgVi5vFfD/5p/FmLdiKkdsclJf1+jN/fNNRiLrEpuxn4xCYweUr5Z2A==
-
-"@pooltogether/evm-chains-extended@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@pooltogether/evm-chains-extended/-/evm-chains-extended-0.4.3.tgz#01bf32b6a5fc93437b7e02f9380c53e976e7a2c1"
-  integrity sha512-yG2U+5IjwqAjBOmEcP7WmdLs2DSBxM1VPWqQ1Wjelo3/E24aUVe2/ftTEcRwoJXfE1sqYH4sAUoNGl+O3Tbijg==
-  dependencies:
-    evm-chains "^0.2.0"
-
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -1707,11 +1700,6 @@ eventemitter3@^4.0.4:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
-
-evm-chains@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/evm-chains/-/evm-chains-0.2.0.tgz#401354aa2b474bb9b34e796d328f281e67d07349"
-  integrity sha512-iMpFpmKT9VydfIUpRFoQHNzLdZ3WSNagiq6PABqWDSRwAA9OW+dpKYczkvJ/WSUesGWgcfzYoKRvfusn/9bBYA==
 
 execa@^5.0.0:
   version "5.0.0"

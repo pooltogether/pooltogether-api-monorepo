@@ -1,6 +1,6 @@
 import { testnet, mainnet } from '@pooltogether/v4-pool-data'
-import { batch } from './cloudflare-workers-batch'
-import { getProviders } from './getProviders'
+import { batch } from '../batch'
+import { getProviders } from '../getProviders'
 import {
   calculateDrawResults,
   Draw,
@@ -9,10 +9,10 @@ import {
   filterResultsByValue
 } from '@pooltogether/draw-calculator-js'
 import { BigNumber, ethers } from 'ethers'
-import { ContractList, ContractMetadata, PrizeDistributorData, PrizeDistributors } from './types'
+import { ContractList, ContractMetadata, PrizeDistributorData, PrizeDistributors } from '../types'
 import { contract } from '@pooltogether/etherplex'
-import { ContractType, getContractsByType } from './contractType'
-import { log } from '../../../utils/sentry'
+import { ContractType, getContractsByType } from '../contractType'
+import { log } from '../../../../utils/sentry'
 
 // Validation
 const SUPPORTED_NETWORKS = Object.freeze({
@@ -23,33 +23,45 @@ const VALID_NETWORKS = [...SUPPORTED_NETWORKS['mainnets'], ...SUPPORTED_NETWORKS
 
 /**
  *
- * @param _chainId
- * @param prizeDistributorAddress
- * @param usersAddress
- * @param _drawId
+ * @param event
  * @returns
  */
-export const getUsersPrizes = async (
-  _chainId: string,
+export const computeUsersPrizes = async (event: FetchEvent) => {
+  const request = event.request
+  const _url = new URL(request.url)
+  const pathname = _url.pathname
+  const splitPathname = pathname.split('/')
+  const chainId = splitPathname[1]
+  const prizeDistributorAddress = splitPathname[2]
+  const usersAddress = splitPathname[4]
+  const drawId = splitPathname[5]
+
+  return await _computeUsersPrizes(
+    Number(chainId),
+    prizeDistributorAddress,
+    usersAddress,
+    Number(drawId)
+  )
+}
+
+const _computeUsersPrizes = async (
+  chainId: number,
   prizeDistributorAddress: string,
   usersAddress: string,
-  _drawId: string
+  drawId: number
 ) => {
   try {
-    const chainId = Number(_chainId)
-    const drawId = Number(_drawId)
-
     console.log('====================================')
     console.log(
       'Params: ',
-      '_chainId',
-      _chainId,
+      'chainId',
+      chainId,
       'prizeDistributorAddress',
       prizeDistributorAddress,
       'usersAddress',
       usersAddress,
-      '_drawId',
-      _drawId
+      'drawId',
+      drawId
     )
     console.log('====================================')
 

@@ -5,6 +5,7 @@
   "license": "MIT",
   "description": "API for PoolTogether data",
   "devDependencies": {
+    "@cloudflare/workers-types": "^3.14.1",
     "lerna": "^4.0.0"
   }
 }

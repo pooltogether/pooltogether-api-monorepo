@@ -50,10 +50,12 @@ async function handleRequest(event) {
       return getCachedResponse(event, getPods(event, request), 5)
     } else if (gasCostsRegex.test(pathname)) {
       return getCachedResponse(event, getGasCosts(event, request), 5)
+      // V3
     } else if (singleV3PrizePoolRegex.test(pathname)) {
       return getCachedResponse(event, getV3PrizePool(event, request), 5)
     } else if (multiV3PrizePoolRegex.test(pathname)) {
       return getCachedResponse(event, getV3PrizePoolsByChainId(event, request), 5)
+      // V4
     } else if (singleV4PrizePoolRegex.test(pathname)) {
       return getCachedResponse(event, getV4PrizePool(event, request), 5)
     } else if (multiV4PrizePoolRegex.test(pathname)) {
