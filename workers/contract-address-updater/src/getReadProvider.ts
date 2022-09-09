@@ -11,6 +11,8 @@ export const INFURA_CHAIN_IDS = Object.freeze([
   1, 3, 4, 5, 42,
   // Polygon
   137, 80001,
+  // Avalanche
+  43114, 43113,
   // Optimism
   10, 69,
   // Arbitrum
