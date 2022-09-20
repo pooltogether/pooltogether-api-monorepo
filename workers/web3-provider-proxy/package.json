@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "name": "web3-provider-proxy",
+  "version": "1.0.0",
+  "description": "A template for kick starting a Cloudflare Workers project",
+  "main": "index.js",
+  "scripts": {
+    "publish-all": "wrangler publish --env ethereum-mainnet && wrangler publish --env goerli && wrangler publish --env rinkeby && wrangler publish --env optimism-mainnet && wrangler publish --env optimism-kovan && wrangler publish --env optimism-goerli && wrangler publish --env polygon-mainnet && wrangler publish --env polygon-mumbai && wrangler publish --env avalanche-mainnet && wrangler publish --env avalanche-fuji",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
+}

@@ -1,0 +1,95 @@
+name = "web3-provider-proxy"
+type = "javascript"
+zone_id = ""
+account_id = "" # Production account
+workers_dev = true
+compatibility_date = "2022-04-26"
+
+[env.ethereum-mainnet]
+name = "ethereum-mainnet-web3-provider-proxy"
+workers_dev = false
+
+[env.ethereum-mainnet.vars]
+EDGE_CACHE_TTL = 13
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://mainnet.infura.io/v3/"]'
+
+[env.rinkeby]
+name = "rinkeby-web3-provider-proxy"
+workers_dev = false
+
+[env.rinkeby.vars]
+EDGE_CACHE_TTL = 15
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://rinkeby.infura.io/v3/"]'
+
+[env.goerli]
+name = "goerli-web3-provider-proxy"
+workers_dev = false
+
+[env.goerli.vars]
+EDGE_CACHE_TTL = 15
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://goerli.infura.io/v3/"]'
+
+[env.optimism-mainnet]
+name = "optimism-mainnet-web3-provider-proxy"
+workers_dev = false
+
+[env.optimism-mainnet.vars]
+EDGE_CACHE_TTL = 4
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://optimism-mainnet.infura.io/v3/"]'
+
+[env.optimism-kovan]
+name = "optimism-kovan-web3-provider-proxy"
+workers_dev = false
+
+[env.optimism-kovan.vars]
+EDGE_CACHE_TTL = 15
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://optimism-kovan.infura.io/v3/"]'
+
+[env.optimism-goerli]
+name = "optimism-goerli-web3-provider-proxy"
+workers_dev = false
+
+[env.optimism-goerli.vars]
+EDGE_CACHE_TTL = 15
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://optimism-goerli.infura.io/v3/"]'
+
+[env.polygon-mainnet]
+name = "polygon-mainnet-web3-provider-proxy"
+workers_dev = false
+
+[env.polygon-mainnet.vars]
+EDGE_CACHE_TTL = 2
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://polygon-mainnet.infura.io/v3/"]'
+
+[env.polygon-mumbai]
+name = "polygon-mumbai-web3-provider-proxy"
+workers_dev = false
+
+[env.polygon-mumbai.vars]
+EDGE_CACHE_TTL = 5
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://polygon-mumbai.infura.io/v3/"]'
+
+[env.avalanche-mainnet]
+name = "avalanche-mainnet-web3-provider-proxy"
+
+[env.avalanche-mainnet.vars]
+EDGE_CACHE_TTL = 2
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://avalanche-mainnet.infura.io/v3/"]'
+
+[env.avalanche-fuji]
+name = "avalanche-fuji-web3-provider-proxy"
+
+[env.avalanche-fuji.vars]
+EDGE_CACHE_TTL = 2
+BROWSER_CACHE_TTL = 0
+PROVIDERS = '["https://api.avax-test.network/ext/bc/C/rpc"]'
+
