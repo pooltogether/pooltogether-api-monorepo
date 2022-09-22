@@ -284,14 +284,7 @@ async function handlePost(event) {
     }
     return formatResponse(event, response, { id })
   } catch (e) {
-    console.log(e)
-    console.log(e.message)
-    console.log('HERE')
-    const a = Sentry.captureException(e)
-    console.log(a)
-    event.waitUntil(() => {
-      console.log(Sentry.captureException(e))
-    })
+    event.waitUntil(Sentry.captureException(e))
     return new Response(null, { status: 500 })
   }
 }
