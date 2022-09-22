@@ -5,91 +5,117 @@ account_id = "" # Production account
 workers_dev = true
 compatibility_date = "2022-04-26"
 
+[build]
+command = "yarn install && yarn build"
+
+[build.upload]
+format = "service-worker"
+
 [env.ethereum-mainnet]
 name = "ethereum-mainnet-web3-provider-proxy"
 workers_dev = false
 
 [env.ethereum-mainnet.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 13
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://mainnet.infura.io/v3/"]'
+PROVIDER = 'https://mainnet.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.rinkeby]
 name = "rinkeby-web3-provider-proxy"
 workers_dev = false
 
 [env.rinkeby.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://rinkeby.infura.io/v3/"]'
+PROVIDER = 'https://rinkeby.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.goerli]
 name = "goerli-web3-provider-proxy"
 workers_dev = false
 
 [env.goerli.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://goerli.infura.io/v3/"]'
+PROVIDER = 'https://goerli.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.optimism-mainnet]
 name = "optimism-mainnet-web3-provider-proxy"
 workers_dev = false
 
 [env.optimism-mainnet.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 4
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://optimism-mainnet.infura.io/v3/"]'
+PROVIDER = 'https://optimism-mainnet.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.optimism-kovan]
 name = "optimism-kovan-web3-provider-proxy"
 workers_dev = false
 
 [env.optimism-kovan.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://optimism-kovan.infura.io/v3/"]'
+PROVIDER = 'https://optimism-kovan.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.optimism-goerli]
 name = "optimism-goerli-web3-provider-proxy"
 workers_dev = false
 
 [env.optimism-goerli.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://optimism-goerli.infura.io/v3/"]'
+PROVIDER = 'https://optimism-goerli.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.polygon-mainnet]
 name = "polygon-mainnet-web3-provider-proxy"
 workers_dev = false
 
 [env.polygon-mainnet.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 2
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://polygon-mainnet.infura.io/v3/"]'
+PROVIDER = 'https://polygon-mainnet.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.polygon-mumbai]
 name = "polygon-mumbai-web3-provider-proxy"
 workers_dev = false
 
 [env.polygon-mumbai.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 5
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://polygon-mumbai.infura.io/v3/"]'
+PROVIDER = 'https://polygon-mumbai.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.avalanche-mainnet]
 name = "avalanche-mainnet-web3-provider-proxy"
 
 [env.avalanche-mainnet.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 2
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://avalanche-mainnet.infura.io/v3/"]'
+PROVIDER = 'https://avalanche-mainnet.infura.io/v3/'
+SENTRY_DSN = ''
 
 [env.avalanche-fuji]
 name = "avalanche-fuji-web3-provider-proxy"
 
 [env.avalanche-fuji.vars]
+APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 2
 BROWSER_CACHE_TTL = 0
-PROVIDERS = '["https://api.avax-test.network/ext/bc/C/rpc"]'
+PROVIDER = 'https://api.avax-test.network/ext/bc/C/rpc'
+SENTRY_DSN = ''
 

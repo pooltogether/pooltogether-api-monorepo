@@ -24,7 +24,7 @@ const RETRIES = 5
 //   })
 // })
 
-export async function log(err, request) {
+const log = async (err, request) => {
   if (!SENTRY_PROJECT_ID || !CLIENT_NAME || !CLIENT_VERSION || !SENTRY_KEY) return
 
   const body = JSON.stringify(toSentryEvent(err, request))
@@ -50,7 +50,7 @@ export async function log(err, request) {
   }
 }
 
-function toSentryEvent(err, request) {
+const toSentryEvent = (err, request) => {
   const errType = err.name || (err.contructor || {}).name
   const frames = parse(err)
   const extraKeys = Object.keys(err).filter((key) => !['name', 'message', 'stack'].includes(key))
@@ -123,4 +123,9 @@ function uuidv4() {
   bytes[6] = (bytes[6] & 0x0f) | 0x40
   bytes[8] = (bytes[8] & 0x3f) | 0x80
   return [...bytes].map((b) => ('0' + b.toString(16)).slice(-2)).join('') // to hex
+}
+
+module.exports = {
+  log,
+  toSentryEvent
 }
