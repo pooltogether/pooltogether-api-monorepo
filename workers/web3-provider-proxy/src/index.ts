@@ -48,7 +48,9 @@ async function sha256(message) {
   // convert ArrayBuffer to Array
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   // convert bytes to hex string
-  const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+  const hashHex = hashArray
+    .map((b) => ('00' + b.toString(16)).slice(-2))
+    .join('')
   return hashHex
 }
 
@@ -73,9 +75,7 @@ async function fetchWithTimeout(url, request, timeout) {
  * @param {Event} event
  */
 async function tryProvider(url, request, retry = 3) {
-  const provider = new URL(
-    PROVIDER
-  )
+  const provider = new URL(PROVIDER)
   // Set the current URL hostname and pathname
   url.hostname = provider.hostname
   url.pathname = provider.pathname
@@ -160,8 +160,8 @@ async function handleOptions(event) {
     context: event, // Includes 'waitUntil', which is essential for Sentry logs to be delivered. Also includes 'request' -- no need to set it separately.
     allowedHeaders: ['user-agent'],
     allowedSearchParams: /(.*)/,
-  });
-  
+  })
+
   try {
     const request = event.request
     const url = new URL(request.url)
@@ -217,7 +217,7 @@ async function handleGet(event) {
     context: event, // Includes 'waitUntil', which is essential for Sentry logs to be delivered. Also includes 'request' -- no need to set it separately.
     allowedHeaders: ['user-agent'],
     allowedSearchParams: /(.*)/,
-  });
+  })
   try {
     const request = event.request
     const url = new URL(request.url)
@@ -249,7 +249,7 @@ async function handlePost(event) {
     context: event, // Includes 'waitUntil', which is essential for Sentry logs to be delivered. Also includes 'request' -- no need to set it separately.
     allowedHeaders: ['user-agent'],
     allowedSearchParams: /(.*)/,
-  });
+  })
   const request = event.request
   try {
     const url = new URL(request.url)
@@ -271,7 +271,7 @@ async function handlePost(event) {
 
     // Create a cache key based on method, jsonrpc version, and the rest of the body
     const cacheable = { method, jsonrpc, ...body.params }
-    const cacheableBody = JSON.stringify(body.params)
+    const cacheableBody = JSON.stringify(cacheable)
     const hash = await sha256(cacheableBody)
     // Store the URL in cache by adding the body's hash
     url.pathname = '/posts' + url.pathname + hash
@@ -292,7 +292,7 @@ async function handlePost(event) {
   }
 }
 
-addEventListener('fetch', event => {
+addEventListener('fetch', (event) => {
   const request = event.request
   if (request.method.toUpperCase() === 'OPTIONS') {
     return event.respondWith(handleOptions(event))
