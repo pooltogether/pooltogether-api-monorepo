@@ -13,7 +13,6 @@ format = "service-worker"
 
 [env.ethereum-mainnet]
 name = "ethereum-mainnet-web3-provider-proxy"
-workers_dev = false
 
 [env.ethereum-mainnet.vars]
 APP_NAME='web3-proxy'
@@ -24,7 +23,6 @@ SENTRY_DSN = ''
 
 [env.rinkeby]
 name = "rinkeby-web3-provider-proxy"
-workers_dev = false
 
 [env.rinkeby.vars]
 APP_NAME='web3-proxy'
@@ -35,7 +33,6 @@ SENTRY_DSN = ''
 
 [env.goerli]
 name = "goerli-web3-provider-proxy"
-workers_dev = false
 
 [env.goerli.vars]
 APP_NAME='web3-proxy'
@@ -46,7 +43,6 @@ SENTRY_DSN = ''
 
 [env.optimism-mainnet]
 name = "optimism-mainnet-web3-provider-proxy"
-workers_dev = false
 
 [env.optimism-mainnet.vars]
 APP_NAME='web3-proxy'
@@ -57,7 +53,6 @@ SENTRY_DSN = ''
 
 [env.arbitrum-mainnet]
 name = "arbitrum-mainnet-web3-provider-proxy"
-workers_dev = false
 
 [env.arbitrum-mainnet.vars]
 APP_NAME='web3-proxy'
@@ -68,7 +63,6 @@ SENTRY_DSN = ''
 
 [env.arbitrum-goerli]
 name = "arbitrum-goerli-web3-provider-proxy"
-workers_dev = false
 
 [env.arbitrum-goerli.vars]
 APP_NAME='web3-proxy'
@@ -79,7 +73,6 @@ SENTRY_DSN = ''
 
 [env.optimism-kovan]
 name = "optimism-kovan-web3-provider-proxy"
-workers_dev = false
 
 [env.optimism-kovan.vars]
 APP_NAME='web3-proxy'
@@ -90,7 +83,6 @@ SENTRY_DSN = ''
 
 [env.optimism-goerli]
 name = "optimism-goerli-web3-provider-proxy"
-workers_dev = false
 
 [env.optimism-goerli.vars]
 APP_NAME='web3-proxy'
@@ -101,7 +93,6 @@ SENTRY_DSN = ''
 
 [env.polygon-mainnet]
 name = "polygon-mainnet-web3-provider-proxy"
-workers_dev = false
 
 [env.polygon-mainnet.vars]
 APP_NAME='web3-proxy'
@@ -112,7 +103,6 @@ SENTRY_DSN = ''
 
 [env.polygon-mumbai]
 name = "polygon-mumbai-web3-provider-proxy"
-workers_dev = false
 
 [env.polygon-mumbai.vars]
 APP_NAME='web3-proxy'
