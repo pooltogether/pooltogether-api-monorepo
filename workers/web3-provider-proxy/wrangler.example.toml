@@ -55,6 +55,28 @@ BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://optimism-mainnet.infura.io/v3/'
 SENTRY_DSN = ''
 
+[env.arbitrum-mainnet]
+name = "arbitrum-mainnet-web3-provider-proxy"
+workers_dev = false
+
+[env.arbitrum-mainnet.vars]
+APP_NAME='web3-proxy'
+EDGE_CACHE_TTL = 4
+BROWSER_CACHE_TTL = 0
+PROVIDER = 'https://arbitrum-mainnet.infura.io/v3/'
+SENTRY_DSN = ''
+
+[env.arbitrum-goerli]
+name = "arbitrum-goerli-web3-provider-proxy"
+workers_dev = false
+
+[env.arbitrum-goerli.vars]
+APP_NAME='web3-proxy'
+EDGE_CACHE_TTL = 4
+BROWSER_CACHE_TTL = 0
+PROVIDER = 'https://arbitrum-goerli.infura.io/v3/'
+SENTRY_DSN = ''
+
 [env.optimism-kovan]
 name = "optimism-kovan-web3-provider-proxy"
 workers_dev = false

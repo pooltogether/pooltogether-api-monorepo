@@ -9,7 +9,7 @@
     "build": "webpack",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
-    "publish-all": "wrangler publish --env ethereum-mainnet && wrangler publish --env goerli && wrangler publish --env rinkeby && wrangler publish --env optimism-mainnet && wrangler publish --env optimism-kovan && wrangler publish --env optimism-goerli && wrangler publish --env polygon-mainnet && wrangler publish --env polygon-mumbai && wrangler publish --env avalanche-mainnet && wrangler publish --env avalanche-fuji",
+    "publish-all": "wrangler publish --env ethereum-mainnet && wrangler publish --env goerli && wrangler publish --env rinkeby && wrangler publish --env optimism-mainnet && wrangler publish --env optimism-kovan && wrangler publish --env optimism-goerli && wrangler publish --env polygon-mainnet && wrangler publish --env polygon-mumbai && wrangler publish --env avalanche-mainnet && wrangler publish --env avalanche-fuji && wrangler publish --env arbitrum-mainnet && wrangler publish --env arbitrum-goerli",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "eslintConfig": {
