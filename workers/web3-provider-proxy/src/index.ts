@@ -19,19 +19,31 @@ import Toucan from 'toucan-js'
 const PROVIDER_TIMEOUT = 5000
 
 const ALLOWED_ORIGINS = Object.freeze([
-  // 'http://localhost:3000',
-  'https://pooltogether.com',
   'https://app.pooltogether.com',
+  'https://app.pooltogether.us',
+  'https://pooltogether.com',
+  'https://pooltogether.us',
   'https://v4.pooltogether.com',
+  'https://v4.pooltogether.us',
   'https://v3.pooltogether.com',
+  'https://v3.pooltogether.us',
   'https://v2.pooltogether.com',
+  'https://v2.pooltogether.us',
   'https://app-staging.pooltogether.com',
+  'https://app-staging.pooltogether.us',
   'https://vote.pooltogether.com',
+  'https://vote.pooltogether.us',
   'https://vote-staging.pooltogether.com',
+  'https://vote-staging.pooltogether.us',
   'https://info.pooltogether.com',
+  'https://info.pooltogether.us',
   'https://info-staging.pooltogether.com',
+  'https://info-staging.pooltogether.us',
   'https://tools.pooltogether.com',
+  'https://tools.pooltogether.us',
+  'https://tools-staging.pooltogether.us',
   'https://tools-staging.pooltogether.com',
+  // 'http://localhost:3000'
 ])
 
 /**
