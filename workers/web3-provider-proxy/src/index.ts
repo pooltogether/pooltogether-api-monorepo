@@ -43,6 +43,7 @@ const ALLOWED_ORIGINS = Object.freeze([
   'https://tools.pooltogether.us',
   'https://tools-staging.pooltogether.us',
   'https://tools-staging.pooltogether.com',
+  'https://account-redesign--v4-ui.netlify.app',
   // 'http://localhost:3000'
 ])
 
