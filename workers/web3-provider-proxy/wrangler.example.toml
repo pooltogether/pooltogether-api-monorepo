@@ -19,6 +19,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 13
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://mainnet.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://mainnet.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.rinkeby]
@@ -29,6 +30,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://rinkeby.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://rinkeby.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.goerli]
@@ -39,6 +41,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://goerli.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://goerli.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.optimism-mainnet]
@@ -49,6 +52,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 4
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://optimism-mainnet.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://optimism-mainnet.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.arbitrum-mainnet]
@@ -59,6 +63,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 4
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://arbitrum-mainnet.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://arbitrum-mainnet.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.arbitrum-goerli]
@@ -69,6 +74,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 4
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://arbitrum-goerli.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://arbitrum-goerli.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.optimism-kovan]
@@ -79,6 +85,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://optimism-kovan.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://optimism-kovan.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.optimism-goerli]
@@ -89,6 +96,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 15
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://optimism-goerli.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://optimism-goerli.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.polygon-mainnet]
@@ -99,6 +107,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 2
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://polygon-mainnet.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://polygon-mainnet.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.polygon-mumbai]
@@ -109,6 +118,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 5
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://polygon-mumbai.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://polygon-mumbai.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.avalanche-mainnet]
@@ -119,6 +129,7 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 2
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://avalanche-mainnet.infura.io/v3/'
+FALLBACK_PROVIDER = 'https://avalanche-mainnet.infura.io/v3/'
 SENTRY_DSN = ''
 
 [env.avalanche-fuji]
@@ -129,5 +140,6 @@ APP_NAME='web3-proxy'
 EDGE_CACHE_TTL = 2
 BROWSER_CACHE_TTL = 0
 PROVIDER = 'https://api.avax-test.network/ext/bc/C/rpc'
+FALLBACK_PROVIDER = 'https://api.avax-test.network/ext/bc/C/rpc'
 SENTRY_DSN = ''
 

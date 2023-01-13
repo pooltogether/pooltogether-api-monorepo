@@ -88,7 +88,7 @@ async function fetchWithTimeout(url, request, timeout) {
  * @param {Event} event
  */
 async function tryProvider(url, request, retry = 3) {
-  const provider = new URL(PROVIDER)
+  const provider = new URL(retry > 1 ? PROVIDER : FALLBACK_PROVIDER)
   // Set the current URL hostname and pathname
   url.hostname = provider.hostname
   url.pathname = provider.pathname
@@ -216,7 +216,9 @@ async function handleOptions(event) {
       })
     }
   } catch (e) {
-    event.waitUntil(Sentry.captureException(e))
+    if (e instanceof Error && e.message !== 'RPC not ok!') {
+      event.waitUntil(Sentry.captureException(e))
+    }
     return new Response(null, { status: 500 })
   }
 }
@@ -248,7 +250,9 @@ async function handleGet(event) {
     }
     return formatResponse(event, response)
   } catch (e) {
-    event.waitUntil(Sentry.captureException(e))
+    if (e?.message !== 'RPC not ok!') {
+      event.waitUntil(Sentry.captureException(e))
+    }
     return new Response(null, { status: 500 })
   }
 }
@@ -300,7 +304,9 @@ async function handlePost(event) {
     }
     return formatResponse(event, response, { id })
   } catch (e) {
-    event.waitUntil(Sentry.captureException(e))
+    if (e instanceof Error && e.message !== 'RPC not ok!') {
+      event.waitUntil(Sentry.captureException(e))
+    }
     return new Response(null, { status: 500 })
   }
 }
