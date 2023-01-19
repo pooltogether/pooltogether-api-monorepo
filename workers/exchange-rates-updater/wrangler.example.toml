@@ -1,0 +1,38 @@
+type = "webpack"
+name = "exchange-rates-updater-localhost"
+workers_dev = true
+
+account_id = "" # Production account
+
+kv_namespaces = [{ binding = "EXCHANGE_RATES", id = "947f468463f8470fa2d77edb514f7f16", preview_id = "1f33e36772b74c1e8ec65abf2960f70e" }]
+
+[triggers]
+crons = ["0 * * * *"]
+
+[vars]
+APP_NAME = 'exchange-rates-updater'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'cloudflare-workers'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
+
+[env.production]
+name = "exchange-rates-updater"
+kv_namespaces = [{ binding = "EXCHANGE_RATES", id = "947f468463f8470fa2d77edb514f7f16", preview_id = "1f33e36772b74c1e8ec65abf2960f70e" }]
+workers_dev = false
+zone_id = ""
+
+[env.production.vars]
+APP_NAME = 'exchange-rates-updater'
+SENTRY_KEY = ''
+SENTRY_ORG = 'pooltogether'
+SENTRY_PROJECT_ID = '5832514'
+SENTRY_PROJECT_NAME = 'cloudflare-workers'
+SENTRY_AUTH_TOKEN = ''
+SENTRY_RELEASE = ''
+ENVIRONMENT_NAME = 'worker'
+INFURA_ID = ''
