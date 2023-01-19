@@ -123,6 +123,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@pooltogether/hooks@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@pooltogether/hooks/-/hooks-2.0.3.tgz#85ffe72672f8e81edac0a83137a13c01d917d969"
+  integrity sha512-a7GpAZpo7TbzWxWLsDBM4cpY/92s8+M4YW+kEVy/75jlJ/QRCtDqYDxu1Q+uNQqFzJc+yLdi+VIO0KS4l5TVGQ==
+
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.4.tgz#37fc1223f0786c39627068a12e94d6e6fc61de16"
