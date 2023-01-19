@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "@pooltogether/exchange-rates-updater",
+  "version": "1.0.0",
+  "description": "A cloudflare worker to keep the KV fresh with data from CoinGeckos exchange rates",
+  "main": "index.js",
+  "scripts": {
+    "start": "wrangler dev",
+    "dev": "wrangler dev",
+    "publish-prod": "wrangler publish --env production",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "PoolTogether <hello@pooltogether.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "@pooltogether/etherplex": "^1.1.1",
+    "@pooltogether/utilities": "^0.0.27",
+    "ethers": "^5.4.2",
+    "graphql": "^15.5.0",
+    "graphql-request": "^3.4.0"
+  }
+}
