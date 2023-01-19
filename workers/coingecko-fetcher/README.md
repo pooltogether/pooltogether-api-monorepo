@@ -17,16 +17,8 @@ This worker fetches data from CoinGecko.
 
 #### Local Development
 
-1. `wrangler dev`
-
-OR
-
-1. `yarn dev`
+1. `wrangler dev` OR `yarn dev`
 
 ### Deploying
 
-1. `wrangler publish`
-
-OR
-
-1. `yarn publish`
+1. `wrangler publish` OR `yarn publish`
