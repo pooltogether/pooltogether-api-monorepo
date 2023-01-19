@@ -1,6 +1,6 @@
 # `Pooltogether API - Exchange Rates Updater`
 
-This repo contains a Cloudflare Worker that is triggered by a cron job to keep the data in a Cloudflare KV store up to date.
+This repo contains a Cloudflare Worker that is triggered by a cron job to keep the data in a Cloudflare KV store up to date. The worker also exposes `/update` which allows a manual trigger of the update.
 
 This worker fetches data from CoinGecko.
 
