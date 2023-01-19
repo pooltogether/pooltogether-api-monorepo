@@ -1,38 +1,30 @@
-type = "webpack"
-name = "exchange-rates-updater-localhost"
-workers_dev = true
-
+name = "exchange-rates-updater"
+type = "javascript"
+zone_id = ""
 account_id = "" # Production account
+route = ""
+workers_dev = true
+compatibility_date = "2023-01-19"
 
-kv_namespaces = [{ binding = "EXCHANGE_RATES", id = "947f468463f8470fa2d77edb514f7f16", preview_id = "1f33e36772b74c1e8ec65abf2960f70e" }]
-
-[triggers]
-crons = ["0 * * * *"]
+[[kv_namespaces]]
+binding = "EXCHANGE_RATES"
+preview_id = "a7ac2bd9e565494d83aa01779679e816"
+id = "dc56d0dcc5ab49069871db83df8df2a4"
 
 [vars]
 APP_NAME = 'exchange-rates-updater'
+ENVIRONMENT_NAME = 'worker'
 SENTRY_KEY = ''
 SENTRY_ORG = 'pooltogether'
 SENTRY_PROJECT_ID = '5832514'
 SENTRY_PROJECT_NAME = 'cloudflare-workers'
 SENTRY_AUTH_TOKEN = ''
-SENTRY_RELEASE = ''
-ENVIRONMENT_NAME = 'worker'
-INFURA_ID = ''
 
-[env.production]
-name = "exchange-rates-updater"
-kv_namespaces = [{ binding = "EXCHANGE_RATES", id = "947f468463f8470fa2d77edb514f7f16", preview_id = "1f33e36772b74c1e8ec65abf2960f70e" }]
-workers_dev = false
-zone_id = ""
+[build]
+command = "yarn install && yarn build"
 
-[env.production.vars]
-APP_NAME = 'exchange-rates-updater'
-SENTRY_KEY = ''
-SENTRY_ORG = 'pooltogether'
-SENTRY_PROJECT_ID = '5832514'
-SENTRY_PROJECT_NAME = 'cloudflare-workers'
-SENTRY_AUTH_TOKEN = ''
-SENTRY_RELEASE = ''
-ENVIRONMENT_NAME = 'worker'
-INFURA_ID = ''
+[build.upload]
+format = "service-worker"
+
+[triggers]
+crons = ["0 */12 * * *"]

@@ -1,26 +1,39 @@
 {
-  "private": true,
   "name": "@pooltogether/exchange-rates-updater",
   "version": "1.0.0",
-  "description": "A cloudflare worker to keep the KV fresh with data from CoinGeckos exchange rates",
-  "main": "index.js",
+  "description": "A cloudflare worker to keep the KV fresh with data from CoinGeckos exchange rates.",
+  "main": "dist/worker.js",
   "scripts": {
-    "start": "wrangler dev",
+    "reinstall": "rm -rf dist && rm -rf node_modules && yarn",
+    "build": "webpack",
+    "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
+    "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "dev": "wrangler dev",
-    "publish-prod": "wrangler publish --env production",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write '**/*.{js,css,json,md}'"
+    "start": "wrangler dev",
+    "publish-prod": "wrangler publish"
   },
   "author": "PoolTogether <hello@pooltogether.com>",
   "license": "MIT",
-  "devDependencies": {
-    "prettier": "^1.18.2"
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "typescript",
+      "prettier"
+    ]
   },
-  "dependencies": {
-    "@pooltogether/etherplex": "^1.1.1",
-    "@pooltogether/utilities": "^0.0.27",
-    "ethers": "^5.4.2",
-    "graphql": "^15.5.0",
-    "graphql-request": "^3.4.0"
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.0.0",
+    "@types/service-worker-mock": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.16.1",
+    "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-typescript": "^3.0.0",
+    "prettier": "^2.3.0",
+    "service-worker-mock": "^2.0.5",
+    "ts-loader": "^9.2.2",
+    "typescript": "^4.8.3",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0"
   }
 }
