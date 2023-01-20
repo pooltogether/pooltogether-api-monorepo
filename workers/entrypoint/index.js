@@ -38,6 +38,7 @@ async function handleRequest(event) {
     const multiV4PrizeDistributorRegex = /\/v4\/addresses\/prize-distributors\/[\d]*/
     // Meta
     const gasCostsRegex = /\/gas\/[\d]*/
+    const exchangeRatesRegex = /\/exchange-rates/
 
     // Read routes
     if (singlePoolRegex.test(pathname)) {
@@ -62,6 +63,8 @@ async function handleRequest(event) {
       return getCachedResponse(event, getV4PrizeDistributor(event, request), 5)
     } else if (multiV4PrizeDistributorRegex.test(pathname)) {
       return getCachedResponse(event, getV4PrizeDistributorsByChainId(event, request), 5)
+    } else if (exchangeRatesRegex.test(pathname)) {
+      return getCachedResponse(event, getExchangeRates(event, request), 5)
     }
 
     const invalidRequestResponse = new Response(
