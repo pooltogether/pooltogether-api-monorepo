@@ -1,15 +1,17 @@
 name = "exchange-rates-updater"
 type = "javascript"
 zone_id = ""
-account_id = "" # Production account
 route = ""
 workers_dev = true
 compatibility_date = "2023-01-19"
 
+account_id = "" # Production account
+# account_id = "" # Personal Account
+
 [[kv_namespaces]]
 binding = "EXCHANGE_RATES"
-preview_id = "a7ac2bd9e565494d83aa01779679e816"
-id = "dc56d0dcc5ab49069871db83df8df2a4"
+preview_id = "1f33e36772b74c1e8ec65abf2960f70e"
+id = "947f468463f8470fa2d77edb514f7f16"
 
 [vars]
 APP_NAME = 'exchange-rates-updater'

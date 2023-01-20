@@ -9,7 +9,8 @@ account_id = "" # Production account
 kv_namespaces = [
     { binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "94a5c29315bb4d31abba4d959c67b2d4" },
     { binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" },
-    { binding = "GAS", id = "9bc65bde97e94e5aa0628fd77e1a29cc", preview_id = "a8bd237afea44bafbdaf4407be5afab0" }
+    { binding = "GAS", id = "9bc65bde97e94e5aa0628fd77e1a29cc", preview_id = "a8bd237afea44bafbdaf4407be5afab0" },
+    { binding = "EXCHANGE_RATES", id = "947f468463f8470fa2d77edb514f7f16", preview_id = "1f33e36772b74c1e8ec65abf2960f70e" }
 ]
 
 [vars]
@@ -27,7 +28,8 @@ name = "pooltogether-api"
 kv_namespaces = [
     { binding = "POOLS", id = "e01e5ae04e134d779382f36ca2ff6cda", preview_id = "e01e5ae04e134d779382f36ca2ff6cda" },
     { binding = "CONTRACT_ADDRESSES", id = "dc56d0dcc5ab49069871db83df8df2a4", preview_id = "a7ac2bd9e565494d83aa01779679e816" },
-    { binding = "GAS", id = "9bc65bde97e94e5aa0628fd77e1a29cc", preview_id = "a8bd237afea44bafbdaf4407be5afab0" }
+    { binding = "GAS", id = "9bc65bde97e94e5aa0628fd77e1a29cc", preview_id = "a8bd237afea44bafbdaf4407be5afab0" },
+    { binding = "EXCHANGE_RATES", id = "947f468463f8470fa2d77edb514f7f16", preview_id = "1f33e36772b74c1e8ec65abf2960f70e" }
 ]
 workers_dev = true
 zone_id = ""
