@@ -33,6 +33,7 @@ Meta
 
 - `GET /gas/:chainId`
 - `GET /gas/update`
+- `GET /exchange-rates`
 
 ### yield.pooltogether.com
 
