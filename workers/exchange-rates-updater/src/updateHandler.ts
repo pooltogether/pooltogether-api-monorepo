@@ -19,7 +19,7 @@ export const updateHandler = async (
   const stringifiedUpdates = JSON.stringify(exchangeRates)
 
   event.waitUntil(
-    EXCHANGE_RATES.put('coingecko-exchange-rates', stringifiedUpdates, {
+    EXCHANGE_RATES.put('coingecko-data', stringifiedUpdates, {
       metadata: {
         lastUpdated: new Date(Date.now()).toUTCString()
       }
