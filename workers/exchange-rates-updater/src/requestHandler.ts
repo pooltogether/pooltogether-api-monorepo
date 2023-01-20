@@ -15,7 +15,7 @@ export const handleRequest = async (event: FetchEvent): Promise<Response> => {
     if (pathname.startsWith('/exchange-rates/update')) {
       const updates = await updateExchangeRates(event)
 
-      if (updates.message === undefined) {
+      if (!!updates && 'usd' in updates) {
         const successResponse = new Response(JSON.stringify(updates), {
           ...DEFAULT_HEADERS,
           status: 200
