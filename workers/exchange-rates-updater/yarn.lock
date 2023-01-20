@@ -24,9 +24,9 @@
     js-tokens "^4.0.0"
 
 "@cloudflare/workers-types@^3.0.0":
-  version "3.18.0"
-  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.18.0.tgz#b4177cbe9306d7df4654db594d6e77c036341d2e"
-  integrity sha512-ehKOJVLMeR+tZkYhWEaLYQxl0TaIZu/kE86HF3/RidR8Xv5LuQxpbh+XXAoKVqsaphWLhIgBhgnlN5HGdheXSQ==
+  version "3.19.0"
+  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.19.0.tgz#f3791b80b23f7cf0072f2e67e98aa37801204b6c"
+  integrity sha512-0FRcsz7Ea3jT+gc5gKPIYciykm1bbAaTpygdzpCwGt0RL+V83zWnYN30NWDW4rIHj/FHtz+MIuBKS61C8l7AzQ==
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.7"
@@ -122,11 +122,6 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
-
-"@pooltogether/hooks@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@pooltogether/hooks/-/hooks-2.0.3.tgz#85ffe72672f8e81edac0a83137a13c01d917d969"
-  integrity sha512-a7GpAZpo7TbzWxWLsDBM4cpY/92s8+M4YW+kEVy/75jlJ/QRCtDqYDxu1Q+uNQqFzJc+yLdi+VIO0KS4l5TVGQ==
 
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"

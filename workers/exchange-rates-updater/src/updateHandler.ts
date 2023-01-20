@@ -1,4 +1,4 @@
-import { CoingeckoExchangeRates } from '@pooltogether/hooks'
+import { CoingeckoExchangeRates } from './updateExchangeRates'
 
 /**
  * @param event
