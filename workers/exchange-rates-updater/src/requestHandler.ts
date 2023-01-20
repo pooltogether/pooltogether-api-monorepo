@@ -12,7 +12,7 @@ export const handleRequest = async (event: FetchEvent): Promise<Response> => {
     const url = new URL(request.url)
     const pathname = url.pathname
 
-    if (pathname.startsWith('exchange-rates/update')) {
+    if (pathname.startsWith('/exchange-rates/update')) {
       const updates = await updateExchangeRates(event)
 
       if (updates.message === undefined) {
